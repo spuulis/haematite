@@ -30,3 +30,7 @@ def chessboard(images, size, dim, verbose=False):
     img = cv2.imread(images[0])
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     return cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+
+
+def focus_measure(img):
+    return cv2.Laplacian(img, cv2.CV_64F).var()
