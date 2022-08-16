@@ -1,3 +1,5 @@
+from contextlib import nullcontext
+import csv
 import time
 
 import nidaqmx
@@ -10,9 +12,13 @@ class Waveform(threading.Thread):
     def __init__(self, amp, freq):
         threading.Thread.__init__(self)
         self.daemon = True
+
         self.amp = amp
         self.freq = freq
         self.phase = np.pi / 2
+
+        # File name for csv output
+        self.output = None
 
         self._stopper = threading.Event()
 
@@ -22,23 +28,29 @@ class Waveform(threading.Thread):
     def stopped(self):
         return self._stopper.is_set()
 
+    def set_output_file(self, file_name):
+        self.output = file_name
+
     # Sine wave generator (freq in rad / s)
     def f(self, t, amp, freq, phase):
         return amp * np.sin(freq * t + phase)
 
     def run(self):
-        with nidaqmx.Task() as task:
+        with (
+            nidaqmx.Task() as task_o,
+            open(self.output, 'w') if self.output is not None else nullcontext() as output_file,
+        ):
             # Define voltage output channels for coil control ([X, Y])
-            task.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OX)
-            task.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
+            task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OX)
+            task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
 
             # Set maximum permittable voltage for output channels
-            task.ao_channels.all.ao_max = config.COILS_MAX_CURRENT
-            task.ao_channels.all.ao_min = -config.COILS_MAX_CURRENT
+            task_o.ao_channels.all.ao_max = config.COILS_MAX_CURRENT
+            task_o.ao_channels.all.ao_min = -config.COILS_MAX_CURRENT
 
-            # Define voltage input channels for coil control ([X, Y])
-            task.ao_channels.add_ai_voltage_chan(config.COILS_NAME_IX)
-            task.ao_channels.add_ai_voltage_chan(config.COILS_NAME_IY)
+            if output_file is not None:
+                out_writer = csv.writer(output_file)
+                out_writer.writerow(['Time', 'B_x', 'B_y'])
 
             # Waveform generation loop
             time_start = time.time_ns() * 1e-9
@@ -51,15 +63,16 @@ class Waveform(threading.Thread):
                     self.f(t, self.amp, self.freq, 0),
                     self.f(t, self.amp, self.freq, self.phase),
                 ])
-                task.write(
-                    sent_t * np.array(config.COILS_T_TO_V_X, config.COILS_T_TO_V_Y)
+                task_o.write(
+                    sent_t * np.array([config.COILS_T_TO_V_X, config.COILS_T_TO_V_Y])
                 )
 
-                # Read voltages over resistors (effectively, coil current)
-                received_t = np.array(task.read()) * np.array(config.COILS_V_TO_T_X, config.COILS_V_TO_T_Y)
+                # Write coil voltages
+                if output_file is not None:
+                    out_writer.writerow(np.concatenate([t], sent_t))
 
                 # Limit frame rate
                 time.sleep(max(1./config.COILS_FPS - (time.time_ns() * 1e-9 - time_now), 0))
 
             # Set current through coils to zero upon exit
-            task.write([0, 0])
+            task_o.write([0, 0])
