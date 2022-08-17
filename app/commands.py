@@ -21,3 +21,11 @@ def get_values(amp, freq, phase):
         return(x,y)
     else:
         return([1],[1])
+
+def next_sin_val(amp, freq, phase, time):
+    if(check_num(amp) and check_num(freq) and check_num(phase)):
+        return float(amp) * np.sin(time*float(freq)*2*np.pi+float(phase))
+    else:
+        return 0.0
+
+        
