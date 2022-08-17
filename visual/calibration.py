@@ -33,7 +33,7 @@ class Chessboard():
         if self.resolution == None:
             self.resolution = gray.shape[::-1]
         if self.resolution != gray.shape[::-1]:
-            return False
+            return False, []
         
         # Find the chessboard corners
         ret, corners = cv2.findChessboardCorners(gray, self.dimensions, None)
@@ -43,14 +43,13 @@ class Chessboard():
             # TODO: Refine image points with cornerSubPix?
             self.objpoints.append(self.objp)
             self.imgpoints.append(corners)
-        return ret
+        return ret, corners
         
-
     def add_images(self, images, verbose=False):
         ret = False
         for i in tqdm(range(len(images)), disable=not verbose):
             img = cv2.imread(images[i])
-            ret = self.add_image(img) or ret
+            ret = self.add_image(img)[0] or ret
         return ret
 
     def calibrate(self):
@@ -61,3 +60,12 @@ class Chessboard():
             None,
             None
         )
+    
+    def draw_corners(self, img, corners, inplace=True):
+        if inplace:
+            cv2.drawChessboardCorners(img, (6, 5), corners, True)
+        else:
+            temp = img.copy()
+            cv2.drawChessboardCorners(temp, (6, 5), corners, True)
+            return temp
+        return True
