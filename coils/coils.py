@@ -9,6 +9,16 @@ import threading
 import config
 import coils.waveform
 
+def turn_off():
+    with nidaqmx.Task() as task_o:
+        # Define voltage output channels for coil control ([X, Y])
+        task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OX)
+        task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
+
+        # Set current through coils to zero
+        task_o.write([0, 0])
+
+
 class Coils(threading.Thread):
     def __init__(self, amp, freq):
         threading.Thread.__init__(self)
