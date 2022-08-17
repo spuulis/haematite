@@ -132,6 +132,7 @@ def start_stop():
         btn_start["text"] = "Stop"
         btn_start["bg"] = "#faaaaa"
         ani.event_source.start()
+        upd_param()
 
 
 fig = Figure(figsize = (10, 10), dpi = 50)        
@@ -170,7 +171,7 @@ def animate(i):
     y2.append(y2_new)
     
     plot1.set_xlim(x[-1]-5,x[-1])
-    plot1.set_ylim(-max(np.max(y1[-1000:])*1.1,np.max(y2[-1000:])*1.1,0.5),max(np.max(y1[-1000:])*1.1,np.max(y2[-1000:])*1.1,0.5))
+    plot1.set_ylim(-max(np.max(y1[int(-5000/dt):])*1.1,np.max(y2[int(-5000/dt):])*1.1,0.5),max(np.max(y1[int(-5000/dt):])*1.1,np.max(y2[int(-5000/dt):])*1.1,0.5))
 
     line1.set_data(x,y1)
     line2.set_data(x,y2)
