@@ -63,9 +63,9 @@ class Chessboard():
     
     def draw_corners(self, img, corners, inplace=True):
         if inplace:
-            cv2.drawChessboardCorners(img, (6, 5), corners, True)
+            cv2.drawChessboardCorners(img, self.dimensions, corners, True)
         else:
             temp = img.copy()
-            cv2.drawChessboardCorners(temp, (6, 5), corners, True)
+            cv2.drawChessboardCorners(temp, self.dimensions, corners, True)
             return temp
         return True
