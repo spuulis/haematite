@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.figure import Figure
 import matplotlib.animation as anim
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 NavigationToolbar2Tk)
 from matplotlib import style
 from PIL import ImageTk, Image
@@ -30,7 +30,7 @@ def check_num(num):
 def get_values(amp, freq, phase, phase_off):
     if(check_num(amp) and check_num(freq) and check_num(phase) and check_num(phase_off)):
         x = np.linspace(0, 5,1001)
-        
+
         y = float(amp) * np.sin(x*float(freq)*2*np.pi+float(phase))
         return(x,y)
     else:
@@ -50,7 +50,4 @@ def clear_canvas(canvas):
 
 def update_image(image, label):
     img = Image.fromarray(image)
-    img_tk = ImageTk.PhotoImage(image=img)
-    label["image"] = img_tk
-  
-
+    # img_tk = ImageTK.PhotoImage()

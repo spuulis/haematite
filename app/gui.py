@@ -1,11 +1,15 @@
 ### This code is the main code to run for the GUI of the program ###
 ###   Imports   ###
+<<<<<<< HEAD
 import sys
 
 # from visual.camera import Camera
 
 # from ..visual.camera import Camera
 sys.path.insert(1, 'C:/Users/danie/haematite/visual')
+=======
+
+>>>>>>> ff0e7f94089f83b1c62d4b6b14d376e56cbb6b3b
 import tkinter as tk
 import tkinter.ttk
 import commands as cmnd
@@ -18,8 +22,13 @@ NavigationToolbar2Tk)
 from matplotlib import style
 import time
 
+<<<<<<< HEAD
 from PIL import ImageTk, Image
 from camera import Camera
+=======
+from PIL import Image#, ImageTK
+# from visual.calibration import chessboard
+>>>>>>> ff0e7f94089f83b1c62d4b6b14d376e56cbb6b3b
 # import visual.tracker
 
 ###    Setting time parameters    ###
@@ -180,13 +189,19 @@ frm_cam_img.update()
 btn_plot = tk.Button(
     master=window,
     text="Update plot",
-    width=10,
-    height=2,
+    width=22,
+    height=1,
     bg="#aafaaa",
     command=lambda: upd_param()
 )
 # button placement
-btn_plot.place(x=195, y=55)
+btn_plot.place(x=195, y=5)
+# tip text box that appears when hovering over
+cmnd.CreateToolTip(btn_plot, text =
+                 'Mani nospiežot tiks nomainīta frekvence, amplitūda \n '
+                 'un fāzes pēc tā, kas būs lauciņos norādīts.\n'
+                 'Ja ir grafiks ir uzlikts uz pauzes, tad  \n'
+                 'atjauninājumi stāsies spēkā uzspižot pogu "Start"')
 # neccesary for to set the locaation in the first loop
 btn_plot.update()
 
@@ -195,12 +210,26 @@ btn_start = tk.Button(
     master=window,
     text="Start",
     width=10,
-    height = 2,
+    height = 5,
     bg="#aafaaa",
     command=lambda:start_stop()
 )
-btn_start.place(x=195, y=5)
+btn_start.place(x=195, y=35)
+cmnd.CreateToolTip(btn_start, text =
+                 'Nospiežot "Start" tiks nomainīta frekvence, amplitūda \n '
+                 'un fāzes pēc tā, kas būs lauciņos norādīts,\n'
+                 'padarot pogu "Update plot" par bezjēdzīgu.  \n'
+                 'Sāksies grafika animācija. ',text2='Grafika animācija tiks apturēta! \n'
+                 'Vai tu tiešām esi gatavs apturēt animāciju?')
+
+#if "Start" == btn_start['text']:
+#    cmnd.CreateToolTip(btn_start, text =
+#                 'Start')
+#else:
+#    cmnd.CreateToolTip(btn_plot, text =
+#                 'Stop')
 btn_start.update()
+<<<<<<< HEAD
 
 
 
@@ -227,6 +256,9 @@ btn_show.place(x=708, y=frm_cam_btn.winfo_height()+10)
 btn_show.update()
 
 ### Functions that need global variables to function ###
+=======
+### Functions that need global variables to Functions ###
+>>>>>>> ff0e7f94089f83b1c62d4b6b14d376e56cbb6b3b
 ### Do not move to a diferent folder ###
 
 
@@ -238,6 +270,7 @@ def start_stop():
         btn_start["text"] = "Start"
         btn_start["bg"] = "#aafaaa"
         ani.event_source.stop()
+
     else:
         anim_running = True
         btn_start["text"] = "Stop"
@@ -245,6 +278,7 @@ def start_stop():
         ani.event_source.start()
         upd_param()
 
+<<<<<<< HEAD
 def toggle_cam(cam):
     print("poga")
     global cam_running
@@ -258,6 +292,8 @@ def toggle_cam(cam):
         btn_record["bg"] = "#faaaaa"
     cam_running = not cam_running
 
+=======
+>>>>>>> ff0e7f94089f83b1c62d4b6b14d376e56cbb6b3b
 
 ### Making the plot  ###
 # making the background to the plot
@@ -269,7 +305,6 @@ plot_canvas = tk.Canvas(
 )
 
 # the figure
-
 fig = Figure(figsize = (10, 10), dpi = 50)
 x = [0]
 y1 = [0]
@@ -297,7 +332,7 @@ canvas.get_tk_widget().pack()
 
 
 def animate(i):
-    
+
     t = np.around(dt*i/1000,3)
     x.append(t)
     y1_new = cmnd.next_sin_val(param[0],param[1],param[2],param[3],t)[0]
