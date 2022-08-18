@@ -53,9 +53,15 @@ class ToolTip(object):
         self.tipwindow = None
         self.id = None
         self.x = self.y = 0
+        #elf.comment_id=0
 
-    def showtip(self, text):
-        "Display text in tooltip window"
+    def showtip(self, text,text2):
+        #"Display text in tooltip window"
+        print(self.widget['bg'])
+        if self.widget['bg'] == "#faaaaa":
+            text=text2
+
+
         self.text = text
         if self.tipwindow or not self.text:
             return
@@ -76,10 +82,10 @@ class ToolTip(object):
         if tw:
             tw.destroy()
 
-def CreateToolTip(widget, text):
+def CreateToolTip(widget, text,text2="Error"):
     toolTip = ToolTip(widget)
     def enter(event):
-        toolTip.showtip(text)
+        toolTip.showtip(text, text2)
     def leave(event):
         toolTip.hidetip()
     widget.bind('<Enter>', enter)

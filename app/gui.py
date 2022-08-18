@@ -120,10 +120,11 @@ btn_plot = tk.Button(
 # button placement
 btn_plot.place(x=195, y=5)
 # tip text box that appears when hovering over
-cmnd.CreateToolTip(btn_plot, text = 'Labdien! Es esmu poga un mani sauc "Update plot".\n'
-                 'Esmu šeit lai izstāstītu, kāpēc esmu nākusi šajā pasaulē.\n'
-                 'Mani nospiežot tiks nomainīta frekvence, amplitūda un fāzes pēc tā, kas būs lauciņos norādīts.\n'
-                 'Ja ir grafiks ir uzlikts uz pauzes, tad atjauninājumi stāsies spēkā uzspižot pogu "Start"')
+cmnd.CreateToolTip(btn_plot, text =
+                 'Mani nospiežot tiks nomainīta frekvence, amplitūda \n '
+                 'un fāzes pēc tā, kas būs lauciņos norādīts.\n'
+                 'Ja ir grafiks ir uzlikts uz pauzes, tad  \n'
+                 'atjauninājumi stāsies spēkā uzspižot pogu "Start"')
 # neccesary for to set the locaation in the first loop
 btn_plot.update()
 
@@ -137,6 +138,19 @@ btn_start = tk.Button(
     command=lambda:start_stop()
 )
 btn_start.place(x=195, y=35)
+cmnd.CreateToolTip(btn_start, text =
+                 'Nospiežot "Start" tiks nomainīta frekvence, amplitūda \n '
+                 'un fāzes pēc tā, kas būs lauciņos norādīts,\n'
+                 'padarot pogu "Update plot" par bezjēdzīgu.  \n'
+                 'Sāksies grafika animācija. ',text2='Grafika animācija tiks apturēta! \n'
+                 'Vai tu tiešām esi gatavs apturēt animāciju?')
+
+#if "Start" == btn_start['text']:
+#    cmnd.CreateToolTip(btn_start, text =
+#                 'Start')
+#else:
+#    cmnd.CreateToolTip(btn_plot, text =
+#                 'Stop')
 btn_start.update()
 ### Functions that need global variables to Functions ###
 ### Do not move to a diferent folder ###
@@ -153,12 +167,14 @@ def start_stop():
         btn_start["text"] = "Start"
         btn_start["bg"] = "#aafaaa"
         ani.event_source.stop()
+
     else:
         anim_running = True
         btn_start["text"] = "Stop"
         btn_start["bg"] = "#faaaaa"
         ani.event_source.start()
         upd_param()
+
 
 ### Making the plot  ###
 # making the background to the plot
