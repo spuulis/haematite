@@ -44,7 +44,7 @@ nidaqmx==0.6.3
 notebook==6.4.12
 numpy==1.23.1
 opencv-contrib-python==4.6.0.66
-opencv-python==4.6.0.66
+opencv-contrib-python-headless==4.6.0.66
 packaging==21.3
 pandas==1.4.3
 pandocfilters==1.5.0
@@ -60,6 +60,7 @@ pure-eval==0.2.2
 pycparser==2.21
 Pygments==2.12.0
 pyparsing==3.0.9
+pypylon==1.8.0
 pyrsistent==0.18.1
 python-dateutil==2.8.2
 pytz==2022.1
