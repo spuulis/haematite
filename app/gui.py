@@ -119,6 +119,11 @@ btn_plot = tk.Button(
 )
 # button placement
 btn_plot.place(x=195, y=5)
+# tip text box that appears when hovering over
+cmnd.CreateToolTip(btn_plot, text = 'Hello World\n'
+                 'This is how tip looks like.'
+                 'Best part is, it\'s not a menu.\n'
+                 'Purely tipbox.')
 # neccesary for to set the locaation in the first loop
 btn_plot.update()
 
@@ -192,7 +197,7 @@ canvas.get_tk_widget().pack()
 
 
 def animate(i):
-    
+
     t = np.around(dt*i/1000,3)
     x.append(t)
     y1_new = cmnd.next_sin_val(param[0],param[1],param[2],param[3],t)[0]
