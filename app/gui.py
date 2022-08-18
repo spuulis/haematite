@@ -1,15 +1,14 @@
 ### This code is the main code to run for the GUI of the program ###
 ###   Imports   ###
-<<<<<<< HEAD
+
 import sys
 
 # from visual.camera import Camera
 
 # from ..visual.camera import Camera
 sys.path.insert(1, 'C:/Users/danie/haematite/visual')
-=======
 
->>>>>>> ff0e7f94089f83b1c62d4b6b14d376e56cbb6b3b
+
 import tkinter as tk
 import tkinter.ttk
 import commands as cmnd
@@ -22,13 +21,13 @@ NavigationToolbar2Tk)
 from matplotlib import style
 import time
 
-<<<<<<< HEAD
+
 from PIL import ImageTk, Image
 from camera import Camera
-=======
+
 from PIL import Image#, ImageTK
 # from visual.calibration import chessboard
->>>>>>> ff0e7f94089f83b1c62d4b6b14d376e56cbb6b3b
+
 # import visual.tracker
 
 ###    Setting time parameters    ###
@@ -189,8 +188,8 @@ frm_cam_img.update()
 btn_plot = tk.Button(
     master=window,
     text="Update plot",
-    width=22,
-    height=1,
+    width=12,
+    height=2,
     bg="#aafaaa",
     command=lambda: upd_param()
 )
@@ -209,12 +208,12 @@ btn_plot.update()
 btn_start = tk.Button(
     master=window,
     text="Start",
-    width=10,
-    height = 5,
+    width=12,
+    height = 2,
     bg="#aafaaa",
     command=lambda:start_stop()
 )
-btn_start.place(x=195, y=35)
+btn_start.place(x=195, y=58)
 cmnd.CreateToolTip(btn_start, text =
                  'Nospiežot "Start" tiks nomainīta frekvence, amplitūda \n '
                  'un fāzes pēc tā, kas būs lauciņos norādīts,\n'
@@ -229,7 +228,7 @@ cmnd.CreateToolTip(btn_start, text =
 #    cmnd.CreateToolTip(btn_plot, text =
 #                 'Stop')
 btn_start.update()
-<<<<<<< HEAD
+
 
 
 
@@ -256,9 +255,9 @@ btn_show.place(x=708, y=frm_cam_btn.winfo_height()+10)
 btn_show.update()
 
 ### Functions that need global variables to function ###
-=======
+
 ### Functions that need global variables to Functions ###
->>>>>>> ff0e7f94089f83b1c62d4b6b14d376e56cbb6b3b
+
 ### Do not move to a diferent folder ###
 
 
@@ -278,7 +277,7 @@ def start_stop():
         ani.event_source.start()
         upd_param()
 
-<<<<<<< HEAD
+
 def toggle_cam(cam):
     print("poga")
     global cam_running
@@ -292,8 +291,7 @@ def toggle_cam(cam):
         btn_record["bg"] = "#faaaaa"
     cam_running = not cam_running
 
-=======
->>>>>>> ff0e7f94089f83b1c62d4b6b14d376e56cbb6b3b
+
 
 ### Making the plot  ###
 # making the background to the plot

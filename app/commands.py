@@ -51,8 +51,7 @@ def clear_canvas(canvas):
 def update_image(image, label):
     img = Image.fromarray(image)
     # img_tk = ImageTK.PhotoImage()
-<<<<<<< HEAD
-=======
+
 
 # Tip text box that appears when hovering hovering
 
