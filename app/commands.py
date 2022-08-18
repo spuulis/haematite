@@ -6,7 +6,13 @@ import matplotlib.animation as anim
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
 NavigationToolbar2Tk)
 from matplotlib import style
-from PIL import Image#, ImageTK
+from PIL import ImageTk, Image
+import sys
+
+# from ..visual.camera import Camera
+sys.path.insert(1, 'C:/Users/danie/haematite/visual')
+from camera import *
+
 
 def fnc_lblUpdate(label):
     n = label["text"]
@@ -38,7 +44,13 @@ def next_sin_val(amp, freq, phase, phase_off, time):
     else:
         return 0.0
 
+def clear_canvas(canvas):
+    for child in canvas.winfo_children():
+        child.destroy()
 
 def update_image(image, label):
     img = Image.fromarray(image)
-    # img_tk = ImageTK.PhotoImage()
+    img_tk = ImageTk.PhotoImage(image=img)
+    label["image"] = img_tk
+  
+

@@ -1,8 +1,13 @@
 ### This code is the main code to run for the GUI of the program ###
 ###   Imports   ###
 import sys
+
+# from visual.camera import Camera
+
+# from ..visual.camera import Camera
 sys.path.insert(1, 'C:/Users/danie/haematite/visual')
 import tkinter as tk
+import tkinter.ttk
 import commands as cmnd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,23 +18,27 @@ NavigationToolbar2Tk)
 from matplotlib import style
 import time
 
-from PIL import Image#, ImageTK
-from calibration import *
+from PIL import ImageTk, Image
+from camera import Camera
 # import visual.tracker
 
 ###    Setting time parameters    ###
 
 dt = 25 #ms
+fps = 30
+exposure = 10000 #microseconds
 anim_running = False
-startup = False
+cam_running = False
+# startup = False
 param = [0,0,0,np.pi/2]
 
 ###   Initialising the GUI window   ###
 window = tk.Tk()
-window.geometry("800x800")
+
+window.geometry(str(window.winfo_screenwidth())+"x"+str(window.winfo_screenheight()-40))
 # window.configure(background = "#003050")
 window.title("Pagraba spoles")
-window.resizable(False, False)
+window.resizable(True, True)
 style.use('ggplot')
 
 
@@ -37,6 +46,21 @@ style.use('ggplot')
 frm_labels = tk.Frame(
     master=window,
     borderwidth=0,
+    # background = "#003555"
+)
+
+
+frm_cam_btn = tk.Frame(
+    master=window,
+    borderwidth=0,
+    # background = "#003555"
+)
+frm_cam_img = tk.Frame(
+    master=window,
+    borderwidth=3,
+    width=500,
+    height=500,
+    relief=tk.GROOVE
     # background = "#003555"
 )
 
@@ -67,6 +91,25 @@ lbl_phase_off = tk.Label(
     width=12
 )
 
+
+lbl_cam_fps = tk.Label(
+    master=frm_cam_btn,
+    text="Camera framerate: "+str(fps),
+    anchor="w",
+    width=20
+)
+lbl_cam_exp = tk.Label(
+    master=frm_cam_btn,
+    text="Camera exposure: "+str(exposure/1000)+"ms",
+    anchor="w",
+    width=20
+)
+lbl_cam_img = tk.Label(
+    master=frm_cam_img,
+    anchor="n",
+)
+
+
 # the blank field part
 ent_freq = tk.Entry(
     master=frm_labels,
@@ -80,16 +123,30 @@ ent_phase = tk.Entry(
     master=frm_labels,
     width=10
 )
-
 ent_phase_off = tk.Entry(
     master=frm_labels,
     width=10
 )
+
+
+# ent_cam_fps = tk.Entry(
+#     master=frm_cam_btn,
+#     width=10
+# )
+# ent_cam_exp = tk.Entry(
+#     master=frm_cam_btn,
+#     width=10
+# )
+
+
 #setting values to the blank field
 ent_freq.insert(0,"1")
 ent_amp.insert(0,"1")
 ent_phase.insert(0,"0")
 ent_phase_off.insert(0,"90")
+
+# ent_cam_fps.insert(0,"30")
+# ent_cam_exp.insert(0,"10")
 
 # placement of the varios components
 frm_labels.place(x=5,y=5)
@@ -106,8 +163,18 @@ ent_phase_off.grid(row=3,column=1)
 frm_labels.update()
 
 
+frm_cam_btn.place(x=630,y=5)
+lbl_cam_fps.grid(row=0,column=0)
+lbl_cam_exp.grid(row=1,column=0)
+
+# ent_cam_fps.grid(row=0,column=1)
+# ent_cam_exp.grid(row=1,column=1)
+frm_cam_btn.update()
 
 
+frm_cam_img.place(x=630,y=180)
+lbl_cam_img.pack()
+frm_cam_img.update()
 ### Buttons
 # A button to update the frequency and other parameters
 btn_plot = tk.Button(
@@ -134,12 +201,34 @@ btn_start = tk.Button(
 )
 btn_start.place(x=195, y=5)
 btn_start.update()
+
+
+
+btn_record = tk.Button(
+    master=window,
+    text="Start \nrecording",
+    width=8,
+    height = 3,
+    bg="#aafaaa",
+    command=lambda:toggle_cam(cam)
+)
+btn_record.place(x=630, y=frm_cam_btn.winfo_height()+10)
+btn_record.update()
+
+btn_show = tk.Button(
+    master=window,
+    text="Show \nimage",
+    width=8,
+    height = 3,
+    bg="#aafaaa",
+    # command=lambda:cmnd.update_image(cam.grab(),lbl_cam_img)
+)
+btn_show.place(x=708, y=frm_cam_btn.winfo_height()+10)
+btn_show.update()
+
 ### Functions that need global variables to function ###
 ### Do not move to a diferent folder ###
-#Cleat plot function
-def clear_plot():
-    for child in plot_canvas.winfo_children():
-        child.destroy()
+
 
 # Remake of the start stop button
 def start_stop():
@@ -155,6 +244,20 @@ def start_stop():
         btn_start["bg"] = "#faaaaa"
         ani.event_source.start()
         upd_param()
+
+def toggle_cam(cam):
+    print("poga")
+    global cam_running
+    if cam_running:
+        # cam.stop_capture()
+        btn_record["text"] = "Start \nrecording"
+        btn_record["bg"] = "#aafaaa"
+    else:
+        # cam.start_capture()
+        btn_record["text"] = "Stop \nrecording"
+        btn_record["bg"] = "#faaaaa"
+    cam_running = not cam_running
+
 
 ### Making the plot  ###
 # making the background to the plot
@@ -219,6 +322,10 @@ def upd_param():
 
 ani = anim.FuncAnimation(fig, animate, interval=dt, blit=False)
 
+
+
+
+
 def plot():
     fig = Figure(figsize = (10, 10), dpi = 50)
     x,y = cmnd.get_values(ent_amp.get(),ent_freq.get(),ent_phase.get())
@@ -241,5 +348,9 @@ def plot():
     canvas.get_tk_widget().pack()
 
 plot_canvas.place(x=20, y=155)
+# tkinter.ttk.Separator(master=window,orient=tk.VERTICAL).pack(fill="y")
 
+
+#Camera stuff
+cam = 5#Camera(fps,exposure)
 window.mainloop()
