@@ -121,7 +121,7 @@ btn_plot = tk.Button(
 btn_plot.place(x=195, y=5)
 # tip text box that appears when hovering over
 cmnd.CreateToolTip(btn_plot, text = 'Labdien! Es esmu poga un mani sauc "Update plot".\n'
-                 'Esmu šeit lai izstāstītu, kāpēc esmu nākusi šajā pasaulē.'
+                 'Esmu šeit lai izstāstītu, kāpēc esmu nākusi šajā pasaulē.\n'
                  'Mani nospiežot tiks nomainīta frekvence, amplitūda un fāzes pēc tā, kas būs lauciņos norādīts.\n'
                  'Ja ir grafiks ir uzlikts uz pauzes, tad atjauninājumi stāsies spēkā uzspižot pogu "Start"')
 # neccesary for to set the locaation in the first loop
