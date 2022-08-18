@@ -1,6 +1,7 @@
 ### This code is the main code to run for the GUI of the program ###
 ###   Imports   ###
-
+import sys
+sys.path.insert(1, 'C:/Users/danie/haematite/visual')
 import tkinter as tk
 import commands as cmnd
 import matplotlib.pyplot as plt
@@ -13,7 +14,7 @@ from matplotlib import style
 import time
 
 from PIL import Image#, ImageTK
-# from visual.calibration import chessboard
+from calibration import *
 # import visual.tracker
 
 ###    Setting time parameters    ###
@@ -112,18 +113,22 @@ frm_labels.update()
 btn_plot = tk.Button(
     master=window,
     text="Update plot",
-    width=22,
-    height=1,
+    width=10,
+    height=2,
     bg="#aafaaa",
     command=lambda: upd_param()
 )
 # button placement
+<<<<<<< HEAD
 btn_plot.place(x=195, y=5)
 # tip text box that appears when hovering over
 cmnd.CreateToolTip(btn_plot, text = 'Hello World\n'
                  'This is how tip looks like.'
                  'Best part is, it\'s not a menu.\n'
                  'Purely tipbox.')
+=======
+btn_plot.place(x=195, y=55)
+>>>>>>> 952784febf6ebd3d6c8050033c7e61eb32697055
 # neccesary for to set the locaation in the first loop
 btn_plot.update()
 
@@ -132,13 +137,13 @@ btn_start = tk.Button(
     master=window,
     text="Start",
     width=10,
-    height = 5,
+    height = 2,
     bg="#aafaaa",
     command=lambda:start_stop()
 )
-btn_start.place(x=195, y=35)
+btn_start.place(x=195, y=5)
 btn_start.update()
-### Functions that need global variables to Functions ###
+### Functions that need global variables to function ###
 ### Do not move to a diferent folder ###
 #Cleat plot function
 def clear_plot():
@@ -170,6 +175,7 @@ plot_canvas = tk.Canvas(
 )
 
 # the figure
+
 fig = Figure(figsize = (10, 10), dpi = 50)
 x = [0]
 y1 = [0]
