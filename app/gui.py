@@ -1,3 +1,4 @@
+### This code is the main code to run for the GUI of the program ###
 ###   Imports   ###
 
 import tkinter as tk
@@ -209,7 +210,7 @@ def upd_param():
 
 
 
-# if anim_running:
+# Stopping the animation in the begining
 
 ani = anim.FuncAnimation(fig, animate, interval=dt, blit=False)
 
@@ -238,7 +239,7 @@ def plot():
     toolbar.update()
 
     canvas.get_tk_widget().pack()
-
+# plot background location
 plot_canvas.place(x=20, y=115)
 
 window.mainloop()
