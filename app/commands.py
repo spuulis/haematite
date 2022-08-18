@@ -57,7 +57,7 @@ class ToolTip(object):
 
     def showtip(self, text,text2):
         #"Display text in tooltip window"
-        print(self.widget['bg'])
+        #print(self.widget['bg'])
         if self.widget['bg'] == "#faaaaa":
             text=text2
 
