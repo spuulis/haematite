@@ -7,6 +7,8 @@ import matplotlib.animation as anim
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
 NavigationToolbar2Tk)
 from matplotlib import style
+import time
+
 from PIL import Image#, ImageTK
 # from visual.calibration import chessboard
 # import visual.tracker
@@ -14,6 +16,7 @@ from PIL import Image#, ImageTK
 
 dt = 25 #ms
 anim_running = False
+startup = False
 param = [0,0,0,np.pi/2]
 window = tk.Tk()
 window.geometry("800x800")
@@ -109,7 +112,7 @@ btn_start = tk.Button(
     master=window,
     text="Start",
     width=10,
-    height = 5,
+    height = 6,
     bg="#aafaaa",
     command=lambda: start_stop()
 )
@@ -162,7 +165,7 @@ canvas.get_tk_widget().pack()
 
 
 def animate(i):
-
+    
     t = np.around(dt*i/1000,3)
     x.append(t)
     y1_new = cmnd.next_sin_val(param[0],param[1],param[2],param[3],t)[0]
@@ -187,11 +190,6 @@ def upd_param():
 
 ani = anim.FuncAnimation(fig, animate, interval=dt, blit=False)
 
-if not anim_running:
-    ani.event_source.start()
-    ani.event_source.stop()
-
-
 def plot():
     fig = Figure(figsize = (10, 10), dpi = 50)        
     x,y = cmnd.get_values(ent_amp.get(),ent_freq.get(),ent_phase.get())
@@ -214,5 +212,12 @@ def plot():
     canvas.get_tk_widget().pack()
 
 plot_canvas.place(x=20, y=155)
+
+
+
+# window.after_idle(ani.event_source.stop)
+window.after(5,ani.event_source.stop())
+# start_stop()
+# start_stop()
 
 window.mainloop()
