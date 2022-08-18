@@ -42,6 +42,3 @@ def next_sin_val(amp, freq, phase, phase_off, time):
 def update_image(image, label):
     img = Image.fromarray(image)
     # img_tk = ImageTK.PhotoImage()
-
-def anim_init(self):
-    self.event_source.stop()
