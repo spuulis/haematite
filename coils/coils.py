@@ -65,8 +65,8 @@ class Coils(threading.Thread):
 
                 # Set coil voltages (effectively, coil current)
                 sent_t = np.array([
-                    waveform.sine(time_now, self.amp, self.freq, 0),
-                    waveform.sine(time_now, self.amp, self.freq, self.phase),
+                    coils.waveform.sine(time_now, self.amp, self.freq, 0),
+                    coils.waveform.sine(time_now, self.amp, self.freq, self.phase),
                 ])
                 task_o.write(
                     sent_t * np.array([config.COILS_T_TO_V_X, config.COILS_T_TO_V_Y])
