@@ -227,8 +227,8 @@ btn_record = tk.Button(
 btn_record.place(x=630, y=frm_cam_btn.winfo_height()+10)
 
 cmnd.CreateToolTip(btn_record, text =
-                 'Ieslēdz kameru \n'
-                 ,text2='Izslēdz kameru.'
+                 'Sāk bilžu uzņemšanu bildes nesaglabājot. \n'
+                 ,text2='Beidz rādīt kameras attēlu'
                  )
 
 btn_record.update()
@@ -242,6 +242,10 @@ btn_show = tk.Button(
     # command=lambda:cmnd.update_image(cam.grab(),lbl_cam_img)
 )
 btn_show.place(x=708, y=frm_cam_btn.winfo_height()+10)
+cmnd.CreateToolTip(btn_show, text =
+                 'Poga!!!'
+                 )
+
 btn_show.update()
 
 btn_calib = tk.Button(
@@ -253,6 +257,10 @@ btn_calib = tk.Button(
     # command=lambda:cmnd.update_image(cam.grab(),lbl_cam_img)
 )
 btn_calib.place(x=785, y=frm_cam_btn.winfo_height()+10)
+cmnd.CreateToolTip(btn_calib, text =
+                 'Poga!!!'
+                 )
+
 btn_calib.update()
 
 ### Functions that need global variables to function ###
