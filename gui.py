@@ -477,13 +477,10 @@ def plot():
     canvas.get_tk_widget().pack()
 
 plot_canvas.place(x=20, y=155)
-<<<<<<< HEAD
 lissajous_plot_canvas.place(x=620, y=155)
 #lissajous_plot_canvas.update()
 #Bplot_canvas.update()
 
-=======
->>>>>>> 7050b4fe7de3b84c9e2496a2c08f511977207e52
 # tkinter.ttk.Separator(master=window,orient=tk.VERTICAL).pack(fill="y")
 
 
