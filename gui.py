@@ -225,6 +225,12 @@ btn_record = tk.Button(
     command=lambda:toggle_cam(cam)
 )
 btn_record.place(x=630, y=frm_cam_btn.winfo_height()+10)
+
+cmnd.CreateToolTip(btn_record, text =
+                 'Ieslēdz kameru \n'
+                 ,text2='Izslēdz kameru.'
+                 )
+
 btn_record.update()
 
 btn_show = tk.Button(
