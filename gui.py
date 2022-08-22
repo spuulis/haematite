@@ -2,16 +2,9 @@
 ###   Imports   ###
 
 import sys
-
-# from visual.camera import Camera
-
-# from ..visual.camera import Camera
-sys.path.insert(1, 'C:/Users/danie/haematite/visual')
-
-
 import tkinter as tk
 import tkinter.ttk
-import commands as cmnd
+import app.commands as cmnd
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.figure import Figure
@@ -23,9 +16,10 @@ import time
 
 
 from PIL import ImageTk, Image
-from camera import Camera
+from visual.camera import Camera
+from visual.calibration import *
+from visual.tracker import *
 
-from PIL import Image#, ImageTK
 # from visual.calibration import chessboard
 
 # import visual.tracker
@@ -220,17 +214,7 @@ cmnd.CreateToolTip(btn_start, text =
                  'padarot pogu "Update plot" par bezjēdzīgu.  \n'
                  'Sāksies grafika animācija. ',text2='Grafika animācija tiks apturēta! \n'
                  'Vai tu tiešām esi gatavs apturēt animāciju?')
-
-#if "Start" == btn_start['text']:
-#    cmnd.CreateToolTip(btn_start, text =
-#                 'Start')
-#else:
-#    cmnd.CreateToolTip(btn_plot, text =
-#                 'Stop')
 btn_start.update()
-
-
-
 
 btn_record = tk.Button(
     master=window,
@@ -254,9 +238,18 @@ btn_show = tk.Button(
 btn_show.place(x=708, y=frm_cam_btn.winfo_height()+10)
 btn_show.update()
 
-### Functions that need global variables to function ###
+btn_calib = tk.Button(
+    master=window,
+    text="Calibrate",
+    width=8,
+    height = 3,
+    bg="#aafaaa",
+    # command=lambda:cmnd.update_image(cam.grab(),lbl_cam_img)
+)
+btn_calib.place(x=785, y=frm_cam_btn.winfo_height()+10)
+btn_calib.update()
 
-### Functions that need global variables to Functions ###
+### Functions that need global variables to function ###
 
 ### Do not move to a diferent folder ###
 

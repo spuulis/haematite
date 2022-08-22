@@ -10,8 +10,7 @@ from PIL import ImageTk, Image
 import sys
 
 # from ..visual.camera import Camera
-sys.path.insert(1, 'C:/Users/danie/haematite/visual')
-from camera import *
+
 
 
 def fnc_lblUpdate(label):
@@ -67,7 +66,7 @@ class ToolTip(object):
 
     def showtip(self, text,text2):
         #"Display text in tooltip window"
-        print(self.widget['bg'])
+        # print(self.widget['bg'])
         if self.widget['bg'] == "#faaaaa":
             text=text2
 
