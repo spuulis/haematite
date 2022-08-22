@@ -418,6 +418,14 @@ def upd_param(lissajous_canvas):
 
     #lissajous_line.set_data(lissajous_x,lissajous_y)
 
+    lissajous_plot = lissajous_fig.add_subplot(111)
+    #lissajous_plot.set_xlim(-1.2, 1.2)
+    #lissajous_plot.set_ylim(-1.2, 1.2)
+    #print(lissajous_t,lissajous_x,lissajous_y)
+    lissajous_line, =lissajous_plot.plot(lissajous_x,lissajous_y)
+    lissajous_fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+# Stopping the animation in the begining
 
 
     lissajous_plot = lissajous_fig.add_subplot(111)
