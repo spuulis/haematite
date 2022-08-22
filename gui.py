@@ -13,13 +13,12 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 NavigationToolbar2Tk)
 from matplotlib import style
 import time
+
+
 from PIL import ImageTk, Image
-
-
 from visual.camera import Camera
 from visual.calibration import *
 from visual.tracker import *
-from config import *
 
 # from visual.calibration import chessboard
 
@@ -32,11 +31,9 @@ fps = 30
 exposure = 10000 #microseconds
 anim_running = False
 cam_running = False
-num_of_calib_images = 0
 # startup = False
+#  amplitude, frequency, phase, phase offset
 param = [0,0,0,np.pi/2]
-
-chessboard = Chessboard(CHESSBOARD_SIZE,CHESSBOARD_DIM)
 
 ###   Initialising the GUI window   ###
 window = tk.Tk()
@@ -57,11 +54,6 @@ frm_labels = tk.Frame(
 
 
 frm_cam_btn = tk.Frame(
-    master=window,
-    borderwidth=0,
-    # background = "#003555"
-)
-frm_calib = tk.Frame(
     master=window,
     borderwidth=0,
     # background = "#003555"
@@ -120,19 +112,7 @@ lbl_cam_img = tk.Label(
     anchor="n",
 )
 
-lbl_cb_edge_size = tk.Label(
-    master=frm_calib,
-    text="Calibration chessboard \n edge size, mm",
-    anchor="w",
-    width=20,
-    height=2,
-)
-lbl_cb_dimension = tk.Label(
-    master=frm_calib,
-    text="Chessboard \n dimensions",
-    anchor="w",
-    width=20
-)
+
 # the blank field part
 ent_freq = tk.Entry(
     master=frm_labels,
@@ -152,14 +132,14 @@ ent_phase_off = tk.Entry(
 )
 
 
-ent_cb_edge_size = tk.Entry(
-    master=frm_calib,
-    width=10
-)
-ent_cb_dimension = tk.Entry(
-    master=frm_calib,
-    width=10
-)
+# ent_cam_fps = tk.Entry(
+#     master=frm_cam_btn,
+#     width=10
+# )
+# ent_cam_exp = tk.Entry(
+#     master=frm_cam_btn,
+#     width=10
+# )
 
 
 #setting values to the blank field
@@ -187,7 +167,7 @@ frm_labels.update()
 
 
 frm_cam_btn.place(x=630,y=5)
-lbl_cam_fps.grid(row=0,column=0)    
+lbl_cam_fps.grid(row=0,column=0)
 lbl_cam_exp.grid(row=1,column=0)
 
 # ent_cam_fps.grid(row=0,column=1)
@@ -206,7 +186,7 @@ btn_plot = tk.Button(
     width=12,
     height=2,
     bg="#aafaaa",
-    command=lambda: upd_param()
+    command=lambda: upd_param(lissajous_canvas)
 )
 # button placement
 btn_plot.place(x=195, y=5)
@@ -248,8 +228,8 @@ btn_record = tk.Button(
 btn_record.place(x=630, y=frm_cam_btn.winfo_height()+10)
 
 cmnd.CreateToolTip(btn_record, text =
-                 'Ieslēdz kameru \n'
-                 ,text2='Izslēdz kameru.'
+                 'Sāk bilžu uzņemšanu bildes nesaglabājot. \n'
+                 ,text2='Beidz rādīt kameras attēlu'
                  )
 
 btn_record.update()
@@ -263,6 +243,10 @@ btn_show = tk.Button(
     # command=lambda:cmnd.update_image(cam.grab(),lbl_cam_img)
 )
 btn_show.place(x=708, y=frm_cam_btn.winfo_height()+10)
+cmnd.CreateToolTip(btn_show, text =
+                 'Poga!!!'
+                 )
+
 btn_show.update()
 
 btn_calib = tk.Button(
@@ -271,10 +255,15 @@ btn_calib = tk.Button(
     width=8,
     height = 3,
     bg="#aafaaa",
-    command=lambda: open_calib_window(cam)
+    # command=lambda:cmnd.update_image(cam.grab(),lbl_cam_img)
 )
 btn_calib.place(x=785, y=frm_cam_btn.winfo_height()+10)
+cmnd.CreateToolTip(btn_calib, text =
+                 'Poga!!!'
+                 )
+
 btn_calib.update()
+
 ### Functions that need global variables to function ###
 
 ### Do not move to a diferent folder ###
@@ -294,7 +283,7 @@ def start_stop():
         btn_start["text"] = "Stop"
         btn_start["bg"] = "#faaaaa"
         ani.event_source.start()
-        upd_param()
+        upd_param(lissajous_canvas)
 
 
 def toggle_cam(cam):
@@ -309,57 +298,6 @@ def toggle_cam(cam):
         btn_record["text"] = "Stop \nrecording"
         btn_record["bg"] = "#faaaaa"
     cam_running = not cam_running
-
-def open_calib_window(cam):
-    global num_of_calib_images
-    num_of_calib_images = 0
-    images = []
-    top= tk.Toplevel(window)
-    top.geometry("750x350")
-    top.title("Camera calibration")
-    # n = 0
-
-    lbl_top_num = tk.Label(
-        master=top,
-        text="Number of pictures: 0",
-        anchor="w",
-        width=40,
-        height=3
-    )
-    lbl_top_num.place(x=180,y=10)
-    lbl_top_num.update()
-
-    lbl_top_img = tk.Label(
-        master=top,
-    )
-    lbl_top_img.place(x=10,y=100)
-    
-    btn_top_show = tk.Button(
-        master=top,
-        text="Take calibration picture",
-        width=20,
-        height = 3,
-        bg="#aafaaa",
-        command=lambda:[take_calib_pics(cam,lbl_top_num)]#, cmnd.update_image(cam.grab(),lbl_top_img)]
-    ).place(x=10,y=10)
-    # lbl_top_num.update()
-    btn_top_show.update()
-
-def take_calib_pics(cam,label):
-    # img = cam.grab()
-    # chessboard.add_image(img)
-    global num_of_calib_images
-    num_of_calib_images = num_of_calib_images+1
-    label.config(text = "Number of pictures: "+str(num_of_calib_images))
-    
-
-    
-
-def calibrate():
-    for i in num_of_calib_images:
-        # cb.add_image(cam.grab())
-        time.sleep(1)
-    ret, mtx, dist, _, _ =  chessboard.calibrate()
 
 
 
@@ -398,6 +336,49 @@ toolbar.update()
 
 canvas.get_tk_widget().pack()
 
+### lissajous grafiks ###
+# canvas
+lissajous_plot_canvas = tk.Canvas(
+    master=window,
+    height=150,
+    width=150,
+    background="#fafafa"
+)
+
+# the figure
+lissajous_fig = Figure(figsize = (2, 2), dpi = 100)
+lissajous_a = param[0]
+lissajous_b = param[0]
+lissajous_delta = param[3]
+lissajous_a = 1
+lissajous_b = 1
+
+lissajous_t = np.linspace(-np.pi,np.pi,51)
+lissajous_x = np.sin(lissajous_a * lissajous_t + lissajous_delta)
+lissajous_y = np.sin(lissajous_b * lissajous_t)
+
+lissajous_plot = lissajous_fig.add_subplot(111)
+lissajous_plot.set_xlim(-1.2, 1.2)
+lissajous_plot.set_ylim(-1.2, 1.2)
+print(lissajous_t,lissajous_x,lissajous_y)
+lissajous_line, =lissajous_plot.plot(lissajous_x,lissajous_y)
+lissajous_fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+
+lissajous_canvas = FigureCanvasTkAgg(
+    lissajous_fig,
+    master = lissajous_plot_canvas
+)
+lissajous_canvas.draw()
+lissajous_canvas.get_tk_widget().pack()
+
+#lissajous_toolbar = NavigationToolbar2Tk(
+#    lissajous_canvas,
+#    lissajous_plot_canvas
+#)
+#lissajous_toolbar.update()
+
+#lissajous_canvas.get_tk_widget().pack()
 
 def animate(i):
 
@@ -411,21 +392,62 @@ def animate(i):
     plot1.set_xlim(x[-1]-5,x[-1])
     plot1.set_ylim(-max(np.max(y1[int(-5000/dt):])*1.1,np.max(y2[int(-5000/dt):])*1.1,0.5),max(np.max(y1[int(-5000/dt):])*1.1,np.max(y2[int(-5000/dt):])*1.1,0.5))
 
-    line1.set_data(x[int(-5000/dt):],y1[int(-5000/dt):])
-    line2.set_data(x[int(-5000/dt):],y2[int(-5000/dt):])
+    line1.set_data(x,y1)
+    line2.set_data(x,y2)
 
-def upd_param():
+def upd_param(lissajous_canvas):
+    ################### ŠĪĪĪĪĪĪĪ ##############
     global param
     if (cmnd.check_num(ent_amp.get()) and cmnd.check_num(ent_freq.get()) and cmnd.check_num(ent_phase.get()) and cmnd.check_num(ent_phase_off.get())):
         param = [ent_amp.get(),ent_freq.get(),ent_phase.get(),ent_phase_off.get()]
 
+    #cmnd.clear_canvas(lissajous_canvas)
 
+    lissajous_a = float(param[1])
+    lissajous_b = float(param[1])
+    lissajous_A = float(param[0])
+    lissajous_B = float(param[0])
+    lissajous_delta = float(param[3])/180*np.pi
+    #lissajous_a = 1
+    #lissajous_b = 1
+    minf = min(lissajous_a,lissajous_b)
+    lissajous_t = np.linspace(-np.pi,np.pi,300)/minf*2
+    lissajous_y = lissajous_B*np.sin(lissajous_b * lissajous_t)
+    lissajous_x = lissajous_A*np.sin(lissajous_a * lissajous_t + lissajous_delta)
+
+
+    #lissajous_line.set_data(lissajous_x,lissajous_y)
+
+
+
+    lissajous_plot = lissajous_fig.add_subplot(111)
+    #lissajous_plot.set_xlim(-1.2, 1.2)
+    #lissajous_plot.set_ylim(-1.2, 1.2)
+    #print(lissajous_t,lissajous_x,lissajous_y)
+    lissajous_line, =lissajous_plot.plot(lissajous_x,lissajous_y)
+    lissajous_fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+    #cmnd.clear_canvas(lissajous_canvas)
+    #former_canvas.delete('all')
+    #lissajous_canvas = FigureCanvasTkAgg(
+    #    lissajous_fig,
+    #    master = lissajous_plot_canvas
+    #)
+
+    lissajous_canvas.draw()
+    #lissajous_canvas.get_tk_widget().pack()
+
+
+
+# Stopping the animation in the begining
 
 ani = anim.FuncAnimation(fig, animate, interval=dt, blit=False)
 
 
+
+
+
 def plot():
-    
     fig = Figure(figsize = (10, 10), dpi = 50)
     x,y = cmnd.get_values(ent_amp.get(),ent_freq.get(),ent_phase.get())
     plot1 = fig.add_subplot(111)
@@ -447,12 +469,13 @@ def plot():
     canvas.get_tk_widget().pack()
 
 plot_canvas.place(x=20, y=155)
-plot_canvas.update()
+lissajous_plot_canvas.place(x=620, y=155)
+#lissajous_plot_canvas.update()
+#Bplot_canvas.update()
+
 # tkinter.ttk.Separator(master=window,orient=tk.VERTICAL).pack(fill="y")
 
 
 #Camera stuff
 cam = 5#Camera(fps,exposure)
-
-
 window.mainloop()
