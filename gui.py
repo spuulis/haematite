@@ -19,6 +19,7 @@ from PIL import ImageTk, Image
 from visual.camera import Camera
 from visual.calibration import *
 from visual.tracker import *
+from config import *
 
 # from visual.calibration import chessboard
 
@@ -34,7 +35,8 @@ cam_running = False
 # startup = False
 #  amplitude, frequency, phase, phase offset
 param = [0,0,0,np.pi/2]
-
+chessboard = Chessboard(CHESSBOARD_SIZE,CHESSBOARD_DIM)
+num_of_calib_images = 0
 ###   Initialising the GUI window   ###
 window = tk.Tk()
 
@@ -255,7 +257,7 @@ btn_calib = tk.Button(
     width=8,
     height = 3,
     bg="#aafaaa",
-    # command=lambda:cmnd.update_image(cam.grab(),lbl_cam_img)
+    command=lambda:open_calib_window(cam)
 )
 btn_calib.place(x=785, y=frm_cam_btn.winfo_height()+10)
 cmnd.CreateToolTip(btn_calib, text =
@@ -298,6 +300,58 @@ def toggle_cam(cam):
         btn_record["text"] = "Stop \nrecording"
         btn_record["bg"] = "#faaaaa"
     cam_running = not cam_running
+
+
+def open_calib_window(cam):
+    global num_of_calib_images
+    num_of_calib_images = 0
+    images = []
+    top= tk.Toplevel(window)
+    top.geometry("750x350")
+    top.title("Camera calibration")
+    # n = 0
+
+    lbl_top_num = tk.Label(
+        master=top,
+        text="Number of pictures: 0",
+        anchor="w",
+        width=40,
+        height=3
+    )
+    lbl_top_num.place(x=180,y=10)
+    lbl_top_num.update()
+
+    lbl_top_img = tk.Label(
+        master=top,
+    )
+    lbl_top_img.place(x=10,y=100)
+    
+    btn_top_show = tk.Button(
+        master=top,
+        text="Take calibration picture",
+        width=20,
+        height = 3,
+        bg="#aafaaa",
+        command=lambda:[take_calib_pics(cam,lbl_top_num)]#, cmnd.update_image(cam.grab(),lbl_top_img)]
+    ).place(x=10,y=10)
+    # lbl_top_num.update()
+    btn_top_show.update()
+
+def take_calib_pics(cam,label):
+    # img = cam.grab()
+    # chessboard.add_image(img)
+    global num_of_calib_images
+    num_of_calib_images = num_of_calib_images+1
+    label.config(text = "Number of pictures: "+str(num_of_calib_images))
+    
+
+    
+
+def calibrate():
+    for i in num_of_calib_images:
+        # cb.add_image(cam.grab())
+        time.sleep(1)
+    ret, mtx, dist, _, _ =  chessboard.calibrate()
 
 
 
