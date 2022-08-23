@@ -43,6 +43,72 @@ def next_sin_val(amp, freq, phase, phase_off, time):
     else:
         return 0.0
 
+def sines(freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off,time,is_bound):
+    
+
+    x = amp_x * np.sin(time*freq_x*2*np.pi+phase_x)
+    if is_bound:
+        y = amp_x * np.sin(time*freq_x*2*np.pi+phase_x + phase_off)
+        
+    else:
+        y = amp_y * np.sin(time*freq_y*2*np.pi+phase_y)
+        
+
+    return x,y
+
+def square_wave(freq,amp,phase,time):
+    T = 1/freq
+    if(np.mod(time+phase,T)<=T/2):
+        return amp
+    else:
+        return -amp
+
+def triangle_wave(freq,amp,phase,time):
+    T = 1/freq
+    t_spec = np.mod(time+phase,T)
+    if t_spec<T/2:
+        return amp - 2*amp*(t_spec*2/T)
+    else:
+        return -amp + 2*amp*((t_spec-T/2)*2/T)
+    
+def sawtooth_wave(freq,amp,phase,time):
+    T = 1/freq
+    t_spec = np.mod(time+phase,T)
+    return -amp + 2*amp*(t_spec/T)
+
+
+def generate_signal(values,time,is_bound,signal_type):
+    [freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off] = values
+    phase_x = np.deg2rad(phase_x)
+    phase_y = np.deg2rad(phase_y)
+    phase_off = np.deg2rad(phase_off)
+    match signal_type:
+        case "sine":
+            x,y = sines(freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off,time,is_bound)
+        case "square":
+            if is_bound:
+                freq_y = freq_x
+                amp_y = amp_x
+                phase_y = phase_x + phase_off
+            x = square_wave(freq_x,amp_x,phase_x,time)
+            y = square_wave(freq_y,amp_y,phase_y,time)
+        case "triangle":
+            if is_bound:
+                freq_y = freq_x
+                amp_y = amp_x
+                phase_y = phase_x + phase_off
+            x = triangle_wave(freq_x,amp_x,phase_x,time)
+            y = triangle_wave(freq_y,amp_y,phase_y,time)
+        case "sawtooth":
+            if is_bound:
+                freq_y = freq_x
+                amp_y = amp_x
+                phase_y = phase_x + phase_off
+            x = sawtooth_wave(freq_x,amp_x,phase_x,time)
+            y = sawtooth_wave(freq_y,amp_y,phase_y,time)
+    return x, y
+
+
 def clear_canvas(canvas):
     for child in canvas.winfo_children():
         child.destroy()
@@ -53,6 +119,30 @@ def update_image(image, label):
 
 
 # Tip text box that appears when hovering hovering
+class CoilParams():
+
+    def __init__(self,e_fx,e_ax,e_px,e_fy,e_ay,e_py,e_poff):
+        self.amp_x = 0
+        self.freq_x = 1
+        self.phase_x = 1
+
+        self.amp_y = 0
+        self.freq_y = 1
+        self.phase_y = 1
+
+        self.phase_off = 90
+
+        self.values = [self.freq_x, self.amp_x, self.phase_x, self.freq_y, self.amp_y, self.phase_y, self.phase_off]
+        self.entries = [e_fx, e_ax, e_px, e_fy, e_ay, e_py, e_poff]
+
+    def update(self):
+        for i in range(0,len(self.entries)):
+            if check_num(self.entries[i].get()):
+                self.values[i] = float(self.entries[i].get())
+        [self.freq_x, self.amp_x, self.phase_x, self.freq_y, self.amp_y, self.phase_y, self.phase_off] = self.values
+
+    def squeeze(self):
+        self.values = [self.freq_x, self.amp_x, self.phase_x, self.freq_y, self.amp_y, self.phase_y, self.phase_off]
 
 
 class ToolTip(object):
