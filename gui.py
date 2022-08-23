@@ -29,7 +29,7 @@ from config import *
 
 dt = 25 #ms
 fps = 30
-exposure = 10000 #microseconds
+exposure = 10000 #nanoseconds
 anim_running = False
 cam_running = False
 # startup = False

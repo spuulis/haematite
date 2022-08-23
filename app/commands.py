@@ -58,9 +58,12 @@ def sines(freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off,time,is_bound):
 
 def square_wave(freq,amp,phase,time):
     T = 1/freq
-    if(np.mod(time+phase,T)<=T/2):
+    t_spec = np.mod(time+phase,T)
+    if(t_spec<=T/2):
+        print("up ", t_spec)
         return amp
     else:
+        print("down ", t_spec)
         return -amp
 
 def triangle_wave(freq,amp,phase,time):
