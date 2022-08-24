@@ -9,6 +9,7 @@ import threading
 import config
 import coils.waveform
 
+
 def turn_off():
     with nidaqmx.Task() as task_o:
         # Define voltage output channels for coil control ([X, Y])
@@ -45,7 +46,8 @@ class Coils(threading.Thread):
     def run(self):
         with (
             nidaqmx.Task() as task_o,
-            open(self.output, 'w') if self.output is not None else nullcontext() as output_file,
+            open(self.output, 'w') if self.output is not None
+                else nullcontext() as output_file,
         ):
             # Define voltage output channels for coil control ([X, Y])
             task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OX)
@@ -65,11 +67,16 @@ class Coils(threading.Thread):
 
                 # Set coil voltages (effectively, coil current)
                 sent_t = np.array([
-                    coils.waveform.sine(time_now, self.amp, self.freq, 0),
-                    coils.waveform.sine(time_now, self.amp, self.freq, self.phase),
+                    coils.waveform.sine(
+                        time_now, self.amp, self.freq, 0),
+                    coils.waveform.sine(
+                        time_now, self.amp, self.freq, self.phase),
                 ])
                 task_o.write(
-                    sent_t * np.array([config.COILS_T_TO_V_X, config.COILS_T_TO_V_Y])
+                    sent_t * np.array([
+                        config.COILS_T_TO_V_X,
+                        config.COILS_T_TO_V_Y,
+                    ])
                 )
 
                 # Write coil voltages
@@ -77,7 +84,10 @@ class Coils(threading.Thread):
                     out_writer.writerow(np.concatenate([time_now], sent_t))
 
                 # Limit frame rate
-                time.sleep(max(1./config.COILS_FPS - (time.time_ns() * 1e-9 - time_now), 0))
+                time.sleep(max(
+                    1./config.COILS_FPS - (time.time_ns() * 1e-9 - time_now),
+                    0,
+                ))
 
             # Set current through coils to zero upon exit
             task_o.write([0, 0])

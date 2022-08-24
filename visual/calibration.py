@@ -17,7 +17,10 @@ class Chessboard():
 
         # Prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
         self.objp = np.zeros((dimensions[0] * dimensions[1], 3), np.float32)
-        self.objp[:, :2] = np.mgrid[0:dimensions[0], 0:dimensions[1]].T.reshape(-1,2)
+        self.objp[:, :2] = np.mgrid[
+            0:dimensions[0],
+            0:dimensions[1],
+        ].T.reshape(-1, 2)
 
         # Resize objp to match given units
         self.objp = self.objp * edge_size
@@ -34,32 +37,38 @@ class Chessboard():
         width = int(gray.shape[1] * sensitivity / 100)
         height = int(gray.shape[0] * sensitivity / 100)
         dim = (width, height)
-        resized = cv2.resize(gray, dim, interpolation = cv2.INTER_AREA)
+        resized = cv2.resize(gray, dim, interpolation=cv2.INTER_AREA)
 
         # Find initial guess for the corners
-        ret, corners = cv2.findChessboardCorners(resized, self.dimensions, cv2.CALIB_CB_FAST_CHECK)
-        if ret == False:
+        ret, corners = cv2.findChessboardCorners(
+            resized, self.dimensions, cv2.CALIB_CB_FAST_CHECK
+        )
+        if not ret:
             return ret, corners
 
         # Refine the guss using the original image
-        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-        corners2 = cv2.cornerSubPix(gray, corners * 100 / sensitivity, (11,11), (-1,-1), criteria)
+        criteria = (
+            cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER,
+            30, 0.001)
+        corners2 = cv2.cornerSubPix(
+            gray, corners * 100 / sensitivity,
+            (11, 11), (-1, -1), criteria)
         return ret, corners2
 
     def add_image(self, img):
         # Check and save image resolution
-        if self.resolution == None:
+        if self.resolution is None:
             self.resolution = (img.shape[1], img.shape[0])
         if self.resolution != (img.shape[1], img.shape[0]):
             return False, None
 
         ret, corners = self.find_corners(img)
         # If found, add object points, image points
-        if ret == True:
+        if ret is True:
             self.objpoints.append(self.objp)
             self.imgpoints.append(corners)
         return ret, corners
-        
+
     def add_images(self, images, verbose=False):
         ret = False
         for i in tqdm(range(len(images)), disable=not verbose):
@@ -75,7 +84,7 @@ class Chessboard():
             None,
             None
         )
-    
+
     def draw_corners(self, img, corners, inplace=True):
         if inplace:
             cv2.drawChessboardCorners(img, self.dimensions, corners, True)
