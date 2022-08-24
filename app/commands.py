@@ -58,7 +58,9 @@ def sines(freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off,time,is_bound):
 
 def square_wave(freq,amp,phase,time):
     T = 1/freq
+    phase = phase/2/np.pi*T
     t_spec = np.mod(time+phase,T)
+
     if(t_spec<=T/2):
         return amp
     else:
@@ -66,6 +68,7 @@ def square_wave(freq,amp,phase,time):
 
 def triangle_wave(freq,amp,phase,time):
     T = 1/freq
+    phase = phase/2/np.pi*T
     t_spec = np.mod(time+phase,T)
     if t_spec<T/2:
         return amp - 2*amp*(t_spec*2/T)
@@ -74,6 +77,7 @@ def triangle_wave(freq,amp,phase,time):
     
 def sawtooth_wave(freq,amp,phase,time):
     T = 1/freq
+    phase = phase/2/np.pi*T
     t_spec = np.mod(time+phase,T)
     return -amp + 2*amp*(t_spec/T)
 
