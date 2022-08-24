@@ -467,26 +467,8 @@ lissajous_plot_canvas = tk.Canvas(
 # the figure
 lissajous_fig = Figure(figsize = (2, 2), dpi = 100)
 
-
-#plot1.set_xlim(-5, 0)
-#line1, = plot1.plot(tm,x)
-#line2, = plot1.plot(tm,y)
-
-
-
-#lissajous_a = param.freq_x
-#lissajous_b = param.freq_y
-#lissajous_delta = param.phase_off
-#lissajous_a = 1
-#lissajous_b = 1
-
-#lissajous_t = np.linspace(-np.pi,np.pi,51)
-#lissajous_x = np.sin(lissajous_a * lissajous_t + lissajous_delta)
-#lissajous_y = np.sin(lissajous_b * lissajous_t)
-
 lissajous_plot = lissajous_fig.add_subplot(111)
-#lissajous_plot.set_xlim(-1.2, 1.2)
-#lissajous_plot.set_ylim(-1.2, 1.2)
+
 lissajous_line, =lissajous_plot.plot(x,y)
 lissajous_fig.subplots_adjust(left=0.25, right=0.75, top=0.75, bottom=0.25)
 
@@ -527,7 +509,7 @@ def animate(i):
 
     lissajous_plot.set_xlim(-lim_lissajous,lim_lissajous)
     lissajous_plot.set_ylim(-lim_lissajous, lim_lissajous)
-    lissajous_line.set_data(x[int(-5000/dt):],y[int(-5000/dt):])
+    lissajous_line.set_data(x[int(-500/dt):],y[int(-500/dt):])
 
 
 
@@ -536,33 +518,9 @@ def upd_param(lissajous_canvas):
     param.update()
 
 
-
 ani = anim.FuncAnimation(fig, animate, interval=dt, blit=False)
 lissajous_ani = anim.FuncAnimation(lissajous_fig, animate, interval=dt, blit=False)
 
-
-
-
-def plot():
-    fig = Figure(figsize = (10, 10), dpi = 50)
-    x,y = cmnd.get_values(ent_amp.get(),ent_freq.get(),ent_phase.get())
-    plot1 = fig.add_subplot(111)
-    plot1.plot(x,y)
-
-    canvas = FigureCanvasTkAgg(
-        fig,
-        master = plot_canvas
-    )
-    canvas.draw()
-    canvas.get_tk_widget().pack()
-
-    toolbar = NavigationToolbar2Tk(
-        canvas,
-        plot_canvas
-    )
-    toolbar.update()
-
-    canvas.get_tk_widget().pack()
 
 plot_canvas.place(x=20, y=155)
 lissajous_plot_canvas.place(x=620, y=155)
@@ -574,4 +532,6 @@ lissajous_plot_canvas.place(x=620, y=155)
 
 #Camera stuff
 cam = 5#Camera(fps,exposure)
+
+
 window.mainloop()
