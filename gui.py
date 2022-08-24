@@ -499,7 +499,16 @@ lissajous_canvas.draw()
 lissajous_canvas.get_tk_widget().pack()
 
 def animate(i):
+    #limiti grafikiem
+    y_test = y[int(-5000/dt):]
+    y_lim =max(-np.min(y_test),np.max(y_test))*1.1
+    x_lim =max(-np.min(x[int(-5000/dt):]),np.max(x[int(-5000/dt):]))*1.2
+
+    x_lim =max(x_lim,0.5)
+    y_lim =max(y_lim,0.5)
+    lim_lissajous = max(x_lim,y_lim)
     # parametri, kas vajadzīgi grafikam
+
     t = np.around(dt*i/1000,3)
     t = (time.time_ns()-time_start)/1e9
     tm.append(t)
@@ -510,19 +519,13 @@ def animate(i):
     #Grafika dzīvā animācija
 
     plot1.set_xlim(tm[-1]-5,tm[-1])
-    plot1.set_ylim(-max(np.max(x[int(-5000/dt):])*1.1,np.max(y[int(-5000/dt):])*1.1,0.5),max(np.max(x[int(-5000/dt):])*1.1,np.max(y[int(-5000/dt):])*1.1,0.5))
+    plot1.set_ylim(-lim_lissajous,lim_lissajous)
 
     line1.set_data(tm[int(-5000/dt):],x[int(-5000/dt):])
     line2.set_data(tm[int(-5000/dt):],y[int(-5000/dt):])
 
-    #limiti grafikiem
-    y_test = y[int(-5000/dt):]
-    y_lim =max(-np.min(y_test),np.max(y_test))*1.1
-    x_lim =max(-np.min(x[int(-5000/dt):]),np.max(x[int(-5000/dt):]))*1.1
 
-    x_lim =max(x_lim,0.5)
-    y_lim =max(y_lim,0.5)
-    lim_lissajous = max(x_lim,y_lim)
+
     #lissajous grafika dzīvā animācija
     lissajous_plot.set_xlim(-lim_lissajous,lim_lissajous)
     lissajous_plot.set_ylim(-lim_lissajous, lim_lissajous)
