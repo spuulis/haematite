@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
+
 def focus_measure(img):
     return cv2.Laplacian(img, cv2.CV_64F).var()
 
@@ -25,22 +26,36 @@ class Chessboard():
         self.objpoints = []  # 3d point in real world space
         self.imgpoints = []  # 2d points in image plane.
 
-    def add_image(self, img):
+    def find_corners(self, img, sensitivity=25):
         # Convert the image to grayscale
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+        # Downsize the image for the initial guess
+        width = int(gray.shape[1] * sensitivity / 100)
+        height = int(gray.shape[0] * sensitivity / 100)
+        dim = (width, height)
+        resized = cv2.resize(gray, dim, interpolation = cv2.INTER_AREA)
+
+        # Find initial guess for the corners
+        ret, corners = cv2.findChessboardCorners(resized, self.dimensions, cv2.CALIB_CB_FAST_CHECK)
+        if ret == False:
+            return ret, corners
+
+        # Refine the guss using the original image
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+        corners2 = cv2.cornerSubPix(gray, corners * 100 / sensitivity, (11,11), (-1,-1), criteria)
+        return ret, corners2
+
+    def add_image(self, img):
         # Check and save image resolution
         if self.resolution == None:
-            self.resolution = gray.shape[::-1]
-        if self.resolution != gray.shape[::-1]:
-            return False, []
-        
-        # Find the chessboard corners
-        ret, corners = cv2.findChessboardCorners(gray, self.dimensions, None)
+            self.resolution = (img.shape[1], img.shape[0])
+        if self.resolution != (img.shape[1], img.shape[0]):
+            return False, None
 
+        ret, corners = self.find_corners(img)
         # If found, add object points, image points
         if ret == True:
-            # TODO: Refine image points with cornerSubPix?
             self.objpoints.append(self.objp)
             self.imgpoints.append(corners)
         return ret, corners
