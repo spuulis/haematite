@@ -501,7 +501,7 @@ lissajous_canvas.get_tk_widget().pack()
 def animate(i):
     #limiti grafikiem
     y_test = y[int(-5000/dt):]
-    y_lim =max(-np.min(y_test),np.max(y_test))*1.1
+    y_lim =max(-np.min(y_test),np.max(y_test))*1.2
     x_lim =max(-np.min(x[int(-5000/dt):]),np.max(x[int(-5000/dt):]))*1.2
 
     x_lim =max(x_lim,0.5)
@@ -518,7 +518,7 @@ def animate(i):
 
     #Grafika dzīvā animācija
 
-    plot1.set_xlim(-lim_lissajous,lim_lissajous)
+    plot1.set_xlim(tm[-1]-5,tm[-1])
     plot1.set_ylim(-lim_lissajous,lim_lissajous)
 
     line1.set_data(tm[int(-5000/dt):],x[int(-5000/dt):])
