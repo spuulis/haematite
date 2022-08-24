@@ -515,7 +515,7 @@ def animate(i):
     line1.set_data(tm[int(-5000/dt):],x[int(-5000/dt):])
     line2.set_data(tm[int(-5000/dt):],y[int(-5000/dt):])
 
-    #limiti
+    #limiti grafikiem
     y_test = y[int(-5000/dt):]
     y_lim =max(-np.min(y_test),np.max(y_test))*1.1
     x_lim =max(-np.min(x[int(-5000/dt):]),np.max(x[int(-5000/dt):]))*1.1
