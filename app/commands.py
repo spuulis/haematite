@@ -10,9 +10,6 @@ from PIL import ImageTk, Image
 import sys
 
 # from ..visual.camera import Camera
-
-
-
 def fnc_lblUpdate(label):
     n = label["text"]
     label["text"] = str(int(n)+1)
@@ -43,18 +40,22 @@ def next_sin_val(amp, freq, phase, phase_off, time):
     else:
         return 0.0
 
-def sines(freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off,time,is_bound):
+# def sines(freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off,time,is_bound):
     
 
-    x = amp_x * np.sin(time*freq_x*2*np.pi+phase_x)
-    if is_bound:
-        y = amp_x * np.sin(time*freq_x*2*np.pi+phase_x + phase_off)
+#     x = amp_x * np.sin(time*freq_x*2*np.pi+phase_x)
+#     if is_bound:
+#         y = amp_x * np.sin(time*freq_x*2*np.pi+phase_x + phase_off)
         
-    else:
-        y = amp_y * np.sin(time*freq_y*2*np.pi+phase_y)
+#     else:
+#         y = amp_y * np.sin(time*freq_y*2*np.pi+phase_y)
         
 
-    return x,y
+#     return x,y
+
+
+def sine_wave(freq,amp,phase,time):
+    return amp * np.sin(time*freq*2*np.pi + phase)
 
 def square_wave(freq,amp,phase,time):
     T = 1/freq
@@ -87,30 +88,43 @@ def generate_signal(values,time,is_bound,signal_type):
     phase_x = np.deg2rad(phase_x)
     phase_y = np.deg2rad(phase_y)
     phase_off = np.deg2rad(phase_off)
+
+    if is_bound:
+        freq_y = freq_x
+        amp_y = amp_x
+        phase_y = phase_x + phase_off
+
     match signal_type:
         case "sine":
-            x,y = sines(freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off,time,is_bound)
+            x = sine_wave(freq_x,amp_x,phase_x,time)
+            y = sine_wave(freq_y,amp_y,phase_y,time)
         case "square":
-            if is_bound:
-                freq_y = freq_x
-                amp_y = amp_x
-                phase_y = phase_x + phase_off
-            x = square_wave(freq_x,amp_x,phase_x,time)
-            y = square_wave(freq_y,amp_y,phase_y,time)
+            if freq_x == 0:
+                x = sine_wave(freq_x,amp_x,phase_x,time)
+            else:
+                x = square_wave(freq_x,amp_x,phase_x,time)
+            if freq_y == 0:
+                y = sine_wave(freq_y,amp_y,phase_y,time)
+            else:
+                y = square_wave(freq_y,amp_y,phase_y,time)
         case "triangle":
-            if is_bound:
-                freq_y = freq_x
-                amp_y = amp_x
-                phase_y = phase_x + phase_off
-            x = triangle_wave(freq_x,amp_x,phase_x,time)
-            y = triangle_wave(freq_y,amp_y,phase_y,time)
+            if freq_x == 0:
+                x = sine_wave(freq_x,amp_x,phase_x,time)
+            else:
+                x = triangle_wave(freq_x,amp_x,phase_x,time)
+            if freq_y == 0:
+                y = sine_wave(freq_y,amp_y,phase_y,time)
+            else:
+                y = triangle_wave(freq_y,amp_y,phase_y,time)
         case "sawtooth":
-            if is_bound:
-                freq_y = freq_x
-                amp_y = amp_x
-                phase_y = phase_x + phase_off
-            x = sawtooth_wave(freq_x,amp_x,phase_x,time)
-            y = sawtooth_wave(freq_y,amp_y,phase_y,time)
+            if freq_x == 0:
+                x = sine_wave(freq_x,amp_x,phase_x,time)
+            else:
+                x = sawtooth_wave(freq_x,amp_x,phase_x,time)
+            if freq_y == 0:
+                y = sine_wave(freq_y,amp_y,phase_y,time)
+            else:
+                y = sawtooth_wave(freq_y,amp_y,phase_y,time)
     return x, y
 
 

@@ -562,6 +562,11 @@ def plot():
 
 plot_canvas.place(x=20, y=155)
 lissajous_plot_canvas.place(x=620, y=155)
+#lissajous_plot_canvas.update()
+#Bplot_canvas.update()
+
+# tkinter.ttk.Separator(master=window,orient=tk.VERTICAL).pack(fill="y")
+
 
 #Camera stuff
 cam = 5#Camera(fps,exposure)
