@@ -518,7 +518,7 @@ def animate(i):
 
     #Grafika dzīvā animācija
 
-    plot1.set_xlim(tm[-1]-5,tm[-1])
+    plot1.set_xlim(-lim_lissajous,lim_lissajous)
     plot1.set_ylim(-lim_lissajous,lim_lissajous)
 
     line1.set_data(tm[int(-5000/dt):],x[int(-5000/dt):])
