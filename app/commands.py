@@ -60,10 +60,8 @@ def square_wave(freq,amp,phase,time):
     T = 1/freq
     t_spec = np.mod(time+phase,T)
     if(t_spec<=T/2):
-        print("up ", t_spec)
         return amp
     else:
-        print("down ", t_spec)
         return -amp
 
 def triangle_wave(freq,amp,phase,time):
