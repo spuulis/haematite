@@ -27,7 +27,7 @@ from config import *
 
 ###    Setting time parameters    ###
 
-dt = 25 #ms
+dt = 5 #ms
 fps = 30
 exposure = 10000 #nanoseconds
 anim_running = False
@@ -45,7 +45,9 @@ window.geometry(str(window.winfo_screenwidth())+"x"+str(window.winfo_screenheigh
 window.title("Pagraba spoles")
 window.resizable(True, True)
 style.use('ggplot')
-global_time = time.time_ns()*1000
+
+time_start = time.time_ns()
+
 
 
 ###  The window which encloses the parameters below
@@ -501,6 +503,7 @@ lissajous_canvas.get_tk_widget().pack()
 def animate(i):
     # print(var_bind_coils.get())
     t = np.around(dt*i/1000,3)
+    t = (time.time_ns()-time_start)/1e9
     # t = global_time
     tm.append(t)
     # x_new,y_new = cmnd.sines(param.freq_x, param.amp_x, param.phase_x, param.freq_y, param.amp_y, param.phase_y, param.phase_off, t, var_bind_coils.get())
@@ -508,12 +511,12 @@ def animate(i):
     x_new,y_new = cmnd.generate_signal(param.values, t,var_bind_coils.get(),var_signal_type.get())
     x.append(x_new)
     y.append(y_new)
-
+    # print()
     plot1.set_xlim(tm[-1]-5,tm[-1])
     plot1.set_ylim(-max(np.max(x[int(-5000/dt):])*1.1,np.max(y[int(-5000/dt):])*1.1,0.5),max(np.max(x[int(-5000/dt):])*1.1,np.max(y[int(-5000/dt):])*1.1,0.5))
 
-    line1.set_data(tm,x)
-    line2.set_data(tm,y)
+    line1.set_data(tm[int(-5000/dt):],x[int(-5000/dt):])
+    line2.set_data(tm[int(-5000/dt):],y[int(-5000/dt):])
 
 def upd_param(lissajous_canvas):
     ################### ŠĪĪĪĪĪĪĪ ##############
