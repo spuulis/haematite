@@ -389,7 +389,7 @@ def open_calib_window(cam):
         master=top,
     )
     lbl_top_img.place(x=10,y=100)
-    
+
     btn_top_show = tk.Button(
         master=top,
         text="Take calibration picture",
@@ -408,9 +408,9 @@ def take_calib_pics(cam,label):
     global num_of_calib_images
     num_of_calib_images = num_of_calib_images+1
     label.config(text = "Number of pictures: "+str(num_of_calib_images))
-    
 
-    
+
+
 
 def calibrate():
     for i in num_of_calib_images:
@@ -453,7 +453,7 @@ canvas.get_tk_widget().pack()
 # )
 # toolbar.update()
 
-canvas.get_tk_widget().pack()
+#canvas.get_tk_widget().pack()
 
 ### lissajous grafiks ###
 # canvas
@@ -466,20 +466,28 @@ lissajous_plot_canvas = tk.Canvas(
 
 # the figure
 lissajous_fig = Figure(figsize = (2, 2), dpi = 100)
-lissajous_a = param.freq_x
-lissajous_b = param.freq_y
-lissajous_delta = param.phase_off
-lissajous_a = 1
-lissajous_b = 1
 
-lissajous_t = np.linspace(-np.pi,np.pi,51)
-lissajous_x = np.sin(lissajous_a * lissajous_t + lissajous_delta)
-lissajous_y = np.sin(lissajous_b * lissajous_t)
+
+#plot1.set_xlim(-5, 0)
+#line1, = plot1.plot(tm,x)
+#line2, = plot1.plot(tm,y)
+
+
+
+#lissajous_a = param.freq_x
+#lissajous_b = param.freq_y
+#lissajous_delta = param.phase_off
+#lissajous_a = 1
+#lissajous_b = 1
+
+#lissajous_t = np.linspace(-np.pi,np.pi,51)
+#lissajous_x = np.sin(lissajous_a * lissajous_t + lissajous_delta)
+#lissajous_y = np.sin(lissajous_b * lissajous_t)
 
 lissajous_plot = lissajous_fig.add_subplot(111)
-lissajous_plot.set_xlim(-1.2, 1.2)
-lissajous_plot.set_ylim(-1.2, 1.2)
-lissajous_line, =lissajous_plot.plot(lissajous_x,lissajous_y)
+#lissajous_plot.set_xlim(-1.2, 1.2)
+#lissajous_plot.set_ylim(-1.2, 1.2)
+lissajous_line, =lissajous_plot.plot(x,y)
 lissajous_fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
 
@@ -491,50 +499,42 @@ lissajous_canvas.draw()
 lissajous_canvas.get_tk_widget().pack()
 
 def animate(i):
+    # parametri, kas vajadzīgi grafikam
     t = np.around(dt*i/1000,3)
     t = (time.time_ns()-time_start)/1e9
     tm.append(t)
     x_new,y_new = cmnd.generate_signal(param.values, t,var_bind_coils.get(),var_signal_type.get())
     x.append(x_new)
     y.append(y_new)
+
+    #Grafika dzīvā animācija
+
     plot1.set_xlim(tm[-1]-5,tm[-1])
     plot1.set_ylim(-max(np.max(x[int(-5000/dt):])*1.1,np.max(y[int(-5000/dt):])*1.1,0.5),max(np.max(x[int(-5000/dt):])*1.1,np.max(y[int(-5000/dt):])*1.1,0.5))
 
     line1.set_data(tm[int(-5000/dt):],x[int(-5000/dt):])
     line2.set_data(tm[int(-5000/dt):],y[int(-5000/dt):])
 
+    #lissajous grafika dzīvā animācija
+    y_test = y[int(-5000/dt):]
+    y_lim =max(-np.min(y_test),np.max(y_test))*1.1
+    x_lim =max(-np.min(x[int(-5000/dt):]),np.max(x[int(-5000/dt):]))*1.1
+
+    x_lim =max(x_lim,0.5)
+    y_lim =max(y_lim,0.5)
+    lissajous_plot.set_xlim(-x_lim, x_lim)
+    lissajous_plot.set_ylim(-y_lim, y_lim)
+    lissajous_line.set_data(x[int(-5000/dt):],y[int(-5000/dt):])
+
+
 def upd_param(lissajous_canvas):
     ################### ŠĪĪĪĪĪĪĪ ##############
     param.update()
-    lissajous_a = float(param.freq_x)
-    lissajous_b = float(param.freq_y)
-    lissajous_A = float(param.amp_x)
-    lissajous_B = float(param.amp_y)
-    lissajous_delta = float(param.phase_off)/180*np.pi
-    #lissajous_a = 1
-    #lissajous_b = 1
-    minf = min(lissajous_a,lissajous_b)
-    lissajous_t = np.linspace(-np.pi,np.pi,300)/minf*2
-    lissajous_y = lissajous_B*np.sin(lissajous_b * lissajous_t)
-    lissajous_x = lissajous_A*np.sin(lissajous_a * lissajous_t + lissajous_delta)
 
-
-    #lissajous_line.set_data(lissajous_x,lissajous_y)
-
-    lissajous_plot = lissajous_fig.add_subplot(111)
-    #lissajous_plot.set_xlim(-1.2, 1.2)
-    #lissajous_plot.set_ylim(-1.2, 1.2)
-    #print(lissajous_t,lissajous_x,lissajous_y)
-    lissajous_line, =lissajous_plot.plot(lissajous_x,lissajous_y)
-    lissajous_fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
-
-# Stopping the animation in the begining
-
-    lissajous_canvas.draw()
 
 
 ani = anim.FuncAnimation(fig, animate, interval=dt, blit=False)
-
+lissajous_ani = anim.FuncAnimation(lissajous_fig, animate, interval=dt, blit=False)
 
 
 
