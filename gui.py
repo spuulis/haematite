@@ -525,7 +525,7 @@ def animate(i):
     #lissajous grafika dzīvā animācija
     lissajous_plot.set_xlim(-x_lim, x_lim)
     lissajous_plot.set_ylim(-y_lim, y_lim)
-    lissajous_line.set_data(x[int(-5000/dt):],y[int(-5000/dt):])
+    lissajous_line.set_data(x[int(-200/dt):],y[int(-200/dt):])
 
 
 def upd_param(lissajous_canvas):
