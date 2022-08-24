@@ -27,14 +27,11 @@ from config import *
 
 ###    Setting time parameters    ###
 
-dt = 5 #ms
+dt = 10 #ms
 fps = 30
 exposure = 10000 #nanoseconds
 anim_running = False
 cam_running = False
-# startup = False
-# frequency, amplitude, phase, phase offset
-# param = [0,0,0,np.pi/2]
 chessboard = Chessboard(CHESSBOARD_SIZE,CHESSBOARD_DIM)
 num_of_calib_images = 0
 ###   Initialising the GUI window   ###
@@ -54,12 +51,10 @@ time_start = time.time_ns()
 frm_labels = tk.Frame(
     master=window,
     borderwidth=0,
-    # background = "#003555"
 )
 frm_cam_btn = tk.Frame(
     master=window,
     borderwidth=0,
-    # background = "#003555"
 )
 frm_cam_img = tk.Frame(
     master=window,
@@ -67,7 +62,6 @@ frm_cam_img = tk.Frame(
     width=500,
     height=500,
     relief=tk.GROOVE
-    # background = "#003555"
 )
 
 ### Number field windows for frequency, amplitude, phase, e.c
@@ -243,10 +237,7 @@ frm_cam_btn.place(x=630,y=5)
 lbl_cam_fps.grid(row=0,column=0)
 lbl_cam_exp.grid(row=1,column=0)
 
-# ent_cam_fps.grid(row=0,column=1)
-# ent_cam_exp.grid(row=1,column=1)
 frm_cam_btn.update()
-
 
 frm_cam_img.place(x=630,y=180)
 lbl_cam_img.pack()
@@ -488,7 +479,6 @@ lissajous_y = np.sin(lissajous_b * lissajous_t)
 lissajous_plot = lissajous_fig.add_subplot(111)
 lissajous_plot.set_xlim(-1.2, 1.2)
 lissajous_plot.set_ylim(-1.2, 1.2)
-# print(lissajous_t,lissajous_x,lissajous_y)
 lissajous_line, =lissajous_plot.plot(lissajous_x,lissajous_y)
 lissajous_fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
@@ -501,17 +491,12 @@ lissajous_canvas.draw()
 lissajous_canvas.get_tk_widget().pack()
 
 def animate(i):
-    # print(var_bind_coils.get())
     t = np.around(dt*i/1000,3)
     t = (time.time_ns()-time_start)/1e9
-    # t = global_time
     tm.append(t)
-    # x_new,y_new = cmnd.sines(param.freq_x, param.amp_x, param.phase_x, param.freq_y, param.amp_y, param.phase_y, param.phase_off, t, var_bind_coils.get())
-    # x_new = cmnd.sawtooth_wave(param.freq_x,param.amp_x,param.phase_x,t)
     x_new,y_new = cmnd.generate_signal(param.values, t,var_bind_coils.get(),var_signal_type.get())
     x.append(x_new)
     y.append(y_new)
-    # print()
     plot1.set_xlim(tm[-1]-5,tm[-1])
     plot1.set_ylim(-max(np.max(x[int(-5000/dt):])*1.1,np.max(y[int(-5000/dt):])*1.1,0.5),max(np.max(x[int(-5000/dt):])*1.1,np.max(y[int(-5000/dt):])*1.1,0.5))
 
@@ -577,11 +562,6 @@ def plot():
 
 plot_canvas.place(x=20, y=155)
 lissajous_plot_canvas.place(x=620, y=155)
-#lissajous_plot_canvas.update()
-#Bplot_canvas.update()
-
-# tkinter.ttk.Separator(master=window,orient=tk.VERTICAL).pack(fill="y")
-
 
 #Camera stuff
 cam = 5#Camera(fps,exposure)
