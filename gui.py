@@ -1,5 +1,5 @@
 ### This code is the main code to run for the GUI of the program ###
-###   Imports   ###
+###   Imports   ####
 
 import sys
 import tkinter as tk
