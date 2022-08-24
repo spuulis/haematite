@@ -488,7 +488,7 @@ lissajous_plot = lissajous_fig.add_subplot(111)
 #lissajous_plot.set_xlim(-1.2, 1.2)
 #lissajous_plot.set_ylim(-1.2, 1.2)
 lissajous_line, =lissajous_plot.plot(x,y)
-lissajous_fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+lissajous_fig.subplots_adjust(left=0.25, right=0.75, top=0.75, bottom=0.25)
 
 
 lissajous_canvas = FigureCanvasTkAgg(
@@ -522,9 +522,10 @@ def animate(i):
 
     x_lim =max(x_lim,0.5)
     y_lim =max(y_lim,0.5)
+    lim_lissajous = max(x_lim,y_lim)
     #lissajous grafika dzīvā animācija
-    lissajous_plot.set_xlim(-x_lim, x_lim)
-    lissajous_plot.set_ylim(-y_lim, y_lim)
+    lissajous_plot.set_xlim(-lim_lissajous,lim_lissajous)
+    lissajous_plot.set_ylim(-lim_lissajous, lim_lissajous)
     lissajous_line.set_data(x[int(-5000/dt):],y[int(-5000/dt):])
 
 
