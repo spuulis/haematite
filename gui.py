@@ -515,13 +515,14 @@ def animate(i):
     line1.set_data(tm[int(-5000/dt):],x[int(-5000/dt):])
     line2.set_data(tm[int(-5000/dt):],y[int(-5000/dt):])
 
-    #lissajous grafika dzīvā animācija
+    #limiti
     y_test = y[int(-5000/dt):]
     y_lim =max(-np.min(y_test),np.max(y_test))*1.1
     x_lim =max(-np.min(x[int(-5000/dt):]),np.max(x[int(-5000/dt):]))*1.1
 
     x_lim =max(x_lim,0.5)
     y_lim =max(y_lim,0.5)
+    #lissajous grafika dzīvā animācija
     lissajous_plot.set_xlim(-x_lim, x_lim)
     lissajous_plot.set_ylim(-y_lim, y_lim)
     lissajous_line.set_data(x[int(-5000/dt):],y[int(-5000/dt):])
