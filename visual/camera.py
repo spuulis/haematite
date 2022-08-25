@@ -18,6 +18,14 @@ class Camera():
         self.converter.OutputPixelFormat = pylon.PixelType_BGR8packed
         self.converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
 
+        # Calibration parameters
+        self.mtx = None
+        self.dist = None
+    
+    def calibrate(self, mtx, dist):
+        self.mtx = mtx
+        self.dist = dist
+
     def start_capture(self):
         self.camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
 
