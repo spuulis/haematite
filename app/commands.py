@@ -9,7 +9,6 @@ from matplotlib import style
 from PIL import ImageTk, Image
 import sys
 
-# from ..visual.camera import Camera
 def fnc_lblUpdate(label):
     n = label["text"]
     label["text"] = str(int(n)+1)
@@ -39,20 +38,6 @@ def next_sin_val(amp, freq, phase, phase_off, time):
         return (float(amp) * np.sin(time*float(freq)*2*np.pi+phase),float(amp) * np.sin(time*float(freq)*2*np.pi+phase+phase_off))
     else:
         return 0.0
-
-# def sines(freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off,time,is_bound):
-    
-
-#     x = amp_x * np.sin(time*freq_x*2*np.pi+phase_x)
-#     if is_bound:
-#         y = amp_x * np.sin(time*freq_x*2*np.pi+phase_x + phase_off)
-        
-#     else:
-#         y = amp_y * np.sin(time*freq_y*2*np.pi+phase_y)
-        
-
-#     return x,y
-
 
 def sine_wave(freq,amp,phase,time):
     return amp * np.sin(time*freq*2*np.pi + phase)
@@ -132,9 +117,9 @@ def clear_canvas(canvas):
     for child in canvas.winfo_children():
         child.destroy()
 
-def update_image(image, label):
-    img = Image.fromarray(image)
-    # img_tk = ImageTK.PhotoImage()
+# def update_image(image, label):
+#     img = Image.fromarray(image)
+#     # img_tk = ImageTK.PhotoImage()
 
 
 # Tip text box that appears when hovering hovering

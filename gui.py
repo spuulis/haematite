@@ -321,7 +321,6 @@ btn_calib.update()
 # Remake of the start stop button
 def start_stop():
     global anim_running
-    global param
     if anim_running:
         anim_running = False
         btn_start["text"] = "Start"
@@ -336,7 +335,7 @@ def start_stop():
         btn_start["text"] = "Stop"
         btn_start["bg"] = "#faaaaa"
         # ani.event_source.start()
-        upd_param(lissajous_canvas)
+        upd_param()
 
 def toggle_bind():
     if var_bind_coils.get():
@@ -365,13 +364,12 @@ def toggle_cam(cam):
         btn_record["bg"] = "#faaaaa"
     cam_running = not cam_running
 
-
 def open_calib_window(cam):
     global num_of_calib_images
     num_of_calib_images = 0
     images = []
     top= tk.Toplevel(window)
-    top.geometry("750x350")
+    top.geometry("750x650")
     top.title("Camera calibration")
     # n = 0
 
@@ -383,12 +381,14 @@ def open_calib_window(cam):
         height=3
     )
     lbl_top_num.place(x=180,y=10)
-    lbl_top_num.update()
+    # lbl_top_num.update()
 
-    lbl_top_img = tk.Label(
+    canvas_top_img = tk.Canvas(
         master=top,
+        width=730,
+        height=400
     )
-    lbl_top_img.place(x=10,y=100)
+    canvas_top_img.place(x=10,y=100)
 
     btn_top_show = tk.Button(
         master=top,
@@ -396,21 +396,23 @@ def open_calib_window(cam):
         width=20,
         height = 3,
         bg="#aafaaa",
-        command=lambda:[take_calib_pics(cam,lbl_top_num)]#, cmnd.update_image(cam.grab(),lbl_top_img)]
+        command=lambda:[take_calib_pics(cam,lbl_top_num,canvas_top_img)]#, cmnd.update_image(cam.grab(),lbl_top_img)]
     )
     btn_top_show.place(x=10,y=10)
     # lbl_top_num.update()
     btn_top_show.update()
 
-def take_calib_pics(cam,label):
+def take_calib_pics(cam,label,canvas):
+    cmnd.clear_canvas(canvas)
     # img = cam.grab()
+    img = ImageTk.PhotoImage(Image.open("picture.jpg").resize([730,400]))
+    canvas.create_image(0,0,anchor="nw",image=img)
+    
     # chessboard.add_image(img)
     global num_of_calib_images
     num_of_calib_images = num_of_calib_images+1
-    label.config(text = "Number of pictures: "+str(num_of_calib_images))
-
-
-
+    label["text"] = "Number of pictures: "+str(num_of_calib_images)
+    canvas.update()
 
 def calibrate():
     for i in num_of_calib_images:
@@ -447,21 +449,12 @@ canvas = FigureCanvasTkAgg(
 canvas.draw()
 canvas.get_tk_widget().pack()
 
-# toolbar = NavigationToolbar2Tk(
-#     canvas,
-#     plot_canvas
-# )
-# toolbar.update()
 
-#canvas.get_tk_widget().pack()
-
-### lissajous grafiks ###
-# canvas
 lissajous_plot_canvas = tk.Canvas(
     master=window,
     height=150,
     width=150,
-    background="#fafafa"
+    background="#aaaaaa"
 )
 
 # the figure
@@ -508,22 +501,24 @@ def animate(i):
     line2.set_data(tm[int(-5000/dt):],y[int(-5000/dt):])
 
 
-
-    # x_lim =max(param.amp_x,0.5)*1.1
-    # y_lim =max(param.amp_y,0.5)*1.1
     lim_lissajous = max(x_lim,y_lim)
 
-    # plot1.set_ylim(-lim_lissajous,lim_lissajous)
     lissajous_plot.set_xlim(-lim_lissajous,lim_lissajous)
     lissajous_plot.set_ylim(-lim_lissajous, lim_lissajous)
-    lissajous_line.set_data(x[int(-500/dt):],y[int(-500/dt):])
 
+    x_lim =max(param.amp_x,0.5)*1.1
+    y_lim =max(param.amp_y,0.5)*1.1
+    lim_lissajous = max(x_lim,y_lim)
+    lissajous_line.set_data([0,x_new],[0,y_new])
 
-
-def upd_param(lissajous_canvas):
-    ################### ŠĪĪĪĪĪĪĪ ##############
+def upd_param():
     param.update()
 
+def enter_upd(event):
+    if anim_running:
+        param.update()
+
+window.bind('<Return>', enter_upd)
 
 ani = anim.FuncAnimation(fig, animate, interval=dt, blit=False)
 lissajous_ani = anim.FuncAnimation(lissajous_fig, animate, interval=dt, blit=False)
@@ -531,10 +526,6 @@ lissajous_ani = anim.FuncAnimation(lissajous_fig, animate, interval=dt, blit=Fal
 
 plot_canvas.place(x=20, y=155)
 lissajous_plot_canvas.place(x=620, y=155)
-#lissajous_plot_canvas.update()
-#Bplot_canvas.update()
-
-# tkinter.ttk.Separator(master=window,orient=tk.VERTICAL).pack(fill="y")
 
 
 #Camera stuff
