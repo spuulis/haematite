@@ -7,6 +7,8 @@ def find_markers(img, aruco_dict, aruco_params):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     (corners, ids, _) = cv2.aruco.detectMarkers(
         gray, aruco_dict, parameters=aruco_params)
+    if corners is None or ids is None:
+        return []
     return [
         {'id': id_[0], 'corners': corners_}
         for id_, corners_ in zip(ids, corners)
@@ -65,7 +67,7 @@ def pose_cubes(mtx, dist, markers, marker_positions):
                 imgpoints,
                 marker['corners'],
             ))
-        
+
         # Estimate and save pose
         rvec, tvec = cv2.solvePnP(
             objpoints, imgpoints, mtx, dist, flags=cv2.SOLVEPNP_EPNP
