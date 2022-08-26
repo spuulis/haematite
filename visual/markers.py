@@ -52,25 +52,26 @@ def pose_cubes(mtx, dist, markers, marker_positions):
     for cube_id in cube_ids:
         # Find markers belonging to the cube
         cube_markers = [
-            marker for marker in markers if marker['id'] // 6 is cube_id
+            marker for marker in markers if marker['id'] // 6 == cube_id
         ]
 
         # Match points on the cube and the image
-        objpoints = []
-        imgpoints = []
+        objpoints = np.array([])
+        imgpoints = np.array([])
         for marker in cube_markers:
-            objpoints = np.concatenate((
+            objpoints = np.vstack([
                 objpoints,
                 marker_positions[marker['id'] % 6],
-            ))
-            imgpoints = np.concatenate((
+            ]) if objpoints.size else marker_positions[marker['id'] % 6]
+            imgpoints = np.vstack([
                 imgpoints,
                 marker['corners'],
-            ))
+            ]) if imgpoints.size else marker['corners']
 
         # Estimate and save pose
         rvec, tvec = cv2.solvePnP(
-            objpoints, imgpoints, mtx, dist, flags=cv2.SOLVEPNP_EPNP
+            objpoints, imgpoints,
+            mtx, dist, flags=cv2.SOLVEPNP_EPNP,
         )
         poses.append({
             'id': cube_id,

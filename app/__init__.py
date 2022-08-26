@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
 from tkinter.messagebox import showwarning
 
 from .frames.main import MainFrame, Navbar
@@ -22,7 +21,7 @@ class App(tk.Tk):
 
         self.camera = Camera()
         try:
-            self.camera.initialize(5000)
+            self.camera.initialize(10000)
         except Exception as err:
             showwarning(
                 title='Warning',
@@ -31,7 +30,7 @@ class App(tk.Tk):
 
         self.coils = Coils()
         try:
-            self.coils.test()
+            self.coils.initialize()
         except Exception as err:
             showwarning(
                 title='Warning',

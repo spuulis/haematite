@@ -52,6 +52,7 @@ class Camera():
             img = image.GetArray()
             grabResult.Release()
         else:
-            img = np.ones((300, 500, 3)) * 255 / 8 * (2 + np.sin(time.time_ns() * 3.e-9))
+            img = np.ones(
+                (300, 500, 3)) * 255 / 8 * (2 + np.sin(time.time_ns() * 3.e-9))
             img = img.astype(np.uint8)
         return img

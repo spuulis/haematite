@@ -33,7 +33,7 @@ class Coils(threading.Thread):
             'y_phase': np.pi / 2,
         }
 
-        self._field = {'x': 0, 'y': 0}
+        self._field = {'x': 0, 'y': 0, 't': time.time_ns()}
         self.initialized = False
 
         self._stopper = threading.Event()
