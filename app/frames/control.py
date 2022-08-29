@@ -1,3 +1,5 @@
+import json
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -47,10 +49,22 @@ class ControlFrame(tk.Frame):
 
 
 class CameraControlFrame(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.label = ttk.Label(self, text='Camera control frame')
-        self.label.pack(ipadx=10, ipady=10)
+        self.controller = controller
+
+        self.grid_columnconfigure(0, weight=1)
+
+        tk.Button(
+            self,
+            text='Load calibration from calibration.json',
+            command=self.load_calib,
+        ).grid(row=0, column=0, padx=5, pady=5, sticky=tk.EW)
+
+    def load_calib(self):
+        with open('calibration.json', 'r') as json_file:
+            calib = json.load(json_file)
+            self.controller.camera.calibrate(calib['mtx'], calib['dist'])
 
 
 class FramerateControlFrame(tk.Frame):
