@@ -66,7 +66,7 @@ class CoilPlotFrame(tk.Frame):
         self.plotcanvas = FigureCanvasTkAgg(self.fig, self)
         self.plotcanvas.get_tk_widget().grid(column=0, row=0)
         self.ani = animation.FuncAnimation(
-            self.fig, self.animate, interval=1, blit=False)
+            self.fig, self.animate, interval=100, blit=False)
 
     def animate(self, i):
         field = self.controller.field

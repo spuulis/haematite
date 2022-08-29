@@ -22,7 +22,7 @@ class ControlFrame(tk.Frame):
             orient=tk.HORIZONTAL,
         ).grid(column=0, row=1, sticky=tk.EW)
 
-        self.camera_frame = CameraControlFrame(self)
+        self.camera_frame = CameraControlFrame(self, self.controller)
         self.camera_frame.grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
 
         ttk.Separator(
