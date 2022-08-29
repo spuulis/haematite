@@ -141,7 +141,7 @@ class CoilParametersFrame(tk.LabelFrame):
                 self,
                 name=_id,
                 textvariable=var,
-                width=6,
+                width=8,
                 validate='all',
                 validatecommand=vcmd,
             )

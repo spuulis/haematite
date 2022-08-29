@@ -43,7 +43,7 @@ class Controller(threading.Thread):
 
     def start_recording(self):
         self.clear_data()
-        self.recodring = True
+        self.recording = True
 
     def stop_recording(self, filename):
         # TODO: Remake this part thread-safe (right now it is questionable)
@@ -81,19 +81,20 @@ class Controller(threading.Thread):
         return img, measurement
 
     def append_data(self, measurement):
-        tvec, reul = markers.camera_to_aboslute_ref_frame(
-            measurement['tvec'],
-            measurement['rvec'],
-            [],
-        )
-        self.data.append({
-            'time': measurement['time'],
-            'coil_x': measurement['coil_x'],
-            'coil_y': measurement['coil_y'],
-            'cube_id': measurement['cube_id'],
-            'tvec': tvec,
-            'reul': reul,
-        }, ignore_index=True)
+        for cube in measurement:
+            tvec, reul = markers.camera_to_aboslute_ref_frame(
+                cube['tvec'],
+                cube['rvec'],
+                [],
+            )
+            self.data.append({
+                'time': cube['time'],
+                'coil_x': cube['coil_x'],
+                'coil_y': cube['coil_y'],
+                'cube_id': cube['cube_id'],
+                'tvec': tvec,
+                'reul': reul,
+            }, ignore_index=True)
 
     def tick(self):
         time_now = time.time_ns()
