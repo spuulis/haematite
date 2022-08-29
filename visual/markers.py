@@ -74,7 +74,7 @@ def pose_cubes(mtx, dist, markers, marker_positions):
             mtx, dist, flags=cv2.SOLVEPNP_EPNP,
         )
         poses.append({
-            'id': cube_id,
+            'cube_id': cube_id,
             'rvec': rvec,
             'tvec': tvec,
         })
@@ -83,10 +83,12 @@ def pose_cubes(mtx, dist, markers, marker_positions):
 
 
 def camera_to_aboslute_ref_frame(tvec, rvec, repos, euler="zyx"):
-    pass
+    a_tvec = tvec
+    a_reul = rvec_to_reul(rvec, euler)
+    return a_tvec, a_reul
 
 
-def rvec_to_relr(rvec, euler="zyx"):
+def rvec_to_reul(rvec, euler="zyx"):
     r_matrix = cv2.Rodrigues(rvec.reshape(3))[0]
     r = Rotation.from_matrix(r_matrix)
     return r.as_euler(euler, degrees=True)
