@@ -6,7 +6,7 @@ import numpy as np
 import threading
 
 import config
-import coils.waveform
+from coils.waveform import Waveform
 
 
 def turn_off():
@@ -20,26 +20,22 @@ def turn_off():
 
 
 class Coils(threading.Thread):
-    def __init__(self, amp=0., freq=0.):
+    def __init__(self):
         threading.Thread.__init__(self)
         self.daemon = True
 
-        self.params = {
-            'x_amp': amp,
-            'y_amp': amp,
-            'x_freq': freq,
-            'y_freq': freq,
-            'x_phase': 0.,
-            'y_phase': np.pi / 2,
-        }
+        self.waveform = Waveform()
 
         self._field = {'x': 0, 'y': 0, 't': time.time_ns()}
         self.initialized = False
 
         self._stopper = threading.Event()
 
-    def update_params(self, new_params):
-        self.params.update(new_params)
+    def update_params(self, new_params, override=False):
+        self.waveform.update_parameters(new_params, override)
+
+    def set_function(self, func):
+        self.waveform.func = func
 
     def stop(self):
         self._stopper.set()
@@ -67,21 +63,7 @@ class Coils(threading.Thread):
                 time_now = time.time_ns() * 1e-9
 
                 # Set coil voltages (effectively, coil current)
-                self._field = {
-                    't': time_now,
-                    'x': coils.waveform.sine(
-                        time_now,
-                        self.params['x_amp'],
-                        self.params['x_freq'],
-                        self.params['x_phase'],
-                    ),
-                    'y': coils.waveform.sine(
-                        time_now,
-                        self.params['y_amp'],
-                        self.params['y_freq'],
-                        self.params['y_phase'],
-                    ),
-                }
+                self._field = self.waveform.generate(time_now)
                 sent_t = np.array([
                     self._field['x'],
                     self._field['y'],

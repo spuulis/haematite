@@ -8,7 +8,7 @@ import tkinter as tk
 
 class CoilControlFrame(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, relief=tk.RAISED)
         self.controller = controller
 
         self.plot_frame = CoilPlotFrame(self, self.controller)
@@ -113,10 +113,10 @@ class CoilParametersFrame(tk.LabelFrame):
                 'id': 'phase',
                 'label': 'Phase, \u00B0',
                 'row': 2,
-                'default': '0',
+                'default': '0' if self.coil_name == 'x' else '90',
                 'from': '0',
                 'to': '360',
-                'increment': '45',
+                'increment': '30',
                 'format': '%3.0f',
             }
         }
@@ -157,18 +157,22 @@ class CoilParametersFrame(tk.LabelFrame):
             case 'focusin':
                 return True
             case 'focusout':
-                v = float(value)
+                v = 0.
+                if value != '':
+                    v = float(value)
                 match parameter['id']:
                     case 'freq':
                         v = v * 2 * np.pi
                     case 'amp':
                         v = v * 1.e-3
                 self.controller.coils.update_params({
-                    f'{self.coil_name}_{parameter["id"]}': v,
+                    f'{self.coil_name}': {f'{parameter["id"]}': v},
                 })
                 # TODO: Reformat input
                 return True
             case 'key':
+                if value == '':
+                    return True
                 try:
                     v = float(value)
                     return True
@@ -176,5 +180,9 @@ class CoilParametersFrame(tk.LabelFrame):
                     return False
             case 'forced':
                 # TODO: Validate input
+                v = float(value)
+                self.controller.coils.update_params({
+                    f'{self.coil_name}': {f'{parameter["id"]}': v},
+                })
                 return True
         return True

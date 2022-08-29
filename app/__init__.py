@@ -4,6 +4,7 @@ from tkinter.messagebox import showwarning
 from .frames.main import MainFrame, Navbar
 from visual.camera import Camera
 from coils.coils import Coils
+import coils.waveform
 from controller import Controller
 
 
@@ -29,6 +30,11 @@ class App(tk.Tk):
             )
 
         self.coils = Coils()
+        self.coils.set_function(coils.waveform.sine)
+        self.coils.update_params({
+            'x': {'amp': 0., 'freq': 0., 'phase': 0.},
+            'y': {'amp': 0., 'freq': 0., 'phase': 0.},
+        }, override=True)
         try:
             self.coils.initialize()
         except Exception as err:
