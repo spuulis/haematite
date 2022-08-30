@@ -28,12 +28,12 @@ class Camera():
             self.camera.Open()
             self.camera.ExposureTime.SetValue(self.exposure_time)
             self.camera.Close()
-        except Exception:
-            raise Exception("Camera is not found")
+        except Exception as e:
+            raise Exception(f"Camera could not be initialized:\n\n{e}")
 
     def calibrate(self, mtx, dist):
-        self.mtx = mtx
-        self.dist = dist
+        self.mtx = np.array(mtx)
+        self.dist = np.array(dist)
 
     def start_capture(self):
         if self.camera is not None:

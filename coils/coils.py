@@ -47,8 +47,8 @@ class Coils(threading.Thread):
                 # Define voltage output channels for coil control ([X, Y])
                 task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OX)
                 task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
-        except Exception:
-            raise Exception("Coils could not be initialized")
+        except Exception as e:
+            raise Exception(f"Coils could not be initialized:\n\n{e}")
         else:
             self.initialized = True
 
@@ -58,6 +58,11 @@ class Coils(threading.Thread):
 
     def run(self):
         with nidaqmx.Task() if self.initialized else nullcontext() as task_o:
+            # Define voltage output channels for coil control ([X, Y])
+            if task_o is not None:
+                task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OX)
+                task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
+
             # Waveform generation loop
             while not self._stopper.is_set():
                 time_now = time.time_ns() * 1e-9
