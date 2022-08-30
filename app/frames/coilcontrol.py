@@ -34,10 +34,17 @@ class CoilRunFrame(tk.LabelFrame):
         tk.LabelFrame.__init__(self, parent, text='Coil Controls')
         self.controller = controller
 
+        tk.Label(self, text='Wave type').grid(
+            column=0, row=0, padx=5, pady=(0, 0), sticky=tk.W)
+        self.wavetype = tk.StringVar()
+        self.wavetype.set('Sine wave')
+        tk.OptionMenu(self, self.wavetype, 'Sine wave').grid(
+            column=0, row=1, padx=5, pady=(0, 5), sticky=tk.W)
+
         tk.Checkbutton(self, text='Couple coils').grid(
-            column=0, row=0, sticky=tk.W)
+            column=0, row=2, padx=5, sticky=tk.W)
         tk.Checkbutton(self, text='Disable coils').grid(
-            column=0, row=1, sticky=tk.W)
+            column=0, row=3, padx=5, sticky=tk.W)
 
 
 class CoilPlotFrame(tk.Frame):
@@ -152,19 +159,25 @@ class CoilParametersFrame(tk.LabelFrame):
 
     def on_validate(self, value, reason, widget_name):
         parameter = self.parameters[widget_name.split('.')[-1]]
-        # widget = self.winfo_toplevel().nametowidget(widget_name)
+
+        def get_value(value, parameter_id):
+            v = 0.
+            if value != '':
+                v = float(value)
+            match parameter_id:
+                case 'freq':
+                    return v * 2 * np.pi
+                case 'amp':
+                    return v * 1.e-3
+                case 'phase':
+                    return np.deg2rad(v)
+            return v
+
         match reason:
             case 'focusin':
                 return True
             case 'focusout':
-                v = 0.
-                if value != '':
-                    v = float(value)
-                match parameter['id']:
-                    case 'freq':
-                        v = v * 2 * np.pi
-                    case 'amp':
-                        v = v * 1.e-3
+                v = get_value(value, parameter['id'])
                 self.controller.coils.update_params({
                     f'{self.coil_name}': {f'{parameter["id"]}': v},
                 })
@@ -180,7 +193,7 @@ class CoilParametersFrame(tk.LabelFrame):
                     return False
             case 'forced':
                 # TODO: Validate input
-                v = float(value)
+                v = get_value(value, parameter['id'])
                 self.controller.coils.update_params({
                     f'{self.coil_name}': {f'{parameter["id"]}': v},
                 })
