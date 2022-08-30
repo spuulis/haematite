@@ -1,10 +1,9 @@
-import json
-
 import tkinter as tk
 from tkinter import ttk
 
 from .coilcontrol import CoilControlFrame
 from .filecontrol import FileControlFrame
+from .visualcontrol import VisualControlFrame
 
 
 class ControlFrame(tk.Frame):
@@ -22,7 +21,7 @@ class ControlFrame(tk.Frame):
             orient=tk.HORIZONTAL,
         ).grid(column=0, row=1, sticky=tk.EW)
 
-        self.camera_frame = CameraControlFrame(self, self.controller)
+        self.camera_frame = VisualControlFrame(self, self.controller)
         self.camera_frame.grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
 
         ttk.Separator(
@@ -46,25 +45,6 @@ class ControlFrame(tk.Frame):
             master=self,
             orient=tk.HORIZONTAL,
         ).grid(column=0, row=7, sticky=tk.EW)
-
-
-class CameraControlFrame(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-
-        self.grid_columnconfigure(0, weight=1)
-
-        tk.Button(
-            self,
-            text='Load calibration from calibration.json',
-            command=self.load_calib,
-        ).grid(row=0, column=0, padx=5, pady=5, sticky=tk.EW)
-
-    def load_calib(self):
-        with open('calibration.json', 'r') as json_file:
-            calib = json.load(json_file)
-            self.controller.camera.calibrate(calib['mtx'], calib['dist'])
 
 
 class FramerateControlFrame(tk.Frame):

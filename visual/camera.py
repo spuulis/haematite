@@ -6,13 +6,13 @@ from pypylon import pylon
 
 class Camera():
     def __init__(self):
-        self.exposure_time = None
-
         # Calibration parameters
         self.mtx = None
         self.dist = None
 
+        # Physical camera parameters
         self.camera = None
+        self.exposure_time = None
 
         # Image converter to cv2 format (bgr)
         self.converter = pylon.ImageFormatConverter()
@@ -20,20 +20,24 @@ class Camera():
         self.converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
 
     def initialize(self, exposure_time: int):
-        self.exposure_time = exposure_time
         # Connect to the first available camera
         try:
             self.camera = pylon.InstantCamera(
                 pylon.TlFactory.GetInstance().CreateFirstDevice())
-            self.camera.Open()
-            self.camera.ExposureTime.SetValue(self.exposure_time)
-            self.camera.Close()
+            self.set_exposure_time(exposure_time)
         except Exception as e:
             raise Exception(f"Camera could not be initialized:\n\n{e}")
 
     def calibrate(self, mtx, dist):
         self.mtx = np.array(mtx)
         self.dist = np.array(dist)
+
+    def set_exposure_time(self, exposure_time):
+        self.exposure_time = exposure_time
+        if self.camera is not None:
+            self.camera.Open()
+            self.camera.ExposureTime.SetValue(self.exposure_time)
+            self.camera.Close()
 
     def start_capture(self):
         if self.camera is not None:
