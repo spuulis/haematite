@@ -62,11 +62,12 @@ def pose_cubes(mtx, dist, markers, marker_positions):
             objpoints = np.vstack([
                 objpoints,
                 marker_positions[marker['id'] % 6],
-            ]) if objpoints.size else marker_positions[marker['id'] % 6]
+            ]) if objpoints.size else np.array(
+                marker_positions[marker['id'] % 6])
             imgpoints = np.vstack([
                 imgpoints,
                 marker['corners'],
-            ]) if imgpoints.size else marker['corners']
+            ]) if imgpoints.size else np.array(marker['corners'])
 
         # Estimate and save pose
         rvec, tvec = cv2.solvePnP(

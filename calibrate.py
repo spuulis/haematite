@@ -8,7 +8,8 @@ from visual.camera import Camera
 calibrator = Chessboard(1, (10, 7))
 ret, mtx, dist, rvecs, tvecs = None, None, None, None, None
 
-cam = Camera(10, 3000)
+cam = Camera()
+cam.initialize(10000)
 cam.start_capture()
 
 calib = {}
