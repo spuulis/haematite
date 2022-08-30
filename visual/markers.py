@@ -10,7 +10,7 @@ def find_markers(img, aruco_dict, aruco_params):
     if corners is None or ids is None:
         return []
     return [
-        {'id': id_[0], 'corners': corners_}
+        {'id': id_[0], 'corners': corners_[0]}
         for id_, corners_ in zip(ids, corners)
     ]
 
@@ -70,14 +70,14 @@ def pose_cubes(mtx, dist, markers, marker_positions):
             ]) if imgpoints.size else np.array(marker['corners'])
 
         # Estimate and save pose
-        rvec, tvec = cv2.solvePnP(
+        _, rvec, tvec = cv2.solvePnP(
             objpoints, imgpoints,
             mtx, dist, flags=cv2.SOLVEPNP_EPNP,
         )
         poses.append({
             'cube_id': cube_id,
-            'rvec': rvec,
-            'tvec': tvec,
+            'rvec': rvec.reshape(3),
+            'tvec': tvec.reshape(3),
         })
 
     return poses

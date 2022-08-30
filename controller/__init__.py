@@ -38,8 +38,12 @@ class Controller(threading.Thread):
             'coil_x',
             'coil_y',
             'cube_id',
-            'tvec',
-            'reul',
+            'tvec_x',
+            'tvec_y',
+            'tvec_z',
+            'reul_x',
+            'reul_y',
+            'reul_z',
         ])
 
     def start_recording(self):
@@ -49,7 +53,11 @@ class Controller(threading.Thread):
     def stop_recording(self, filename):
         # TODO: Remake this part thread-safe (right now it is questionable)
         self.recording = False
-        self.data.to_csv(filename)
+        self.data.to_csv(
+            filename,
+            index=False,
+            sep='\t',
+        )
         self.clear_data()
 
     @property
@@ -76,7 +84,7 @@ class Controller(threading.Thread):
             )
             measurement = [
                 dict(cube, **{
-                    'time': time_now,
+                    'time': time_now * 1.e-9,
                     'coil_x': self._field['x'],
                     'coil_y': self._field['y'],
                 }) for cube in cubes
@@ -90,14 +98,21 @@ class Controller(threading.Thread):
                 cube['rvec'],
                 [],
             )
-            self.data.append({
-                'time': cube['time'],
-                'coil_x': cube['coil_x'],
-                'coil_y': cube['coil_y'],
-                'cube_id': cube['cube_id'],
-                'tvec': tvec,
-                'reul': reul,
-            }, ignore_index=True)
+            self.data = pd.concat([
+                self.data,
+                pd.DataFrame([{
+                    'time': cube['time'],
+                    'coil_x': cube['coil_x'],
+                    'coil_y': cube['coil_y'],
+                    'cube_id': cube['cube_id'],
+                    'tvec_x': tvec[0],
+                    'tvec_y': tvec[1],
+                    'tvec_z': tvec[2],
+                    'reul_x': reul[0],
+                    'reul_y': reul[1],
+                    'reul_z': reul[2],
+                }]),
+            ], ignore_index=True)
 
     def tick(self):
         time_now = time.time_ns()
