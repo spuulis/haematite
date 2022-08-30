@@ -66,19 +66,21 @@ class Controller(threading.Thread):
 
     def read_camera(self, time_now):
         img = self.camera.grab()
-        ms = markers.find_markers(
-            self._img, config.MARKER_DICT, config.MARKER_DETECTION_PARAMS)
-        cubes = markers.pose_cubes(
-            self.camera.mtx, self.camera.dist,
-            ms, config.CUBE_MARKER_POSITIONS,
-        )
-        measurement = [
-            dict(cube, **{
-                'time': time_now,
-                'coil_x': self._field['x'],
-                'coil_y': self._field['y'],
-            }) for cube in cubes
-        ]
+        measurement = []
+        if self.camera.mtx is not None and self.camera.dist is not None:
+            ms = markers.find_markers(
+                self._img, config.MARKER_DICT, config.MARKER_DETECTION_PARAMS)
+            cubes = markers.pose_cubes(
+                self.camera.mtx, self.camera.dist,
+                ms, config.CUBE_MARKER_POSITIONS,
+            )
+            measurement = [
+                dict(cube, **{
+                    'time': time_now,
+                    'coil_x': self._field['x'],
+                    'coil_y': self._field['y'],
+                }) for cube in cubes
+            ]
         return img, measurement
 
     def append_data(self, measurement):
