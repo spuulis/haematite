@@ -1,6 +1,7 @@
 import threading
 import time
 
+import cv2
 import numpy as np
 import pandas as pd
 
@@ -89,6 +90,13 @@ class Controller(threading.Thread):
                     'coil_y': self._field['y'],
                 }) for cube in cubes
             ]
+            cv2.aruco.drawDetectedMarkers(
+                img,
+                [
+                    np.array([list(marker['corners'])])
+                    for marker in ms
+                ]
+            )
         return img, measurement
 
     def append_data(self, measurement):
