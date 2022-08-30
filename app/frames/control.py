@@ -95,4 +95,8 @@ class FramerateControlFrame(tk.Frame):
     def update_fps(self):
         fps_controller = self.controller.frame_rate.fps
         self.l_controller.config(text='{:4.2f}'.format(fps_controller))
+
+        fps_coils = self.controller.coils.frame_rate.fps
+        self.l_coils.config(text='{:4.2f}'.format(fps_coils))
+
         self.after(2000, self.update_fps)

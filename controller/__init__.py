@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 
 import config
+from utils import FrameRate
 from visual import markers
 
 
@@ -115,16 +116,3 @@ class Controller(threading.Thread):
         self.time_last = time.time_ns()
         while not self._stopper.is_set():
             self.tick()
-
-
-class FrameRate():
-    def __init__(self, weight=.5):
-        self.dt = 0
-        self.weight = weight
-
-    def add_dt(self, dt):
-        self.dt = (self.dt + self.weight * dt) / (1 + self.weight)
-
-    @property
-    def fps(self):
-        return 1. / self.dt
