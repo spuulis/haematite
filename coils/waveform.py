@@ -1,10 +1,19 @@
 import numpy as np
 
 
-# def sine(t, amp, freq, phase):
-#     return amp * np.sin(freq * t + phase)
 def sine(t, args):
-    return args['amp'] * np.sin(args['freq'] * t + args['phase'])
+    return args.get('amp', 0.) * np.sin(
+        args.get('freq', 0.) * t - args.get('phase', 0.))
+
+
+def triangle(t, args):
+    return 2 * args.get('amp', 0.) / np.pi * np.arcsin(np.sin(
+        args.get('freq', 0.) * t - args.get('phase', 0.)))
+
+
+def sawtooth(t, args):
+    return 2 * args.get('amp', 0.) / np.pi * np.arctan(np.tan(
+        args.get('freq', 0.) * t - args.get('phase', 0.)))
 
 
 class Waveform():
@@ -25,6 +34,10 @@ class Waveform():
             'y': self.func(t, self._prms['y']),
         }
 
+    def set_function(self, func):
+        self.func = func
+        self.generate_profile()
+
     def update_parameters(self, new_prms, override=False):
         if override:
             self.clear_parameters()
@@ -37,7 +50,7 @@ class Waveform():
     def clear_parameters(self):
         self._prms = {'x': {}, 'y': {}}
 
-    def generate_profile(self, length=5., dt=0.01):
+    def generate_profile(self, length=3., dt=0.006):
         ts = np.arange(0, length, dt)
         xs = self.func(ts, self._prms['x'])
         ys = self.func(ts, self._prms['y'])

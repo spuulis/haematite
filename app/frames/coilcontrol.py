@@ -5,6 +5,9 @@ import numpy as np
 import tkinter as tk
 
 
+import coils.waveform as waveform
+
+
 class CoilControlFrame(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent, relief=tk.RAISED)
@@ -33,17 +36,28 @@ class CoilRunFrame(tk.LabelFrame):
         tk.LabelFrame.__init__(self, parent, text='Coil Controls')
         self.controller = controller
 
-        tk.Label(self, text='Wave type').grid(
+        tk.Label(self, text='Waveform').grid(
             column=0, row=0, padx=5, pady=(0, 0), sticky=tk.W)
-        self.wavetype = tk.StringVar()
-        self.wavetype.set('Sine wave')
-        tk.OptionMenu(self, self.wavetype, 'Sine wave').grid(
+        waveforms = ['Sine wave', 'Triangle wave', 'Sawtooth wave']
+        self.var_waveform = tk.StringVar()
+        self.var_waveform.trace_add('write', self.change_waveform)
+        self.var_waveform.set(waveforms[0])
+        tk.OptionMenu(self, self.var_waveform, *waveforms).grid(
             column=0, row=1, padx=5, pady=(0, 5), sticky=tk.W)
 
         tk.Checkbutton(self, text='Couple coils').grid(
             column=0, row=2, padx=5, sticky=tk.W)
         tk.Checkbutton(self, text='Disable coils').grid(
             column=0, row=3, padx=5, sticky=tk.W)
+
+    def change_waveform(self, *args):
+        match self.var_waveform.get():
+            case 'Sine wave':
+                self.controller.coils.set_function(waveform.sine)
+            case 'Triangle wave':
+                self.controller.coils.set_function(waveform.triangle)
+            case 'Sawtooth wave':
+                self.controller.coils.set_function(waveform.sawtooth)
 
 
 class CoilPlotFrame(tk.Frame):

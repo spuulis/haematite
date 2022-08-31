@@ -38,7 +38,7 @@ class Coils(threading.Thread):
         self.waveform.update_parameters(new_params, override)
 
     def set_function(self, func):
-        self.waveform.func = func
+        self.waveform.set_function(func)
 
     def stop(self):
         self._stopper.set()
