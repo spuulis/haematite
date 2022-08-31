@@ -4,7 +4,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import tkinter as tk
 
-
 import coils.waveform as waveform
 
 
@@ -15,7 +14,7 @@ class CoilControlFrame(tk.Frame):
 
         self.plot_frame = CoilPlotFrame(self, self.controller)
         self.plot_frame.grid(
-            row=0, column=0, columnspan=3, sticky=tk.NSEW, padx=5, pady=5)
+            row=0, column=0, columnspan=3, sticky=tk.EW, padx=5, pady=5)
         self.grid_rowconfigure(0)
 
         self.x_parameters = CoilParametersFrame(
@@ -70,17 +69,22 @@ class CoilPlotFrame(tk.Frame):
         self.yvalues = []
 
         style.use('ggplot')
-        self.winfo_width()
+        width = 500 / 2
+
+        dpi = self.winfo_fpixels('1i')
         self.fig = plt.figure(
-            figsize=(7.4, 3),
-            dpi=30,
-            tight_layout=True,
+            figsize=(width / dpi, width * 0.3 / dpi),
+            dpi=dpi,
+            # tight_layout=True,
             facecolor='#BBB',
         )
-        self.ax = self.fig.add_subplot(1, 1, 1)
+
+        self.ax = self.fig.add_axes([0, 0, 1, 1])
+        self.ax.set_axis_off()
 
         self.plotcanvas = FigureCanvasTkAgg(self.fig, self)
         self.plotcanvas.get_tk_widget().grid(column=0, row=0)
+        self.grid_columnconfigure(0, weight=1)
 
     def redraw(self, profile):
         self.ax.clear()
@@ -88,7 +92,10 @@ class CoilPlotFrame(tk.Frame):
         # Plot the new data
         self.ax.set_ylim(-5, 5)
         self.ax.set_xlim(profile['ts'][0], profile['ts'][-1])
-        self.ax.xaxis.set_major_formatter(plt.NullFormatter())
+        # self.ax.xaxis.set_major_formatter(plt.NullFormatter())
+        # self.ax.tick_params(axis='y', which='major', labelsize=8)
+        self.ax.set_xticks(np.arange(profile['ts'][0], profile['ts'][-1] + 1))
+        self.ax.set_yticks(np.arange(-5, 5, 1))
         self.ax.plot(profile['ts'], profile['xs'] * 1.e3, 'r')
         self.ax.plot(profile['ts'], profile['ys'] * 1.e3, 'b')
 

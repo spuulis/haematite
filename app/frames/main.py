@@ -23,7 +23,7 @@ class MainFrame(tk.Frame):
         self.control_frame.grid(column=0, row=0, sticky=tk.NSEW)
         self.grid_columnconfigure(
             0,
-            minsize=450,
+            minsize=520,
         )
 
         ttk.Separator(
