@@ -25,29 +25,40 @@ from config import *
 
 # import visual.tracker
 
-###    Setting time parameters    ###
+# ----------------------------------
+# Constants and stuff
+# ----------------------------------
+dt = 10 #   Time interval for animation code, in ms
+fps = 30 #  Camera fps, not used
+exposure = 10000 #  Camera exposure time, in ns, not used
+anim_running = False #  Variable describing whether the animation is running
+cam_running = False  #  Variable describing whether the camera is running
 
-dt = 10 #ms
-fps = 30
-exposure = 10000 #nanoseconds
-anim_running = False
-cam_running = False
 chessboard = Chessboard(CHESSBOARD_SIZE,CHESSBOARD_DIM)
 num_of_calib_images = 0
-###   Initialising the GUI window   ###
+# ----------------------------------
+# Initializing GUI window
+# ----------------------------------
 window = tk.Tk()
-
+var_bind_coils = tk.BooleanVar() # Variable defining whether the coils are bound together
+var_signal_type = tk.StringVar() # Variable defining signal type
+signal_list = [
+    "sine",
+    "square",
+    "triangle",
+    "sawtooth"
+]
+var_signal_type.set(signal_list[0])
 window.geometry(str(window.winfo_screenwidth())+"x"+str(window.winfo_screenheight()-40))
-# window.configure(background = "#003050")
 window.title("Pagraba spoles")
 window.resizable(True, True)
 style.use('ggplot')
-
 time_start = time.time_ns()
 
-
-
-###  The window which encloses the parameters below
+# ----------------------------------
+# Here begins the long and painful definition of all the graphical elements
+# Starting with some frames
+# ----------------------------------
 frm_labels = tk.Frame(
     master=window,
     borderwidth=0,
@@ -64,8 +75,9 @@ frm_cam_img = tk.Frame(
     relief=tk.GROOVE
 )
 
-### Number field windows for frequency, amplitude, phase, e.c
-# the text part
+# ----------------------------------
+# All them text label for controlling coil signals
+# ----------------------------------
 lbl_x = tk.Label(
     master=frm_labels,
     text="X coil control",
@@ -121,8 +133,9 @@ lbl_phase_2 = tk.Label(
     anchor="e",
     width=12
 )
-
-
+# ----------------------------------
+# Labels for camera stuff
+# ----------------------------------
 
 lbl_cam_fps = tk.Label(
     master=frm_cam_btn,
@@ -141,8 +154,9 @@ lbl_cam_img = tk.Label(
     anchor="n",
 )
 
-
-# the blank field part
+# ----------------------------------
+# A bunch of entries for defining coil signal parameters
+# ----------------------------------
 ent_freq = tk.Entry(
     master=frm_labels,
     width=7
@@ -172,8 +186,9 @@ ent_phase_2 = tk.Entry(
     master=frm_labels,
     width=7
 )
-
-#setting values to the blank field
+# ----------------------------------
+# Defining default values for entries
+# ----------------------------------
 ent_freq.insert(0,"1")
 ent_amp.insert(0,"1")
 ent_phase.insert(0,"0")
@@ -182,19 +197,14 @@ ent_amp_2.insert(0,"1")
 ent_phase_2.insert(0,"0")
 ent_phase_off.insert(0,"90")
 
+# ----------------------------------
+# Definition of CoilParams object, which stores coil parameters (who would have guessed)
+# ----------------------------------
 param = cmnd.CoilParams(ent_freq,ent_amp,ent_phase,ent_freq_2,ent_amp_2,ent_phase_2,ent_phase_off)
 
-
-var_bind_coils = tk.BooleanVar()
-var_signal_type = tk.StringVar()
-signal_list = [
-    "sine",
-    "square",
-    "triangle",
-    "sawtooth"
-]
-var_signal_type.set(signal_list[0])
-
+# ----------------------------------
+# Checkbox to control whther the coils are bound
+# ----------------------------------
 cb_bind_coils = tk.Checkbutton(
     master = frm_labels,
     text = "Bind coils",
@@ -205,7 +215,9 @@ cb_bind_coils = tk.Checkbutton(
     command=lambda: toggle_bind()
 )
 
-# placement of the varios components
+# ----------------------------------
+# Arrangement of most of the graphical elements on the window
+# ----------------------------------
 frm_labels.place(x=5,y=5)
 lbl_x.grid(row=0,columnspan=2)
 lbl_freq.grid(row=1,column=0)
@@ -228,25 +240,27 @@ lbl_phase_2.grid(row=3,column=2)
 ent_freq_2.grid(row=1,column=3)
 ent_amp_2.grid(row=2,column=3)
 ent_phase_2.grid(row=3,column=3)
-
-# puts together the window which encloses the parameters below
 frm_labels.update()
-
 
 frm_cam_btn.place(x=630,y=5)
 lbl_cam_fps.grid(row=0,column=0)
 lbl_cam_exp.grid(row=1,column=0)
-
 frm_cam_btn.update()
 
 frm_cam_img.place(x=630,y=180)
 lbl_cam_img.pack()
 frm_cam_img.update()
-### Buttons
+
+# ----------------------------------
+# Definition of buttons
+# Starting with a dropdown menu for signal type
+# ----------------------------------
 drop_signal = tk.OptionMenu(window, var_signal_type, *signal_list)
+drop_signal.place(x=340, y=12)
 
-
-## Start /Stop button
+# ----------------------------------
+# Start/Stop button for coil signals
+# ----------------------------------
 btn_start = tk.Button(
     master=window,
     text="Start",
@@ -256,6 +270,9 @@ btn_start = tk.Button(
     command=lambda:start_stop()
 )
 btn_start.place(x=340, y=50)
+# ----------------------------------
+# Quite unnecessary code Jānis wrote for a on-hower tooltip
+# ----------------------------------
 cmnd.CreateToolTip(btn_start, text =
                  'Nospiežot "Start" tiks nomainīta frekvence, amplitūda \n '
                  'un fāzes pēc tā, kas būs lauciņos norādīts,\n'
@@ -263,9 +280,10 @@ cmnd.CreateToolTip(btn_start, text =
                  'Sāksies grafika animācija. ',text2='Grafika animācija tiks apturēta! \n'
                  'Vai tu tiešām esi gatavs apturēt animāciju?')
 btn_start.update()
-drop_signal.place(x=340, y=12)
 
-
+# ----------------------------------
+# Start/Stop camera recording button (currently only changes colors)
+# ----------------------------------
 btn_record = tk.Button(
     master=window,
     text="Start \nrecording",
@@ -275,14 +293,15 @@ btn_record = tk.Button(
     command=lambda:toggle_cam(cam)
 )
 btn_record.place(x=630, y=frm_cam_btn.winfo_height()+10)
-
 cmnd.CreateToolTip(btn_record, text =
                  'Sāk bilžu uzņemšanu bildes nesaglabājot. \n'
                  ,text2='Beidz rādīt kameras attēlu'
                  )
-
 btn_record.update()
 
+# ----------------------------------
+# A button that does absolutely nothing
+# ----------------------------------
 btn_show = tk.Button(
     master=window,
     text="Show \nimage",
@@ -298,6 +317,9 @@ cmnd.CreateToolTip(btn_show, text =
 
 btn_show.update()
 
+# ----------------------------------
+# Button that summons the calibration window
+# ----------------------------------
 btn_calib = tk.Button(
     master=window,
     text="Calibrate",
@@ -308,17 +330,16 @@ btn_calib = tk.Button(
 )
 btn_calib.place(x=785, y=frm_cam_btn.winfo_height()+10)
 cmnd.CreateToolTip(btn_calib, text =
-                 'Poga!!!'
+                 'Calibration window!!!'
                  )
-
 btn_calib.update()
 
-### Functions that need global variables to function ###
-
-### Do not move to a diferent folder ###
-
-
-# Remake of the start stop button
+# ----------------------------------
+# Here begins actual code with functions and stuff
+# ----------------------------------
+# Starting with start/stop button, which currently uses a global variable, so it can't be moved to commands.py
+# Should be quite easy to rewrite though
+# ----------------------------------
 def start_stop():
     global anim_running
     if anim_running:
@@ -337,21 +358,25 @@ def start_stop():
         # ani.event_source.start()
         upd_param()
 
+# ----------------------------------
+# The function that controls disabling entries when coils are bound
+# ----------------------------------
 def toggle_bind():
     if var_bind_coils.get():
-        # print("izslēdz entries")
         ent_amp_2.config(state="disable")
         ent_freq_2.config(state="disable")
         ent_phase_2.config(state="disable")
         ent_phase_off.config(state="normal")
     else:
-        # print("ieslēdz entries")
         ent_amp_2.config(state="normal")
         ent_freq_2.config(state="normal")
         ent_phase_2.config(state="normal")
         ent_phase_off.config(state="disable")
-cb_bind_coils.invoke()
+cb_bind_coils.invoke() # This is here to disable the entries on startup
 
+# ----------------------------------
+# The function that toggles camera button's color, and fuck all else
+# ----------------------------------
 def toggle_cam(cam):
     global cam_running
     if cam_running:
@@ -364,6 +389,9 @@ def toggle_cam(cam):
         btn_record["bg"] = "#faaaaa"
     cam_running = not cam_running
 
+# ----------------------------------
+# Function that opens and runs top level window for calibration
+# ----------------------------------
 def open_calib_window(cam):
     global num_of_calib_images
     num_of_calib_images = 0
@@ -371,8 +399,8 @@ def open_calib_window(cam):
     top= tk.Toplevel(window)
     top.geometry("750x650")
     top.title("Camera calibration")
-    # n = 0
 
+    # Text label
     lbl_top_num = tk.Label(
         master=top,
         text="Number of pictures: 0",
@@ -381,8 +409,8 @@ def open_calib_window(cam):
         height=3
     )
     lbl_top_num.place(x=180,y=10)
-    # lbl_top_num.update()
 
+    # Canvas for image
     canvas_top_img = tk.Canvas(
         master=top,
         width=730,
@@ -390,23 +418,26 @@ def open_calib_window(cam):
     )
     canvas_top_img.place(x=10,y=100)
 
+    # Button for taking calib images
     btn_top_show = tk.Button(
         master=top,
         text="Take calibration picture",
         width=20,
         height = 3,
         bg="#aafaaa",
-        command=lambda:[take_calib_pics(cam,lbl_top_num,canvas_top_img)]#, cmnd.update_image(cam.grab(),lbl_top_img)]
+        command=lambda:[take_calib_pics(cam,lbl_top_num,canvas_top_img)]
     )
     btn_top_show.place(x=10,y=10)
-    # lbl_top_num.update()
     btn_top_show.update()
+    top.protocol('WM_DELETE_WINDOW', calibrate(top))
 
+# ----------------------------------
+# Function that takes calibration image and adds it to chessboard (uncomment as needed)
+# ----------------------------------
 def take_calib_pics(cam,label,canvas):
     cmnd.clear_canvas(canvas)
-    # img = cam.grab()
-    img = ImageTk.PhotoImage(Image.open("picture.jpg").resize([730,400]))
-    canvas.create_image(0,0,anchor="nw",image=img)
+    # img = Image.fromarray(cam.grab())
+    # canvas.create_image(0,0,anchor="nw",image=img)
     
     # chessboard.add_image(img)
     global num_of_calib_images
@@ -414,16 +445,19 @@ def take_calib_pics(cam,label,canvas):
     label["text"] = "Number of pictures: "+str(num_of_calib_images)
     canvas.update()
 
-def calibrate():
-    for i in num_of_calib_images:
-        # cb.add_image(cam.grab())
-        time.sleep(1)
-    ret, mtx, dist, _, _ =  chessboard.calibrate()
+# ----------------------------------
+# Function that should perform calibration math when toplevel window is closed (it doesn't)
+# ----------------------------------
+def calibrate(win):
+    print("Calib window closed")
+    win.destroy()
 
 
-
-### Making the plot  ###
-# making the background to the plot
+# ----------------------------------
+# Stuff for making the plot
+# ----------------------------------
+# Canvas for the signal plot
+# ----------------------------------
 plot_canvas = tk.Canvas(
     master=window,
     height=600,
@@ -431,7 +465,6 @@ plot_canvas = tk.Canvas(
     background="#fafafa"
 )
 
-# the figure
 fig = Figure(figsize = (10, 10), dpi = 50)
 x = [0]
 y = [0]
@@ -447,9 +480,11 @@ canvas = FigureCanvasTkAgg(
     master = plot_canvas
 )
 canvas.draw()
-canvas.get_tk_widget().pack()
+canvas.get_tk_widget().pack() #Here, .place() might have been better 
 
-
+# ----------------------------------
+# Canvas for lissajous plot (which isn't lissajous anymore)
+# ----------------------------------
 lissajous_plot_canvas = tk.Canvas(
     master=window,
     height=150,
@@ -457,7 +492,9 @@ lissajous_plot_canvas = tk.Canvas(
     background="#aaaaaa"
 )
 
-# the figure
+# ----------------------------------
+# Figure definition (same as for signal plot)
+# ----------------------------------
 lissajous_fig = Figure(figsize = (2, 2), dpi = 100)
 
 lissajous_plot = lissajous_fig.add_subplot(111)
@@ -473,10 +510,11 @@ lissajous_canvas = FigureCanvasTkAgg(
 lissajous_canvas.draw()
 lissajous_canvas.get_tk_widget().pack()
 
+# ----------------------------------
+# Function that controls animation of both plots
+# ----------------------------------
 def animate(i):
-
-    # parametri, kas vajadzīgi grafikam
-
+    # Plot parameters
     t = np.around(dt*i/1000,3)
     t = (time.time_ns()-time_start)/1e9
     tm.append(t)
@@ -484,15 +522,15 @@ def animate(i):
     x.append(x_new)
     y.append(y_new)
 
-    #limiti grafikiem
+    # Plot axis limits
     y_test = y[int(-5000/dt):]
     y_lim =max(-np.min(y_test),np.max(y_test))*1.2
     x_lim =max(-np.min(x[int(-5000/dt):]),np.max(x[int(-5000/dt):]))*1.2
-
     x_lim =max(x_lim,0.5)
     y_lim =max(y_lim,0.5)
     lim_lissajous = max(x_lim,y_lim)
-    #Grafika dzīvā animācija
+   
+    #Putting new values and limits into the plots
 
     plot1.set_xlim(tm[-1]-5,tm[-1])
     plot1.set_ylim(-lim_lissajous,lim_lissajous)
@@ -511,25 +549,34 @@ def animate(i):
     lim_lissajous = max(x_lim,y_lim)
     lissajous_line.set_data([0,x_new],[0,y_new])
 
+# ----------------------------------
+# Function that updates parameters for coils
+# ----------------------------------
 def upd_param():
     param.update()
 
+# ----------------------------------
+# Detect when "Enter" key is pressed and update param
+# ----------------------------------
 def enter_upd(event):
     if anim_running:
         param.update()
-
 window.bind('<Return>', enter_upd)
 
+# ----------------------------------
+# Call animation functions
+# ----------------------------------
 ani = anim.FuncAnimation(fig, animate, interval=dt, blit=False)
 lissajous_ani = anim.FuncAnimation(lissajous_fig, animate, interval=dt, blit=False)
 
-
+# ----------------------------------
+# place plot canvases
+# ----------------------------------
 plot_canvas.place(x=20, y=155)
 lissajous_plot_canvas.place(x=620, y=155)
 
 
 #Camera stuff
-cam = 5#Camera(fps,exposure)
-
+cam = 5 # Camera(fps,exposure)
 
 window.mainloop()
