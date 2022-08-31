@@ -1,5 +1,5 @@
 ### This code is the main code to run for the GUI of the program ###
-###   Imports   ####
+###   Imports   ###
 
 import sys
 import tkinter as tk
@@ -133,6 +133,7 @@ lbl_phase_2 = tk.Label(
     anchor="e",
     width=12
 )
+
 # ----------------------------------
 # Labels for camera stuff
 # ----------------------------------
@@ -186,6 +187,7 @@ ent_phase_2 = tk.Entry(
     master=frm_labels,
     width=7
 )
+
 # ----------------------------------
 # Defining default values for entries
 # ----------------------------------
@@ -270,6 +272,7 @@ btn_start = tk.Button(
     command=lambda:start_stop()
 )
 btn_start.place(x=340, y=50)
+
 # ----------------------------------
 # Quite unnecessary code Jānis wrote for a on-hower tooltip
 # ----------------------------------
@@ -293,6 +296,7 @@ btn_record = tk.Button(
     command=lambda:toggle_cam(cam)
 )
 btn_record.place(x=630, y=frm_cam_btn.winfo_height()+10)
+
 cmnd.CreateToolTip(btn_record, text =
                  'Sāk bilžu uzņemšanu bildes nesaglabājot. \n'
                  ,text2='Beidz rādīt kameras attēlu'
@@ -372,6 +376,7 @@ def toggle_bind():
         ent_freq_2.config(state="normal")
         ent_phase_2.config(state="normal")
         ent_phase_off.config(state="disable")
+
 cb_bind_coils.invoke() # This is here to disable the entries on startup
 
 # ----------------------------------
@@ -396,7 +401,7 @@ def open_calib_window(cam):
     global num_of_calib_images
     num_of_calib_images = 0
     images = []
-    top= tk.Toplevel(window)
+    top = tk.Toplevel(window)
     top.geometry("750x650")
     top.title("Camera calibration")
 
@@ -537,7 +542,6 @@ def animate(i):
 
     line1.set_data(tm[int(-5000/dt):],x[int(-5000/dt):])
     line2.set_data(tm[int(-5000/dt):],y[int(-5000/dt):])
-
 
     lim_lissajous = max(x_lim,y_lim)
 

@@ -3,6 +3,8 @@
 /samples/*
 /output/*
 *.ipynb
+calibration.json
+camera.py
 
 .DS_Store
 
