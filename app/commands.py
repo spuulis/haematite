@@ -9,55 +9,26 @@ from matplotlib import style
 from PIL import ImageTk, Image
 import sys
 
-# from ..visual.camera import Camera
-def fnc_lblUpdate(label):
-    n = label["text"]
-    label["text"] = str(int(n)+1)
-
-    label.update()
-
 def check_num(num):
+    # ----------------------------------
+    # Outputs true if num can be converted to float
+    # ----------------------------------
     try:
         float(num)
         return True
     except ValueError:
         return False
 
-def get_values(amp, freq, phase, phase_off):
-    if(check_num(amp) and check_num(freq) and check_num(phase) and check_num(phase_off)):
-        x = np.linspace(0, 5,1001)
-
-        y = float(amp) * np.sin(x*float(freq)*2*np.pi+float(phase))
-        return(x,y)
-    else:
-        return([1],[1])
-
-def next_sin_val(amp, freq, phase, phase_off, time):
-    if(check_num(amp) and check_num(freq) and check_num(phase) and check_num(phase_off)):
-        phase = np.deg2rad(float(phase))
-        phase_off = np.deg2rad(float(phase_off))
-        return (float(amp) * np.sin(time*float(freq)*2*np.pi+phase),float(amp) * np.sin(time*float(freq)*2*np.pi+phase+phase_off))
-    else:
-        return 0.0
-
-# def sines(freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off,time,is_bound):
-    
-
-#     x = amp_x * np.sin(time*freq_x*2*np.pi+phase_x)
-#     if is_bound:
-#         y = amp_x * np.sin(time*freq_x*2*np.pi+phase_x + phase_off)
-        
-#     else:
-#         y = amp_y * np.sin(time*freq_y*2*np.pi+phase_y)
-        
-
-#     return x,y
-
-
 def sine_wave(freq,amp,phase,time):
+    # ----------------------------------
+    # Generete sin from parameters
+    # ----------------------------------
     return amp * np.sin(time*freq*2*np.pi + phase)
 
 def square_wave(freq,amp,phase,time):
+    # ----------------------------------
+    # Generate square wave from parameters
+    # ----------------------------------
     T = 1/freq
     phase = phase/2/np.pi*T
     t_spec = np.mod(time+phase,T)
@@ -68,6 +39,9 @@ def square_wave(freq,amp,phase,time):
         return -amp
 
 def triangle_wave(freq,amp,phase,time):
+    # ----------------------------------
+    # Generate triangle wave from parameters
+    # ----------------------------------
     T = 1/freq
     phase = phase/2/np.pi*T
     t_spec = np.mod(time+phase,T)
@@ -77,6 +51,9 @@ def triangle_wave(freq,amp,phase,time):
         return -amp + 2*amp*((t_spec-T/2)*2/T)
     
 def sawtooth_wave(freq,amp,phase,time):
+    # ----------------------------------
+    # Generate sawtooth wave from parameters
+    # ----------------------------------
     T = 1/freq
     phase = phase/2/np.pi*T
     t_spec = np.mod(time+phase,T)
@@ -84,6 +61,10 @@ def sawtooth_wave(freq,amp,phase,time):
 
 
 def generate_signal(values,time,is_bound,signal_type):
+    # ----------------------------------
+    # Generates appropriate signal
+    # Note: if freq=0, it uses a sin function, since other waves don't work for freq=0
+    # ----------------------------------
     [freq_x,amp_x,phase_x,freq_y,amp_y,phase_y,phase_off] = values
     phase_x = np.deg2rad(phase_x)
     phase_y = np.deg2rad(phase_y)
@@ -129,16 +110,19 @@ def generate_signal(values,time,is_bound,signal_type):
 
 
 def clear_canvas(canvas):
+    # ----------------------------------
+    # Clears canvas
+    # ----------------------------------
     for child in canvas.winfo_children():
         child.destroy()
 
-def update_image(image, label):
-    img = Image.fromarray(image)
-    # img_tk = ImageTK.PhotoImage()
 
 
-# Tip text box that appears when hovering hovering
 class CoilParams():
+    # ----------------------------------
+    # Object that stores all coil parameters and reads values from entries
+    # Used to avoid excessive use of global parameters
+    # ----------------------------------
 
     def __init__(self,e_fx,e_ax,e_px,e_fy,e_ay,e_py,e_poff):
         self.amp_x = 0
@@ -155,17 +139,25 @@ class CoilParams():
         self.entries = [e_fx, e_ax, e_px, e_fy, e_ay, e_py, e_poff]
 
     def update(self):
+        # ----------------------------------
+        # Reads values from entries and saves them
+        # ----------------------------------
         for i in range(0,len(self.entries)):
             if check_num(self.entries[i].get()):
                 self.values[i] = float(self.entries[i].get())
         [self.freq_x, self.amp_x, self.phase_x, self.freq_y, self.amp_y, self.phase_y, self.phase_off] = self.values
 
     def squeeze(self):
+        # ----------------------------------
+        # Puts values back in the list, in case specific values have to be changed manually (such as setting amp=0 when signal is turned off)
+        # ----------------------------------
         self.values = [self.freq_x, self.amp_x, self.phase_x, self.freq_y, self.amp_y, self.phase_y, self.phase_off]
 
 
 class ToolTip(object):
-
+    # ----------------------------------
+    # Object that shows tooltips when hovering over certain elements in GUI (buttons, labels, ect.)
+    # ----------------------------------
     def __init__(self, widget):
         self.widget = widget
         self.tipwindow = None
