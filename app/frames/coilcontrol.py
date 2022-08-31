@@ -1,6 +1,5 @@
 from matplotlib import pyplot as plt
 from matplotlib import style
-import matplotlib.animation as animation
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import tkinter as tk
@@ -64,26 +63,22 @@ class CoilPlotFrame(tk.Frame):
             tight_layout=True,
             facecolor='#BBB',
         )
-        self.ax1 = self.fig.add_subplot(1, 1, 1)
-        self.ax1.set_ylim(-5, 5)
-        self.ax1.xaxis.set_major_formatter(plt.NullFormatter())
-        self.xline, = self.ax1.plot(self.tvalues, self.xvalues, 'r')
-        self.yline, = self.ax1.plot(self.tvalues, self.yvalues, 'b')
+        self.ax = self.fig.add_subplot(1, 1, 1)
 
         self.plotcanvas = FigureCanvasTkAgg(self.fig, self)
         self.plotcanvas.get_tk_widget().grid(column=0, row=0)
-        self.ani = animation.FuncAnimation(
-            self.fig, self.animate, interval=100, blit=False)
 
-    def animate(self, i):
-        field = self.controller.field
-        self.tvalues.append(field['t'])
-        self.xvalues.append(field['x'] * 1.e3)
-        self.yvalues.append(field['y'] * 1.e3)
+    def redraw(self, profile):
+        self.ax.clear()
 
-        self.xline.set_data(self.tvalues, self.xvalues)
-        self.yline.set_data(self.tvalues, self.yvalues)
-        self.ax1.set_xlim(field['t']-5, field['t'])
+        # Plot the new data
+        self.ax.set_ylim(-5, 5)
+        self.ax.set_xlim(profile['ts'][0], profile['ts'][-1])
+        self.ax.xaxis.set_major_formatter(plt.NullFormatter())
+        self.ax.plot(profile['ts'], profile['xs'] * 1.e3, 'r')
+        self.ax.plot(profile['ts'], profile['ys'] * 1.e3, 'b')
+
+        self.plotcanvas.draw()
 
 
 class CoilParametersFrame(tk.LabelFrame):
@@ -92,6 +87,7 @@ class CoilParametersFrame(tk.LabelFrame):
             self, parent,
             text=f'{coil_name.upper()} Coils',
         )
+        self.parent = parent
         self.controller = controller
 
         self.coil_name = coil_name
@@ -181,6 +177,8 @@ class CoilParametersFrame(tk.LabelFrame):
                 self.controller.coils.update_params({
                     f'{self.coil_name}': {f'{parameter["id"]}': v},
                 })
+                self.parent.plot_frame.redraw(
+                    self.controller.coils.waveform.generate_profile())
                 # TODO: Reformat input
                 return True
             case 'key':
@@ -197,5 +195,7 @@ class CoilParametersFrame(tk.LabelFrame):
                 self.controller.coils.update_params({
                     f'{self.coil_name}': {f'{parameter["id"]}': v},
                 })
+                self.parent.plot_frame.redraw(
+                    self.controller.coils.waveform.generate_profile())
                 return True
         return True

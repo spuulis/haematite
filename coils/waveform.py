@@ -32,12 +32,14 @@ class Waveform():
             self._prms['x'].update(new_prms['x'])
         if 'y' in new_prms:
             self._prms['y'].update(new_prms['y'])
+        self.generate_profile()
 
     def clear_parameters(self):
         self._prms = {'x': {}, 'y': {}}
 
-    def generate_profile(self, length=5., dt=0.05):
+    def generate_profile(self, length=5., dt=0.01):
         ts = np.arange(0, length, dt)
         xs = self.func(ts, self._prms['x'])
         ys = self.func(ts, self._prms['y'])
         self.profile = {'ts': ts, 'xs': xs, 'ys': ys}
+        return self.profile
