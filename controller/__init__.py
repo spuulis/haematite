@@ -17,6 +17,7 @@ class Controller(threading.Thread):
         self._stopper = threading.Event()
 
         self.frame_rate = FrameRate()
+        self.frame_rate.set_target_fps(100)
         self.time_last = None
 
         self.camera = camera
@@ -136,6 +137,8 @@ class Controller(threading.Thread):
         """
         if self.recording:
             self.append_data(self._measurement)
+
+        self.frame_rate.throttle(time_now * 1.e-9)
 
     def run(self):
         self.time_last = time.time_ns()

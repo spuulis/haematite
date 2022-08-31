@@ -1,7 +1,11 @@
+import time
+
 import cv2
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import ttk
+
+from utils import FrameRate
 
 
 class OutputFrame(tk.Frame):
@@ -30,6 +34,9 @@ class ImageFrame(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
+        self.frame_rate = FrameRate()
+        self.frame_rate.set_target_fps(10)
+
         self.label = tk.Label(self)
         self.label.grid(row=0, column=0, sticky='NS')
         self.grid_columnconfigure(0, weight=1)
@@ -38,6 +45,7 @@ class ImageFrame(tk.Frame):
         self.show_frame()
 
     def show_frame(self):
+        time_now = time.time_ns() * 1.e-9
         # Get the latest frame and convert into Image
         img = self.controller.img
         img_height, img_width, _ = img.shape
@@ -57,7 +65,11 @@ class ImageFrame(tk.Frame):
         imgtk = ImageTk.PhotoImage(image=frame)
         self.label.imgtk = imgtk
         self.label.configure(image=imgtk)
-        self.after(20, self.show_frame)
+        self.frame_rate.add_time(time_now)
+        self.after(
+            int(self.frame_rate.calculate_throttle(time_now) * 1.e3),
+            self.show_frame,
+        )
 
 
 class DataFrame(tk.Frame):

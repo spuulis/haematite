@@ -26,6 +26,7 @@ class Coils(threading.Thread):
         self.daemon = True
 
         self.frame_rate = FrameRate()
+        self.frame_rate.set_target_fps(config.COILS_FPS)
         self.time_last = None
 
         self.waveform = Waveform()
@@ -88,10 +89,11 @@ class Coils(threading.Thread):
                     )
 
                 # Limit frame rate
-                time.sleep(max(
-                    1./config.COILS_FPS - (time.time_ns() * 1e-9 - time_now),
-                    0,
-                ))
+                # time.sleep(max(
+                #     1./config.COILS_FPS - (time.time_ns() * 1e-9 - time_now),
+                #     0,
+                # ))
+                self.frame_rate.throttle(time_now)
 
             # Set current through coils to zero upon exit
             if task_o is not None:
