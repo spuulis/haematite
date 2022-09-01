@@ -3,9 +3,9 @@ from tkinter import ttk
 
 
 class FileControlFrame(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, model):
         tk.Frame.__init__(self, parent)
-        self.controller = controller
+        self.model = model
 
         self.grid_columnconfigure(1, weight=1)
 
@@ -21,14 +21,14 @@ class FileControlFrame(tk.Frame):
         self.button.grid(row=0, column=2, columnspan=2, padx=5, sticky=tk.EW)
 
     def toggle_recording(self):
-        print(self.controller.recording)
-        if not self.controller.recording:
+        print(self.model.recording)
+        if not self.model.recording:
             # Commence recording
-            self.controller.start_recording()
+            self.model.start_recording()
             self.button.config(text='Stop recording')
         else:
             # Stop recording
             filename = self.entry.get()
-            self.controller.stop_recording(filename)
+            self.model.stop_recording(filename)
             self.button.config(text='Start recording')
         return True

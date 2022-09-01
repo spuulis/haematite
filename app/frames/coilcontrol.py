@@ -1,5 +1,5 @@
+import matplotlib as mpl
 from matplotlib import pyplot as plt
-from matplotlib import style
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import tkinter as tk
@@ -8,32 +8,33 @@ import coils.waveform as waveform
 
 
 class CoilControlFrame(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, model):
         tk.Frame.__init__(self, parent, relief=tk.RAISED)
-        self.controller = controller
+        self.model = model
 
-        self.plot_frame = CoilPlotFrame(self, self.controller)
+        self.plot_frame = CoilPlotFrame(self, self.model)
         self.plot_frame.grid(
             row=0, column=0, columnspan=3, sticky=tk.EW, padx=5, pady=5)
         self.grid_rowconfigure(0)
 
+        self.coil_controls = {}
         self.x_parameters = CoilParametersFrame(
-            self, self.controller, 'x')
+            self, self.model, self.coil_controls, 'x')
         self.x_parameters.grid(row=1, column=0, padx=5, pady=5)
 
         self.y_parameters = CoilParametersFrame(
-            self, self.controller, 'y')
+            self, self.model, self.coil_controls, 'y')
         self.y_parameters.grid(row=1, column=1, padx=5, pady=5)
 
-        self.coilrun = CoilRunFrame(self, self.controller)
+        self.coilrun = CoilRunFrame(self, self.model)
         self.coilrun.grid(row=1, column=2, sticky=tk.NSEW, padx=5, pady=5)
         self.grid_columnconfigure(2, weight=1)
 
 
 class CoilRunFrame(tk.LabelFrame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, model):
         tk.LabelFrame.__init__(self, parent, text='Coil Controls')
-        self.controller = controller
+        self.model = model
 
         tk.Label(self, text='Waveform').grid(
             column=0, row=0, padx=5, pady=(0, 0), sticky=tk.W)
@@ -52,23 +53,23 @@ class CoilRunFrame(tk.LabelFrame):
     def change_waveform(self, *args):
         match self.var_waveform.get():
             case 'Sine wave':
-                self.controller.coils.set_function(waveform.sine)
+                self.model.coils.set_function(waveform.sine)
             case 'Triangle wave':
-                self.controller.coils.set_function(waveform.triangle)
+                self.model.coils.set_function(waveform.triangle)
             case 'Sawtooth wave':
-                self.controller.coils.set_function(waveform.sawtooth)
+                self.model.coils.set_function(waveform.sawtooth)
 
 
 class CoilPlotFrame(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, model):
         tk.Frame.__init__(self, parent)
-        self.controller = controller
+        self.model = model
 
         self.tvalues = []
         self.xvalues = []
         self.yvalues = []
 
-        style.use('ggplot')
+        mpl.style.use('ggplot')
         width = 500 / 2
 
         dpi = self.winfo_fpixels('1i')
@@ -103,45 +104,31 @@ class CoilPlotFrame(tk.Frame):
 
 
 class CoilParametersFrame(tk.LabelFrame):
-    def __init__(self, parent, controller, coil_name):
+    def __init__(self, parent, model, coil_controls, coil_name):
         tk.LabelFrame.__init__(
             self, parent,
             text=f'{coil_name.upper()} Coils',
         )
         self.parent = parent
-        self.controller = controller
+        self.model = model
+        self.coil_controls = coil_controls
 
         self.coil_name = coil_name
         self.parameters = {
             'amp': {
-                'id': 'amp',
-                'label': 'Amplitude, mT',
-                'row': 0,
+                'id': 'amp', 'label': 'Amplitude, mT', 'row': 0,
                 'default': '0.000',
-                'from': '0',
-                'to': '5',
-                'increment': '0.05',
-                'format': '%4.3f',
+                'format': '{:1.3f}',
             },
             'freq': {
-                'id': 'freq',
-                'label': 'Frequency, Hz',
-                'row': 1,
+                'id': 'freq', 'label': 'Frequency, Hz', 'row': 1,
                 'default': '0.000',
-                'from': '0',
-                'to': '5',
-                'increment': '0.05',
-                'format': '%4.3f',
+                'format': '{:1.3f}',
             },
             'phase': {
-                'id': 'phase',
-                'label': 'Phase, \u00B0',
-                'row': 2,
+                'id': 'phase', 'label': 'Phase, \u00B0', 'row': 2,
                 'default': '0' if self.coil_name == 'x' else '90',
-                'from': '0',
-                'to': '360',
-                'increment': '30',
-                'format': '%3.0f',
+                'format': '{:3.0f}',
             }
         }
 
@@ -152,27 +139,24 @@ class CoilParametersFrame(tk.LabelFrame):
             )
 
             tk.Label(
-                self,
-                text=parameter['label'],
-                justify='left',
-                anchor='w',
+                self, text=parameter['label'],
+                justify='left', anchor='w',
             ).grid(column=0, row=parameter['row']*2, sticky=tk.W, padx=(2, 5))
 
             vcmd = (self.register(
                 self.on_validate
             ), '%P', '%V', '%W')
             entry = tk.Entry(
-                self,
-                name=_id,
-                textvariable=var,
-                width=8,
-                validate='all',
-                validatecommand=vcmd,
+                self, name=_id, textvariable=var, width=8,
+                validate='all', validatecommand=vcmd,
             )
             entry.grid(
                 column=0, row=parameter['row']*2+1, sticky=tk.W,
                 padx=(2, 5), pady=(0, 5),
             )
+            self.coil_controls[f'{coil_name}_{_id}'] = {
+                ''
+            }
 
     def on_validate(self, value, reason, widget_name):
         parameter = self.parameters[widget_name.split('.')[-1]]
@@ -195,11 +179,11 @@ class CoilParametersFrame(tk.LabelFrame):
                 return True
             case 'focusout':
                 v = get_value(value, parameter['id'])
-                self.controller.coils.update_params({
+                self.model.coils.update_params({
                     f'{self.coil_name}': {f'{parameter["id"]}': v},
                 })
                 self.parent.plot_frame.redraw(
-                    self.controller.coils.waveform.generate_profile())
+                    self.model.coils.waveform.generate_profile())
                 # TODO: Reformat input
                 return True
             case 'key':
@@ -213,10 +197,10 @@ class CoilParametersFrame(tk.LabelFrame):
             case 'forced':
                 # TODO: Validate input
                 v = get_value(value, parameter['id'])
-                self.controller.coils.update_params({
+                self.model.coils.update_params({
                     f'{self.coil_name}': {f'{parameter["id"]}': v},
                 })
                 self.parent.plot_frame.redraw(
-                    self.controller.coils.waveform.generate_profile())
+                    self.model.coils.waveform.generate_profile())
                 return True
         return True

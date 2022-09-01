@@ -10,7 +10,7 @@ from utils import FrameRate
 from visual import markers
 
 
-class Controller(threading.Thread):
+class Model(threading.Thread):
     def __init__(self, camera, coils):
         threading.Thread.__init__(self)
         self.daemon = True

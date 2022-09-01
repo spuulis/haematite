@@ -7,13 +7,13 @@ from utils import FrameRate
 
 
 class OutputFrame(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, model):
         tk.Frame.__init__(self, parent)
-        self.controller = controller
+        self.model = model
 
         self.grid_columnconfigure(0, weight=1)
 
-        self.image_frame = ImageFrame(self, controller)
+        self.image_frame = ImageFrame(self, model)
         self.image_frame.grid(row=0, column=0, sticky=tk.NSEW)
         self.grid_rowconfigure(0, weight=1)
 
@@ -28,9 +28,9 @@ class OutputFrame(tk.Frame):
 
 
 class ImageFrame(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, model):
         tk.Frame.__init__(self, parent)
-        self.controller = controller
+        self.model = model
 
         self.frame_rate = FrameRate()
         self.frame_rate.set_target_fps(10)
@@ -44,7 +44,7 @@ class ImageFrame(tk.Frame):
 
     def show_frame(self):
         # Get the latest frame and convert into Image
-        img = self.controller.img
+        img = self.model.img
         img_height, img_width, _ = img.shape
         cv2image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         frame = Image.fromarray(cv2image)

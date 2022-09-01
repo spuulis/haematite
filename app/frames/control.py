@@ -7,13 +7,13 @@ from .visualcontrol import VisualControlFrame
 
 
 class ControlFrame(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, model):
         tk.Frame.__init__(self, parent)
-        self.controller = controller
+        self.model = model
 
         self.grid_columnconfigure(0, weight=1)
 
-        self.coil_frame = CoilControlFrame(self, self.controller)
+        self.coil_frame = CoilControlFrame(self, self.model)
         self.coil_frame.grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
 
         ttk.Separator(
@@ -21,7 +21,7 @@ class ControlFrame(tk.Frame):
             orient=tk.HORIZONTAL,
         ).grid(column=0, row=1, sticky=tk.EW)
 
-        self.camera_frame = VisualControlFrame(self, self.controller)
+        self.camera_frame = VisualControlFrame(self, self.model)
         self.camera_frame.grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
 
         ttk.Separator(
@@ -29,7 +29,7 @@ class ControlFrame(tk.Frame):
             orient=tk.HORIZONTAL,
         ).grid(column=0, row=3, sticky=tk.EW)
 
-        self.file_frame = FileControlFrame(self, self.controller)
+        self.file_frame = FileControlFrame(self, self.model)
         self.file_frame.grid(column=0, row=4, sticky=tk.EW, padx=5, pady=5)
 
         ttk.Separator(
@@ -37,7 +37,7 @@ class ControlFrame(tk.Frame):
             orient=tk.HORIZONTAL,
         ).grid(column=0, row=5, sticky=tk.EW)
 
-        self.framerate_frame = FramerateControlFrame(self, self.controller)
+        self.framerate_frame = FramerateControlFrame(self, self.model)
         self.framerate_frame.grid(
             column=0, row=6, sticky=tk.EW, padx=5, pady=5)
 
@@ -48,9 +48,9 @@ class ControlFrame(tk.Frame):
 
 
 class FramerateControlFrame(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, model):
         tk.Frame.__init__(self, parent)
-        self.controller = controller
+        self.model = model
 
         self.grid_columnconfigure(0, minsize=150)
         self.grid_columnconfigure(1, weight=1)
@@ -73,10 +73,10 @@ class FramerateControlFrame(tk.Frame):
         self.after(1000, self.update_fps)
 
     def update_fps(self):
-        fps_controller = self.controller.frame_rate.fps
+        fps_controller = self.model.frame_rate.fps
         self.l_controller.config(text='{:4.2f}'.format(fps_controller))
 
-        fps_coils = self.controller.coils.frame_rate.fps
+        fps_coils = self.model.coils.frame_rate.fps
         self.l_coils.config(text='{:4.2f}'.format(fps_coils))
 
         self.after(2000, self.update_fps)
