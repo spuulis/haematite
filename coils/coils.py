@@ -68,11 +68,11 @@ class Coils(threading.Thread):
                 task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
 
             # Waveform generation loop
-            self.time_last = time.time_ns() * 1e-9
+            # self.time_last = time.time_ns() * 1e-9
             while not self._stopper.is_set():
                 time_now = time.time_ns() * 1e-9
-                self.frame_rate.add_dt(time_now - self.time_last)
-                self.time_last = time_now
+                # self.frame_rate.add_dt(time_now - self.time_last)
+                # self.time_last = time_now
 
                 # Set coil voltages (effectively, coil current)
                 self._field = self.waveform.generate(time_now)
@@ -88,12 +88,7 @@ class Coils(threading.Thread):
                         ])
                     )
 
-                # Limit frame rate
-                # time.sleep(max(
-                #     1./config.COILS_FPS - (time.time_ns() * 1e-9 - time_now),
-                #     0,
-                # ))
-                self.frame_rate.throttle(time_now)
+                self.frame_rate.throttle()
 
             # Set current through coils to zero upon exit
             if task_o is not None:

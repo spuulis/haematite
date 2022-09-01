@@ -18,7 +18,6 @@ class Controller(threading.Thread):
 
         self.frame_rate = FrameRate()
         self.frame_rate.set_target_fps(100)
-        self.time_last = None
 
         self.camera = camera
         self.coils = coils
@@ -125,8 +124,6 @@ class Controller(threading.Thread):
 
     def tick(self):
         time_now = time.time_ns()
-        self.frame_rate.add_dt((time_now - self.time_last) * 1.e-9)
-        self.time_last = time_now
 
         self._field = self.coils.field
         self._img, self._measurement = self.read_camera(time_now)
@@ -138,9 +135,8 @@ class Controller(threading.Thread):
         if self.recording:
             self.append_data(self._measurement)
 
-        self.frame_rate.throttle(time_now * 1.e-9)
+        self.frame_rate.throttle()
 
     def run(self):
-        self.time_last = time.time_ns()
         while not self._stopper.is_set():
             self.tick()

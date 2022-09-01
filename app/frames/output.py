@@ -1,5 +1,3 @@
-import time
-
 import cv2
 from PIL import Image, ImageTk
 import tkinter as tk
@@ -45,7 +43,6 @@ class ImageFrame(tk.Frame):
         self.show_frame()
 
     def show_frame(self):
-        time_now = time.time_ns() * 1.e-9
         # Get the latest frame and convert into Image
         img = self.controller.img
         img_height, img_width, _ = img.shape
@@ -65,9 +62,9 @@ class ImageFrame(tk.Frame):
         imgtk = ImageTk.PhotoImage(image=frame)
         self.label.imgtk = imgtk
         self.label.configure(image=imgtk)
-        self.frame_rate.add_time(time_now)
         self.after(
-            int(self.frame_rate.calculate_throttle(time_now) * 1.e3),
+            # tkinter.after requires time in ms
+            int(self.frame_rate.calculate_throttle() * 1.e3),
             self.show_frame,
         )
 
