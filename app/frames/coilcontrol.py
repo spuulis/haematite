@@ -46,6 +46,10 @@ class Controller():
         var_disable.trace_add('write', self.toggle_coils)
         self.variables['boolvar.coils.disable'] = var_disable
 
+        var_disable = tk.BooleanVar(self.parent, name='boolvar.coils.hold')
+        var_disable.trace_add('write', self.toggle_holding)
+        self.variables['boolvar.coils.hold'] = var_disable
+
     def change_parameters(
         self, variable_name: str, index: str = '', mode: str = ''
     ) -> None:
@@ -112,7 +116,24 @@ class Controller():
         self, variable_name: str, index: str = '', mode: str = ''
     ) -> None:
         disabled = self.variables[variable_name].get()
-        self.model.coils.disabled = disabled
+        if disabled is True:
+            self.model.coils.waveform.hold()
+        else:
+            self.model.coils.waveform.release()
+
+        # Redraw changes on the plot
+        self.parent.frame_plot.redraw(
+            self.model.coils.waveform.generate_profile())
+
+    def toggle_holding(
+        self, variable_name: str, index: str = '', mode: str = ''
+    ) -> None:
+        hold = self.variables[variable_name].get()
+        if hold is True:
+            self.model.coils.waveform.hold({'x': 5.e-3, 'y': 5.e-3})
+        else:
+            self.model.coils.waveform.release()
+
         # Redraw changes on the plot
         self.parent.frame_plot.redraw(
             self.model.coils.waveform.generate_profile())
@@ -174,6 +195,12 @@ class CoilRunFrame(tk.LabelFrame):
             variable=self.controller.variables['boolvar.coils.disable']
         ).grid(column=0, row=2, columnspan=2, padx=5, sticky=tk.W)
 
+        self.controller.variables['boolvar.coils.hold'].set(False)
+        tk.Checkbutton(
+            self, text='Hold at 5 mT',
+            variable=self.controller.variables['boolvar.coils.hold']
+        ).grid(column=0, row=3, columnspan=2, padx=5, sticky=tk.W)
+
 
 class CoilPlotFrame(tk.Frame):
     def __init__(self, parent, model):
@@ -192,7 +219,7 @@ class CoilPlotFrame(tk.Frame):
 
         dpi = self.winfo_fpixels('1i')
         self.fig = plt.figure(
-            figsize=(width / dpi, width * 0.3 / dpi),
+            figsize=(width / dpi, width * 0.4 / dpi),
             dpi=dpi,
             facecolor='#BBB',
         )
@@ -209,10 +236,10 @@ class CoilPlotFrame(tk.Frame):
         self.ax.clear()
 
         # Plot the new data
-        self.ax.set_ylim(-5, 5)
+        self.ax.set_ylim(-6, 6)
         self.ax.set_xlim(profile['ts'][0], profile['ts'][-1])
         self.ax.set_xticks(np.arange(profile['ts'][0], profile['ts'][-1] + 1))
-        self.ax.set_yticks(np.arange(-5, 5, 1))
+        self.ax.set_yticks(np.arange(-5, 6, 1))
         self.ax.plot(profile['ts'], profile['xs'] * 1.e3, 'r')
         self.ax.plot(profile['ts'], profile['ys'] * 1.e3, 'b')
 

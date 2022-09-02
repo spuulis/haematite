@@ -44,14 +44,6 @@ class Coils(threading.Thread):
     def stop(self):
         self._stopper.set()
 
-    @property
-    def disabled(self, disabled):
-        return self.waveform.disabled
-
-    @disabled.setter
-    def disabled(self, value):
-        self.waveform.disabled = value
-
     def initialize(self):
         try:
             with nidaqmx.Task() as task_o:
