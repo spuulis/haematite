@@ -68,10 +68,10 @@ class Waveform():
         }
 
     def reset_phase(self):
-        t = time.time_ns()
+        t = time.time_ns() * 1.e-9
         self.master_phase = {
-            'x': self.parameters['x']['freq'] * t % (2 * np.pi),
-            'y': self.parameters['y']['freq'] * t % (2 * np.pi),
+            'x': (self.parameters['x']['freq'] * t),
+            'y': (self.parameters['y']['freq'] * t),
         }
 
     def hold(self, hold_amplitude: dict = {'x': 0., 'y': 0.}):
