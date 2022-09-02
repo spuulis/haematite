@@ -153,26 +153,26 @@ class CoilRunFrame(tk.LabelFrame):
         self.controller = controller
 
         tk.Label(self, text='Waveform').grid(
-            column=0, row=0, padx=5, pady=(0, 0), sticky=tk.W)
+            column=0, row=0, padx=5, pady=(0, 5), sticky=tk.W)
 
         waveforms = ['Sine wave', 'Triangle wave', 'Sawtooth wave']
         self.controller.variables['strvar.coils.function'].set(waveforms[0])
         tk.OptionMenu(
             self, self.controller.variables['strvar.coils.function'],
             *waveforms
-        ).grid(column=0, row=1, padx=5, pady=(0, 5), sticky=tk.W)
+        ).grid(column=1, row=0, padx=5, pady=(0, 5), sticky=tk.W)
 
         self.controller.variables['boolvar.coils.couple'].set(True)
         tk.Checkbutton(
             self, text='Couple coils',
             variable=self.controller.variables['boolvar.coils.couple']
-        ).grid(column=0, row=2, padx=5, sticky=tk.W)
+        ).grid(column=0, row=1, columnspan=2, padx=5, sticky=tk.W)
 
         self.controller.variables['boolvar.coils.disable'].set(False)
         tk.Checkbutton(
             self, text='Disable coils',
             variable=self.controller.variables['boolvar.coils.disable']
-        ).grid(column=0, row=3, padx=5, sticky=tk.W)
+        ).grid(column=0, row=2, columnspan=2, padx=5, sticky=tk.W)
 
 
 class CoilPlotFrame(tk.Frame):
@@ -279,6 +279,11 @@ class CoilParametersFrame(tk.LabelFrame):
             entry.bind('<Return>', lambda event: self.focus_set())
             # Force number format when focus is removed from the entry
             entry.bind('<FocusOut>', self.on_focus_out)
+            # Select text on selection
+            entry.bind(
+                '<FocusIn>',
+                lambda event: event.widget.selection_range(0, tk.END),
+            )
 
         # Disable entries for y coils if coils are coupled
         if coil_name == 'y':
