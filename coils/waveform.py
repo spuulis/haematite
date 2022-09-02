@@ -4,7 +4,7 @@ import numpy as np
 
 
 def sine(
-    t: float, parameters: dict, phase: float = 0., amplitude: float = None
+    t: float, parameters: dict, phase: float = 0., amplitude: float = None,
 ):
     if amplitude is None:
         amplitude = parameters.get('amp', 0.)
@@ -13,7 +13,7 @@ def sine(
 
 
 def triangle(
-    t: float, parameters: dict, phase: float = 0., amplitude: float = None
+    t: float, parameters: dict, phase: float = 0., amplitude: float = None,
 ):
     if amplitude is None:
         amplitude = parameters.get('amp', 0.)
@@ -22,7 +22,7 @@ def triangle(
 
 
 def sawtooth(
-    t: float, parameters: dict, phase: float = 0., amplitude: float = None
+    t: float, parameters: dict, phase: float = 0., amplitude: float = None,
 ):
     if amplitude is None:
         amplitude = parameters.get('amp', 0.)
@@ -47,7 +47,7 @@ class Waveform():
         self.hold_amplitude = {'x': 0., 'y': 0.}
 
     def generate(self, t):
-        if self._hold:
+        if self._hold is True:
             return {
                 't': t,
                 'x': self._function(
@@ -62,16 +62,16 @@ class Waveform():
         return {
             't': t,
             'x': self._function(
-                t, self.parameters['x'], self.master_phase['x']),
+                t, self.parameters['x'], phase=self.master_phase['x']),
             'y': self._function(
-                t, self.parameters['y'], self.master_phase['y']),
+                t, self.parameters['y'], phase=self.master_phase['y']),
         }
 
     def reset_phase(self):
         t = time.time_ns()
         self.master_phase = {
-            'x': self.parameters['x']['freq'] * t,
-            'y': self.parameters['y']['freq'] * t,
+            'x': self.parameters['x']['freq'] * t % (2 * np.pi),
+            'y': self.parameters['y']['freq'] * t % (2 * np.pi),
         }
 
     def hold(self, hold_amplitude: dict = {'x': 0., 'y': 0.}):
