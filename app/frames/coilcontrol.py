@@ -99,18 +99,23 @@ class Controller():
     def toggle_coupling(
         self, variable_name: str, index: str = '', mode: str = ''
     ) -> None:
-        parameters = ['amp', 'freq']
-        for parameter in parameters:
-            self.variables[f'strvar.coils.y_{parameter}'].set(
-                self.variables[f'strvar.coils.x_{parameter}'].get()
-            )
-        self.variables['strvar.coils.x_phase'].set('0')
-        self.variables['strvar.coils.y_phase'].set('90')
+        if self.variables[variable_name].get() is True:
+            parameters = ['amp', 'freq']
+            for parameter in parameters:
+                self.variables[f'strvar.coils.y_{parameter}'].set(
+                    self.variables[f'strvar.coils.x_{parameter}'].get()
+                )
+            self.variables['strvar.coils.x_phase'].set('0')
+            self.variables['strvar.coils.y_phase'].set('90')
 
     def toggle_coils(
         self, variable_name: str, index: str = '', mode: str = ''
     ) -> None:
-        pass
+        disabled = self.variables[variable_name].get()
+        self.model.coils.disabled = disabled
+        # Redraw changes on the plot
+        self.parent.frame_plot.redraw(
+            self.model.coils.waveform.generate_profile())
 
 
 class CoilControlFrame(tk.Frame):

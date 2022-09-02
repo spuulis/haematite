@@ -26,8 +26,11 @@ class Waveform():
             'xs': [],
             'ys': [],
         }
+        self.disabled = False
 
     def generate(self, t):
+        if self.disabled:
+            return {'t': t, 'x': 0., 'y': 0.}
         return {
             't': t,
             'x': self._function(t, self.parameters['x']),
@@ -51,6 +54,12 @@ class Waveform():
         self.parameters = {'x': {}, 'y': {}}
 
     def generate_profile(self, length=3., dt=0.006):
+        if self.disabled:
+            return {
+                'ts': np.array([0, length]),
+                'xs': np.array([0., 0.]),
+                'ys': np.array([0., 0.])
+            }
         ts = np.arange(0, length, dt)
         xs = self._function(ts, self.parameters['x'])
         ys = self._function(ts, self.parameters['y'])

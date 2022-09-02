@@ -44,6 +44,14 @@ class Coils(threading.Thread):
     def stop(self):
         self._stopper.set()
 
+    @property
+    def disabled(self, disabled):
+        return self.waveform.disabled
+
+    @disabled.setter
+    def disabled(self, value):
+        self.waveform.disabled = value
+
     def initialize(self):
         try:
             with nidaqmx.Task() as task_o:
@@ -68,11 +76,8 @@ class Coils(threading.Thread):
                 task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
 
             # Waveform generation loop
-            # self.time_last = time.time_ns() * 1e-9
             while not self._stopper.is_set():
                 time_now = time.time_ns() * 1e-9
-                # self.frame_rate.add_dt(time_now - self.time_last)
-                # self.time_last = time_now
 
                 # Set coil voltages (effectively, coil current)
                 self._field = self.waveform.generate(time_now)
