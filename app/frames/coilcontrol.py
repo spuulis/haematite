@@ -77,7 +77,7 @@ class Controller():
             self.variables[f'strvar.coils.y_{parameter}'].set(strvalue)
 
         # Redraw changes on the plot
-        self.parent.plot_frame.redraw(
+        self.parent.frame_plot.redraw(
             self.model.coils.waveform.generate_profile())
 
     def change_function(
@@ -93,7 +93,7 @@ class Controller():
                 self.model.coils.set_function(waveform.sawtooth)
 
         # Redraw changes on the plot
-        self.parent.plot_frame.redraw(
+        self.parent.frame_plot.redraw(
             self.model.coils.waveform.generate_profile())
 
     def toggle_coupling(
@@ -120,18 +120,18 @@ class CoilControlFrame(tk.Frame):
 
         self.controller = Controller(self, self.model)
 
-        self.plot_frame = CoilPlotFrame(self, self.model)
-        self.plot_frame.grid(
+        self.frame_plot = CoilPlotFrame(self, self.model)
+        self.frame_plot.grid(
             row=0, column=0, columnspan=3, sticky=tk.EW, padx=5, pady=5)
         self.grid_rowconfigure(0)
 
-        self.x_parameters = CoilParametersFrame(
+        self.frame_x_parameters = CoilParametersFrame(
             self, self.model, self.controller, 'x')
-        self.x_parameters.grid(row=1, column=0, padx=5, pady=5)
+        self.frame_x_parameters.grid(row=1, column=0, padx=5, pady=5)
 
-        self.y_parameters = CoilParametersFrame(
+        self.frame_y_parameters = CoilParametersFrame(
             self, self.model, self.controller, 'y')
-        self.y_parameters.grid(row=1, column=1, padx=5, pady=5)
+        self.frame_y_parameters.grid(row=1, column=1, padx=5, pady=5)
 
         self.coilrun = CoilRunFrame(
             self, self.model, self.controller)
@@ -249,18 +249,16 @@ class CoilParametersFrame(tk.LabelFrame):
         }
 
         # Generate label, entry pair for each parameter
+        self.entries = []
         for _id, parameter in self.parameters.items():
             var_name = f'strvar.coils.{coil_name}_{_id}'
             self.controller.variables[var_name].set(parameter['default'])
 
             tk.Label(
-                self, text=parameter['label'],
-                justify='left', anchor='w',
+                self, text=parameter['label'], justify='left', anchor='w',
             ).grid(column=0, row=parameter['row']*2, sticky=tk.W, padx=(2, 5))
 
-            vcmd = (self.register(
-                self.on_validate
-            ), '%P', '%V', '%W')
+            vcmd = (self.register(self.on_validate), '%P', '%V', '%W')
             entry = tk.Entry(
                 self, name=f'{coil_name}_{_id}', width=8,
                 textvariable=self.controller.variables[var_name],
@@ -270,8 +268,24 @@ class CoilParametersFrame(tk.LabelFrame):
                 column=0, row=parameter['row']*2+1, sticky=tk.W,
                 padx=(2, 5), pady=(0, 5),
             )
+            self.entries.append(entry)
+
+            # Remove focus from entry when the return key is pressed
             entry.bind('<Return>', lambda event: self.focus_set())
+            # Force number format when focus is removed from the entry
             entry.bind('<FocusOut>', self.on_focus_out)
+
+        # Disable entries for y coils if coils are coupled
+        if coil_name == 'y':
+            def toggle_enable(variable_name, index, mode):
+                disabled = self.controller.variables[variable_name].get()
+                for entry in self.entries:
+                    if disabled:
+                        entry.config(state='disabled')
+                    else:
+                        entry.config(state='normal')
+            self.controller.variables['boolvar.coils.couple'].trace_add(
+                'write', toggle_enable)
 
     def on_focus_out(self, event):
         strvalue = event.widget.get()
