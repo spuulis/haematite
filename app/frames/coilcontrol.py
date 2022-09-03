@@ -9,6 +9,7 @@ from tkinter import ttk
 
 import coils.waveform as waveform
 from model import Model
+from utils import GridCounter
 
 
 class Controller():
@@ -39,17 +40,17 @@ class Controller():
         var_function.trace_add('write', self.change_function)
         self.variables['strvar.coils.function'] = var_function
 
+        var_mode = tk.StringVar(self.parent, name='strvar.coils.mode')
+        var_mode.trace_add('write', self.change_mode)
+        self.variables['strvar.coils.mode'] = var_mode
+
         var_couple = tk.BooleanVar(self.parent, name='boolvar.coils.couple')
         var_couple.trace_add('write', self.toggle_coupling)
         self.variables['boolvar.coils.couple'] = var_couple
 
-        var_disable = tk.BooleanVar(self.parent, name='boolvar.coils.disable')
-        var_disable.trace_add('write', self.toggle_coils)
-        self.variables['boolvar.coils.disable'] = var_disable
-
-        var_disable = tk.BooleanVar(self.parent, name='boolvar.coils.hold')
-        var_disable.trace_add('write', self.toggle_holding)
-        self.variables['boolvar.coils.hold'] = var_disable
+    def request_redraw(self):
+        self.parent.frame_plot.redraw(
+            self.model.coils.waveform.generate_profile())
 
     def change_parameters(
         self, variable_name: str, index: str = '', mode: str = ''
@@ -82,8 +83,7 @@ class Controller():
             self.variables[f'strvar.coils.y_{parameter}'].set(strvalue)
 
         # Redraw changes on the plot
-        self.parent.frame_plot.redraw(
-            self.model.coils.waveform.generate_profile())
+        self.request_redraw()
 
     def change_function(
         self, variable_name: str, index: str = '', mode: str = ''
@@ -98,8 +98,7 @@ class Controller():
                 self.model.coils.set_function(waveform.sawtooth)
 
         # Redraw changes on the plot
-        self.parent.frame_plot.redraw(
-            self.model.coils.waveform.generate_profile())
+        self.request_redraw()
 
     def toggle_coupling(
         self, variable_name: str, index: str = '', mode: str = ''
@@ -113,31 +112,20 @@ class Controller():
             self.variables['strvar.coils.x_phase'].set('0')
             self.variables['strvar.coils.y_phase'].set('90')
 
-    def toggle_coils(
+    def change_mode(
         self, variable_name: str, index: str = '', mode: str = ''
     ) -> None:
-        disabled = self.variables[variable_name].get()
-        if disabled is True:
-            self.model.coils.waveform.hold()
-        else:
-            self.model.coils.waveform.release()
+        _mode = self.variables[variable_name].get()
+        match _mode:
+            case 'Disabled':
+                self.model.coils.waveform.hold()
+            case 'Waveform':
+                self.model.coils.waveform.release()
+            case 'Hold at 5 mT':
+                self.model.coils.waveform.hold({'x': 5.e-3, 'y': 5.e-3})
 
         # Redraw changes on the plot
-        self.parent.frame_plot.redraw(
-            self.model.coils.waveform.generate_profile())
-
-    def toggle_holding(
-        self, variable_name: str, index: str = '', mode: str = ''
-    ) -> None:
-        hold = self.variables[variable_name].get()
-        if hold is True:
-            self.model.coils.waveform.hold({'x': 5.e-3, 'y': 5.e-3})
-        else:
-            self.model.coils.waveform.release()
-
-        # Redraw changes on the plot
-        self.parent.frame_plot.redraw(
-            self.model.coils.waveform.generate_profile())
+        self.request_redraw()
 
 
 class CoilControlFrame(ttk.Frame):
@@ -174,33 +162,31 @@ class CoilRunFrame(ttk.LabelFrame):
         self.model = model
         self.controller = controller
 
+        gc = GridCounter()
+
         ttk.Label(self, text='Waveform').grid(
-            column=0, row=0, padx=5, pady=(0, 5), sticky=tk.W)
+            column=0, row=gc.get_row(), padx=5, pady=(0, 5), sticky=tk.W)
 
         waveforms = ['Sine wave', 'Triangle wave', 'Sawtooth wave']
         self.controller.variables['strvar.coils.function'].set(waveforms[0])
         ttk.OptionMenu(
             self, self.controller.variables['strvar.coils.function'],
             waveforms[0], *waveforms,
-        ).grid(column=1, row=0, padx=5, pady=(0, 5), sticky=tk.W)
+        ).grid(column=1, row=gc.next_row(), padx=5, pady=(0, 5), sticky=tk.W)
 
         self.controller.variables['boolvar.coils.couple'].set(True)
         ttk.Checkbutton(
             self, text='Couple coils',
             variable=self.controller.variables['boolvar.coils.couple']
-        ).grid(column=0, row=1, columnspan=2, padx=5, sticky=tk.W)
+        ).grid(column=0, row=gc.next_row(), columnspan=2, padx=5, sticky=tk.W)
 
-        self.controller.variables['boolvar.coils.disable'].set(False)
-        ttk.Checkbutton(
-            self, text='Disable coils',
-            variable=self.controller.variables['boolvar.coils.disable']
-        ).grid(column=0, row=2, columnspan=2, padx=5, sticky=tk.W)
-
-        self.controller.variables['boolvar.coils.hold'].set(False)
-        ttk.Checkbutton(
-            self, text='Hold at 5 mT',
-            variable=self.controller.variables['boolvar.coils.hold']
-        ).grid(column=0, row=3, columnspan=2, padx=5, sticky=tk.W)
+        modes = ['Disabled', 'Waveform', 'Hold at 5 mT']
+        self.controller.variables['strvar.coils.mode'].set(modes[0])
+        for mode in modes:
+            ttk.Radiobutton(
+                self, text=mode, value=mode,
+                variable=self.controller.variables['strvar.coils.mode'],
+            ).grid(column=0, row=gc.next_row(), sticky=tk.W)
 
 
 class CoilPlotFrame(ttk.Frame):
