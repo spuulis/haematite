@@ -6,9 +6,9 @@ from tkinter import ttk
 from utils import FrameRate
 
 
-class OutputFrame(tk.Frame):
+class OutputFrame(ttk.Frame):
     def __init__(self, parent, model):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.model = model
 
         self.grid_columnconfigure(0, weight=1)
@@ -27,15 +27,15 @@ class OutputFrame(tk.Frame):
         self.grid_rowconfigure(2, minsize=200)
 
 
-class ImageFrame(tk.Frame):
+class ImageFrame(ttk.Frame):
     def __init__(self, parent, model):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.model = model
 
         self.frame_rate = FrameRate()
         self.frame_rate.set_target_fps(10)
 
-        self.label = tk.Label(self)
+        self.label = ttk.Label(self)
         self.label.grid(row=0, column=0, sticky='NS')
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -69,9 +69,9 @@ class ImageFrame(tk.Frame):
         )
 
 
-class DataFrame(tk.Frame):
+class DataFrame(ttk.Frame):
     def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
 
         self.label = ttk.Label(self, text='Data frame')
         self.label.pack(ipadx=10, ipady=10)

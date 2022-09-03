@@ -1,4 +1,7 @@
+import sys
+
 import tkinter as tk
+from tkinter import ttk
 from tkinter.messagebox import showwarning
 
 from .frames.main import MainFrame, Navbar
@@ -14,6 +17,13 @@ class App(tk.Tk):
         self.geometry('1200x800')
         self.title('Haematite')
         self.resizable(True, True)
+
+        self.style = ttk.Style(self)
+        match sys.platform:
+            case 'darwin':
+                self.style.theme_use('aqua')
+            case 'win32':
+                self.style.theme_use('winnative')
 
         self.navbar = Navbar(self)
         self.config(

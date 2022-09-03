@@ -12,9 +12,9 @@ class Navbar(tk.Menu):
         self.add_cascade(label="File", underline=0, menu=file_menu)
 
 
-class MainFrame(tk.Frame):
+class MainFrame(ttk.Frame):
     def __init__(self, parent, model):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.model = model
 
         self.grid_rowconfigure(0, weight=1)

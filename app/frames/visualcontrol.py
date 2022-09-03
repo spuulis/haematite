@@ -1,11 +1,12 @@
 import json
 
 import tkinter as tk
+from tkinter import ttk
 
 
-class VisualControlFrame(tk.Frame):
+class VisualControlFrame(ttk.Frame):
     def __init__(self, parent, model):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.model = model
 
         self.grid_columnconfigure(0, weight=1)
@@ -17,14 +18,14 @@ class VisualControlFrame(tk.Frame):
             row=0, column=1, padx=5, pady=(0, 5), sticky=tk.NSEW)
 
 
-class CameraControls(tk.LabelFrame):
+class CameraControls(ttk.LabelFrame):
     def __init__(self, parent, model):
-        tk.LabelFrame.__init__(self, parent, text='Camera controls')
+        ttk.LabelFrame.__init__(self, parent, text='Camera controls')
         self.model = model
 
         self.grid_columnconfigure(0, weight=1)
 
-        tk.Label(
+        ttk.Label(
             self,
             text='Exposure time, \u03BCs',
             justify='left',
@@ -33,7 +34,7 @@ class CameraControls(tk.LabelFrame):
         vcmd = (self.register(
             self.validate_exposure_time
         ), '%P', '%V', '%W')
-        tk.Entry(
+        ttk.Entry(
             self,
             textvariable=tk.StringVar(self, value='10000'),
             width=8,
@@ -44,7 +45,7 @@ class CameraControls(tk.LabelFrame):
             padx=5, pady=(0, 5),
         )
 
-        tk.Button(
+        ttk.Button(
             self,
             text='Load calibration',
             command=self.load_calib,
@@ -74,12 +75,12 @@ class CameraControls(tk.LabelFrame):
             self.model.camera.calibrate(calib['mtx'], calib['dist'])
 
 
-class ImageControls(tk.LabelFrame):
+class ImageControls(ttk.LabelFrame):
     def __init__(self, parent, model):
-        tk.LabelFrame.__init__(self, parent, text='Image controls')
+        ttk.LabelFrame.__init__(self, parent, text='Image controls')
         self.model = model
 
-        tk.Checkbutton(self, text='Show markers').grid(
+        ttk.Checkbutton(self, text='Show markers').grid(
             column=0, row=0, padx=5, sticky=tk.NW)
-        tk.Checkbutton(self, text='Draw cubes').grid(
+        ttk.Checkbutton(self, text='Draw cubes').grid(
             column=0, row=1, padx=5, sticky=tk.NW)

@@ -6,9 +6,9 @@ from .filecontrol import FileControlFrame
 from .visualcontrol import VisualControlFrame
 
 
-class ControlFrame(tk.Frame):
+class ControlFrame(ttk.Frame):
     def __init__(self, parent, model):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.model = model
 
         self.grid_columnconfigure(0, weight=1)
@@ -47,9 +47,9 @@ class ControlFrame(tk.Frame):
         ).grid(column=0, row=7, sticky=tk.EW)
 
 
-class FramerateControlFrame(tk.Frame):
+class FramerateControlFrame(ttk.Frame):
     def __init__(self, parent, model):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.model = model
 
         self.grid_columnconfigure(0, minsize=150)

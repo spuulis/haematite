@@ -2,19 +2,19 @@ import tkinter as tk
 from tkinter import ttk
 
 
-class FileControlFrame(tk.Frame):
+class FileControlFrame(ttk.Frame):
     def __init__(self, parent, model):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.model = model
 
         self.grid_columnconfigure(1, weight=1)
 
         ttk.Label(self, text='File name: ').grid(
             row=0, column=0, padx=(5, 0), pady=(5, 0), sticky=tk.W)
-        self.entry = tk.Entry(self)
+        self.entry = ttk.Entry(self)
         self.entry.grid(row=0, column=1, padx=(0, 5), sticky=tk.EW)
 
-        self.button = tk.Button(
+        self.button = ttk.Button(
             self, text="Start recording", width=12,
             command=self.toggle_recording,
         )

@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import tkinter as tk
+from tkinter import ttk
 
 import coils.waveform as waveform
 from model import Model
@@ -12,7 +13,7 @@ from model import Model
 
 class Controller():
     def __init__(
-        self, parent: tk.Frame, model: Model
+        self, parent: ttk.Frame, model: Model
     ) -> None:
         self.parent = parent
         self.model = model
@@ -139,9 +140,9 @@ class Controller():
             self.model.coils.waveform.generate_profile())
 
 
-class CoilControlFrame(tk.Frame):
+class CoilControlFrame(ttk.Frame):
     def __init__(self, parent, model):
-        tk.Frame.__init__(self, parent, relief=tk.RAISED)
+        ttk.Frame.__init__(self, parent)
         self.model = model
 
         self.controller = Controller(self, self.model)
@@ -165,46 +166,46 @@ class CoilControlFrame(tk.Frame):
         self.grid_columnconfigure(2, weight=1)
 
 
-class CoilRunFrame(tk.LabelFrame):
+class CoilRunFrame(ttk.LabelFrame):
     def __init__(
-        self, parent: tk.Frame, model: Model, controller: Controller
+        self, parent: ttk.Frame, model: Model, controller: Controller
     ) -> None:
-        tk.LabelFrame.__init__(self, parent, text='Coil Controls')
+        ttk.LabelFrame.__init__(self, parent, text='Coil Controls')
         self.model = model
         self.controller = controller
 
-        tk.Label(self, text='Waveform').grid(
+        ttk.Label(self, text='Waveform').grid(
             column=0, row=0, padx=5, pady=(0, 5), sticky=tk.W)
 
         waveforms = ['Sine wave', 'Triangle wave', 'Sawtooth wave']
         self.controller.variables['strvar.coils.function'].set(waveforms[0])
-        tk.OptionMenu(
+        ttk.OptionMenu(
             self, self.controller.variables['strvar.coils.function'],
-            *waveforms
+            waveforms[0], *waveforms,
         ).grid(column=1, row=0, padx=5, pady=(0, 5), sticky=tk.W)
 
         self.controller.variables['boolvar.coils.couple'].set(True)
-        tk.Checkbutton(
+        ttk.Checkbutton(
             self, text='Couple coils',
             variable=self.controller.variables['boolvar.coils.couple']
         ).grid(column=0, row=1, columnspan=2, padx=5, sticky=tk.W)
 
         self.controller.variables['boolvar.coils.disable'].set(False)
-        tk.Checkbutton(
+        ttk.Checkbutton(
             self, text='Disable coils',
             variable=self.controller.variables['boolvar.coils.disable']
         ).grid(column=0, row=2, columnspan=2, padx=5, sticky=tk.W)
 
         self.controller.variables['boolvar.coils.hold'].set(False)
-        tk.Checkbutton(
+        ttk.Checkbutton(
             self, text='Hold at 5 mT',
             variable=self.controller.variables['boolvar.coils.hold']
         ).grid(column=0, row=3, columnspan=2, padx=5, sticky=tk.W)
 
 
-class CoilPlotFrame(tk.Frame):
+class CoilPlotFrame(ttk.Frame):
     def __init__(self, parent, model):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.model = model
 
         self.tvalues = []
@@ -247,12 +248,12 @@ class CoilPlotFrame(tk.Frame):
         self.plotcanvas.draw()
 
 
-class CoilParametersFrame(tk.LabelFrame):
+class CoilParametersFrame(ttk.LabelFrame):
     def __init__(
-        self, parent: tk.Frame, model: Model, controller: Controller,
+        self, parent: ttk.Frame, model: Model, controller: Controller,
         coil_name: str
     ) -> None:
-        tk.LabelFrame.__init__(
+        ttk.LabelFrame.__init__(
             self, parent,
             text=f'{coil_name.upper()} Coils',
         )
@@ -286,12 +287,12 @@ class CoilParametersFrame(tk.LabelFrame):
             var_name = f'strvar.coils.{coil_name}_{_id}'
             self.controller.variables[var_name].set(parameter['default'])
 
-            tk.Label(
+            ttk.Label(
                 self, text=parameter['label'], justify='left', anchor='w',
             ).grid(column=0, row=parameter['row']*2, sticky=tk.W, padx=(2, 5))
 
             vcmd = (self.register(self.on_validate), '%P', '%V', '%W')
-            entry = tk.Entry(
+            entry = ttk.Entry(
                 self, name=f'{coil_name}_{_id}', width=8,
                 textvariable=self.controller.variables[var_name],
                 validate='all', validatecommand=vcmd,
