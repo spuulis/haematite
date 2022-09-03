@@ -52,6 +52,29 @@ class Controller():
         self.parent.frame_plot.redraw(
             self.model.coils.waveform.generate_profile())
 
+    def update_all_parameters(self, event: tk.Event) -> None:
+        # Generate a dictionary of values for all parameters
+        parameters = {}
+        for coil_name in ['x', 'y']:
+            parameters[coil_name] = {}
+            for parameter in ['amp', 'freq', 'phase']:
+                value = float(self.variables[
+                    f'strvar.coils.{coil_name}_{parameter}'].get())
+                match parameter:
+                    case 'freq':
+                        value = value * 2 * np.pi   # Hz -> rad/s
+                    case 'amp':
+                        value = value * 1.e-3       # mT -> T
+                    case 'phase':
+                        value = np.deg2rad(value)   # deg -> rad
+                parameters[coil_name][parameter] = value
+
+        # Flush the changes to coils
+        self.model.coils.update_params(parameters)
+
+        # Redraw changes on the plot
+        self.request_redraw()
+
     def change_parameters(
         self, variable_name: str, index: str = '', mode: str = ''
     ) -> None:
@@ -60,30 +83,17 @@ class Controller():
         coil = coil_parameter[0]
         parameter = coil_parameter[2:]
 
-        # Read and format the value to match units
-        strvalue = self.variables[variable_name].get()
-        value = 0.
-        if strvalue != '':
-            value = float(strvalue)
-        match parameter:
-            case 'freq':
-                value = value * 2 * np.pi   # Hz -> rad/s
-            case 'amp':
-                value = value * 1.e-3       # mT -> T
-            case 'phase':
-                value = np.deg2rad(value)   # deg -> rad
-
-        # Update the parameter on coils
-        self.model.coils.update_params({f'{coil}': {f'{parameter}': value}})
+        # If coils are coupled make y mimic x
         if (
             self.variables['boolvar.coils.couple'].get() is True
             and coil == 'x'
-            and parameter != 'phase'
         ):
-            self.variables[f'strvar.coils.y_{parameter}'].set(strvalue)
-
-        # Redraw changes on the plot
-        self.request_redraw()
+            strvalue = self.variables[variable_name].get()
+            if parameter == 'phase':
+                self.variables[f'strvar.coils.y_{parameter}'].set(
+                    str((float(strvalue) + 90) % 360))
+            else:
+                self.variables[f'strvar.coils.y_{parameter}'].set(strvalue)
 
     def change_function(
         self, variable_name: str, index: str = '', mode: str = ''
@@ -109,8 +119,12 @@ class Controller():
                 self.variables[f'strvar.coils.y_{parameter}'].set(
                     self.variables[f'strvar.coils.x_{parameter}'].get()
                 )
-            self.variables['strvar.coils.x_phase'].set('0')
-            self.variables['strvar.coils.y_phase'].set('90')
+            self.variables['strvar.coils.y_phase'].set(
+                str((float(
+                    self.variables['strvar.coils.x_phase'].get()
+                ) + 90) % 360)
+            )
+            self.update_all_parameters(tk.Event())
 
     def change_mode(
         self, variable_name: str, index: str = '', mode: str = ''
@@ -152,6 +166,8 @@ class CoilControlFrame(ttk.Frame):
             self, self.model, self.controller)
         self.coilrun.grid(row=1, column=2, sticky=tk.NSEW, padx=5, pady=5)
         self.grid_columnconfigure(2, weight=1)
+
+        self.controller.update_all_parameters(tk.Event())
 
 
 class CoilRunFrame(ttk.LabelFrame):
@@ -252,12 +268,12 @@ class CoilParametersFrame(ttk.LabelFrame):
         self.parameters = {
             'amp': {
                 'id': 'amp', 'label': 'Amplitude, mT', 'row': 0,
-                'default': '0.00',
+                'default': '1.00',
                 'format': '{:0.2f}',
             },
             'freq': {
                 'id': 'freq', 'label': 'Frequency, Hz', 'row': 1,
-                'default': '0.00',
+                'default': '1.00',
                 'format': '{:0.2f}',
             },
             'phase': {
@@ -290,10 +306,14 @@ class CoilParametersFrame(ttk.LabelFrame):
             self.entries.append(entry)
 
             # Remove focus from entry when the return key is pressed
-            entry.bind('<Return>', lambda event: self.focus_set())
+            entry.bind('<Return>', lambda event: self.focus_set(), add=True)
             # Force number format when focus is removed from the entry
-            entry.bind('<FocusOut>', self.on_focus_out)
-            # Select text on selection
+            entry.bind('<FocusOut>', self.on_focus_out, add=True)
+            # Update parameters when focus is removed from the entry
+            entry.bind(
+                '<FocusOut>', self.controller.update_all_parameters, add=True,
+            )
+            # Select text on entry selection
             entry.bind(
                 '<FocusIn>',
                 lambda event: event.widget.selection_range(0, tk.END),
