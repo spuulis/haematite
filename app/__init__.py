@@ -1,10 +1,8 @@
-import sys
-
 import tkinter as tk
-from tkinter import ttk
 from tkinter.messagebox import showwarning
 
 from .frames.main import MainFrame, Navbar
+from .style import Style
 from visual.camera import Camera
 from coils.coils import Coils
 import coils.waveform
@@ -18,17 +16,10 @@ class App(tk.Tk):
         self.title('Haematite')
         self.resizable(True, True)
 
-        self.style = ttk.Style(self)
-        match sys.platform:
-            case 'darwin':
-                self.style.theme_use('aqua')
-            case 'win32':
-                self.style.theme_use('winnative')
+        self.style = Style(self)
 
         self.navbar = Navbar(self)
-        self.config(
-            menu=self.navbar,
-        )
+        self.config(menu=self.navbar)
 
         self.camera = Camera()
         try:
@@ -38,6 +29,7 @@ class App(tk.Tk):
                 title='Warning',
                 message=f'{err}'
             )
+            pass
 
         self.coils = Coils()
         self.coils.set_function(coils.waveform.sine)
@@ -52,6 +44,7 @@ class App(tk.Tk):
                 title='Warning',
                 message=f'{err}'
             )
+            pass
 
         self.model = Model(self.camera, self.coils)
 

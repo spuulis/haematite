@@ -144,7 +144,7 @@ class Controller():
 
 class CoilControlFrame(ttk.Frame):
     def __init__(self, parent, model):
-        ttk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent, padding=(5, 5, 5, 5))
         self.model = model
 
         self.controller = Controller(self, self.model)
@@ -174,27 +174,25 @@ class CoilRunFrame(ttk.LabelFrame):
     def __init__(
         self, parent: ttk.Frame, model: Model, controller: Controller
     ) -> None:
-        ttk.LabelFrame.__init__(self, parent, text='Coil Controls')
+        ttk.LabelFrame.__init__(
+            self, parent, text='Coil Controls', padding=(5, 5, 5, 5))
         self.model = model
         self.controller = controller
 
         gc = GridCounter()
-
-        ttk.Label(self, text='Waveform').grid(
-            column=0, row=gc.get_row(), padx=5, pady=(0, 5), sticky=tk.W)
 
         waveforms = ['Sine wave', 'Triangle wave', 'Sawtooth wave']
         self.controller.variables['strvar.coils.function'].set(waveforms[0])
         ttk.OptionMenu(
             self, self.controller.variables['strvar.coils.function'],
             waveforms[0], *waveforms,
-        ).grid(column=1, row=gc.next_row(), padx=5, pady=(0, 5), sticky=tk.W)
+        ).grid(column=0, row=gc.next_row(), padx=5, pady=(5, 0), sticky=tk.W)
 
         self.controller.variables['boolvar.coils.couple'].set(True)
         ttk.Checkbutton(
             self, text='Couple coils',
             variable=self.controller.variables['boolvar.coils.couple']
-        ).grid(column=0, row=gc.next_row(), columnspan=2, padx=5, sticky=tk.W)
+        ).grid(column=0, row=gc.next_row(), padx=5, pady=5, sticky=tk.W)
 
         modes = ['Disabled', 'Waveform', 'Hold at 5 mT']
         self.controller.variables['strvar.coils.mode'].set(modes[0])
@@ -202,7 +200,7 @@ class CoilRunFrame(ttk.LabelFrame):
             ttk.Radiobutton(
                 self, text=mode, value=mode,
                 variable=self.controller.variables['strvar.coils.mode'],
-            ).grid(column=0, row=gc.next_row(), sticky=tk.W)
+            ).grid(column=0, row=gc.next_row(), padx=5, sticky=tk.W)
 
 
 class CoilPlotFrame(ttk.Frame):
@@ -256,8 +254,8 @@ class CoilParametersFrame(ttk.LabelFrame):
         coil_name: str
     ) -> None:
         ttk.LabelFrame.__init__(
-            self, parent,
-            text=f'{coil_name.upper()} Coils',
+            self, parent, text=f'{coil_name.upper()} Coils',
+            padding=(5, 5, 5, 5),
         )
         self.parent = parent
         self.model = model
@@ -291,7 +289,7 @@ class CoilParametersFrame(ttk.LabelFrame):
 
             ttk.Label(
                 self, text=parameter['label'], justify='left', anchor='w',
-            ).grid(column=0, row=parameter['row']*2, sticky=tk.W, padx=(2, 5))
+            ).grid(column=0, row=parameter['row']*2, sticky=tk.W, padx=5)
 
             vcmd = (self.register(self.on_validate), '%P', '%V', '%W')
             entry = ttk.Entry(
@@ -301,7 +299,7 @@ class CoilParametersFrame(ttk.LabelFrame):
             )
             entry.grid(
                 column=0, row=parameter['row']*2+1, sticky=tk.W,
-                padx=(2, 5), pady=(0, 5),
+                padx=5, pady=(0, 5),
             )
             self.entries.append(entry)
 

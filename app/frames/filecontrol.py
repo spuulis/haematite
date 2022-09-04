@@ -4,7 +4,7 @@ from tkinter import ttk
 
 class FileControlFrame(ttk.Frame):
     def __init__(self, parent, model):
-        ttk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent, padding=(5, 5, 5, 5))
         self.model = model
 
         self.grid_columnconfigure(1, weight=1)

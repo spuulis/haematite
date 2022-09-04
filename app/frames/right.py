@@ -6,7 +6,7 @@ from tkinter import ttk
 from utils import FrameRate
 
 
-class OutputFrame(ttk.Frame):
+class RightFrame(ttk.Frame):
     def __init__(self, parent, model):
         ttk.Frame.__init__(self, parent)
         self.model = model

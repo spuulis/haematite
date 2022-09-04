@@ -6,7 +6,7 @@ from .filecontrol import FileControlFrame
 from .visualcontrol import VisualControlFrame
 
 
-class ControlFrame(ttk.Frame):
+class LeftFrame(ttk.Frame):
     def __init__(self, parent, model):
         ttk.Frame.__init__(self, parent)
         self.model = model
@@ -14,7 +14,7 @@ class ControlFrame(ttk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
         self.coil_frame = CoilControlFrame(self, self.model)
-        self.coil_frame.grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
+        self.coil_frame.grid(column=0, row=0, sticky=tk.EW)
 
         ttk.Separator(
             master=self,
@@ -22,7 +22,7 @@ class ControlFrame(ttk.Frame):
         ).grid(column=0, row=1, sticky=tk.EW)
 
         self.camera_frame = VisualControlFrame(self, self.model)
-        self.camera_frame.grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
+        self.camera_frame.grid(column=0, row=2, sticky=tk.EW)
 
         ttk.Separator(
             master=self,
@@ -30,7 +30,7 @@ class ControlFrame(ttk.Frame):
         ).grid(column=0, row=3, sticky=tk.EW)
 
         self.file_frame = FileControlFrame(self, self.model)
-        self.file_frame.grid(column=0, row=4, sticky=tk.EW, padx=5, pady=5)
+        self.file_frame.grid(column=0, row=4, sticky=tk.EW)
 
         ttk.Separator(
             master=self,
@@ -39,7 +39,7 @@ class ControlFrame(ttk.Frame):
 
         self.framerate_frame = FramerateControlFrame(self, self.model)
         self.framerate_frame.grid(
-            column=0, row=6, sticky=tk.EW, padx=5, pady=5)
+            column=0, row=6, sticky=tk.EW)
 
         ttk.Separator(
             master=self,
@@ -49,7 +49,7 @@ class ControlFrame(ttk.Frame):
 
 class FramerateControlFrame(ttk.Frame):
     def __init__(self, parent, model):
-        ttk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent, padding=(5, 5, 5, 5))
         self.model = model
 
         self.grid_columnconfigure(0, minsize=150)

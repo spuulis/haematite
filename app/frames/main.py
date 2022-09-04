@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
-from .control import ControlFrame
-from .output import OutputFrame
+from .left import LeftFrame
+from .right import RightFrame
 
 
 class Navbar(tk.Menu):
@@ -19,7 +19,7 @@ class MainFrame(ttk.Frame):
 
         self.grid_rowconfigure(0, weight=1)
 
-        self.control_frame = ControlFrame(self, self.model)
+        self.control_frame = LeftFrame(self, self.model)
         self.control_frame.grid(column=0, row=0, sticky=tk.NSEW)
         self.grid_columnconfigure(
             0,
@@ -31,6 +31,6 @@ class MainFrame(ttk.Frame):
             orient=tk.VERTICAL,
         ).grid(column=1, row=0, sticky=tk.NS)
 
-        self.output_frame = OutputFrame(self, self.model)
+        self.output_frame = RightFrame(self, self.model)
         self.output_frame.grid(column=2, row=0, sticky=tk.NSEW)
         self.grid_columnconfigure(2, weight=1)
