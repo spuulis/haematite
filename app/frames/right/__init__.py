@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import ttk
 
+from .systemcontrol import SystemFrame
 from utils import FrameRate
 
 
@@ -22,8 +23,8 @@ class RightFrame(ttk.Frame):
             orient=tk.HORIZONTAL,
         ).grid(row=1, column=0, sticky=tk.EW)
 
-        self.data_frame = DataFrame(self)
-        self.data_frame.grid(row=2, column=0, sticky=tk.NSEW)
+        self.system_frame = SystemFrame(self, self.model)
+        self.system_frame.grid(row=2, column=0, sticky=tk.NSEW)
         self.grid_rowconfigure(2, minsize=200)
 
 
@@ -67,11 +68,3 @@ class ImageFrame(ttk.Frame):
             int(self.frame_rate.calculate_throttle() * 1.e3),
             self.show_frame,
         )
-
-
-class DataFrame(ttk.Frame):
-    def __init__(self, parent):
-        ttk.Frame.__init__(self, parent)
-
-        self.label = ttk.Label(self, text='Data frame')
-        self.label.pack(ipadx=10, ipady=10)

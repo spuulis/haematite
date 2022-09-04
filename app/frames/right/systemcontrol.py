@@ -3,24 +3,28 @@ import json
 import tkinter as tk
 from tkinter import ttk
 
+from utils import GridCounter
 
-class VisualControlFrame(ttk.Frame):
+
+class SystemFrame(ttk.Frame):
     def __init__(self, parent, model):
-        ttk.Frame.__init__(self, parent, padding=(5, 5, 5, 5))
+        super().__init__(parent, padding=(5, 5, 5, 5))
         self.model = model
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        gc = GridCounter()
+        self.grid_rowconfigure(0, weight=1)
 
         CameraControls(self, self.model).grid(
-            row=0, column=0, padx=5, pady=(0, 5), sticky=tk.NSEW)
-        ImageControls(self, self.model).grid(
-            row=0, column=1, padx=5, pady=(0, 5), sticky=tk.NSEW)
+            column=gc.next_column(), row=0, padx=5, pady=5, sticky=tk.NS)
+
+        FramerateFrame(self, self.model).grid(
+            column=gc.next_column(), row=0, padx=5, pady=5, sticky=tk.NSEW)
+        self.grid_columnconfigure(gc.get_column(), weight=1)
 
 
 class CameraControls(ttk.LabelFrame):
     def __init__(self, parent, model):
-        ttk.LabelFrame.__init__(self, parent, text='Camera controls')
+        super().__init__(parent, text='Camera controls', padding=(5, 5, 5, 5))
         self.model = model
 
         self.grid_columnconfigure(0, weight=1)
@@ -75,12 +79,37 @@ class CameraControls(ttk.LabelFrame):
             self.model.camera.calibrate(calib['mtx'], calib['dist'])
 
 
-class ImageControls(ttk.LabelFrame):
+class FramerateFrame(ttk.LabelFrame):
     def __init__(self, parent, model):
-        ttk.LabelFrame.__init__(self, parent, text='Image controls')
+        super().__init__(
+            parent, text='System statistics', padding=(5, 5, 5, 5))
         self.model = model
 
-        ttk.Checkbutton(self, text='Show markers').grid(
-            column=0, row=0, padx=5, sticky=tk.NW)
-        ttk.Checkbutton(self, text='Draw cubes').grid(
-            column=0, row=1, padx=5, sticky=tk.NW)
+        self.grid_columnconfigure(0, minsize=150)
+        self.grid_columnconfigure(1, weight=1)
+
+        ttk.Label(self, text='Controller fps').grid(
+            row=0, column=0, padx=5, sticky=tk.W)
+        self.l_controller = ttk.Label(self, text='???.??')
+        self.l_controller.grid(row=0, column=1, padx=5, sticky=tk.W)
+
+        ttk.Label(self, text='Image fps').grid(
+            row=1, column=0, padx=5, sticky=tk.W)
+        self.l_image = ttk.Label(self, text='???.??')
+        self.l_image.grid(row=1, column=1, padx=5, sticky=tk.W)
+
+        ttk.Label(self, text='Coils fps').grid(
+            row=2, column=0, padx=5, sticky=tk.W)
+        self.l_coils = ttk.Label(self, text='???.??')
+        self.l_coils.grid(row=2, column=1, padx=5, sticky=tk.W)
+
+        self.after(1000, self.update_fps)
+
+    def update_fps(self):
+        fps_controller = self.model.frame_rate.fps
+        self.l_controller.config(text='{:4.2f}'.format(fps_controller))
+
+        fps_coils = self.model.coils.frame_rate.fps
+        self.l_coils.config(text='{:4.2f}'.format(fps_coils))
+
+        self.after(2000, self.update_fps)

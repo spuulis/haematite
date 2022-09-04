@@ -90,8 +90,10 @@ class Controller():
         ):
             strvalue = self.variables[variable_name].get()
             if parameter == 'phase':
-                self.variables[f'strvar.coils.y_{parameter}'].set(
-                    str((float(strvalue) + 90) % 360))
+                value = 0.
+                if strvalue != '':
+                    value = (float(strvalue) + 90) % 360
+                self.variables[f'strvar.coils.y_{parameter}'].set(str(value))
             else:
                 self.variables[f'strvar.coils.y_{parameter}'].set(strvalue)
 

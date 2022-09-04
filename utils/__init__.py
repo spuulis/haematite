@@ -44,8 +44,8 @@ class FrameRate():
 
 class GridCounter():
     def __init__(self) -> None:
-        self.row = 0
-        self.column = 0
+        self.row = -1
+        self.column = -1
 
     def get_row(self) -> int:
         return self.row
@@ -53,11 +53,11 @@ class GridCounter():
     def get_column(self) -> int:
         return self.column
 
-    def next_row(self, row_span: int = 1) -> int:
+    def next_row(self) -> int:
         self.column = 0
-        self.row += row_span
-        return self.row - row_span
+        self.row += 1
+        return self.row
 
-    def next_column(self, column_span: int = 1) -> int:
-        self.column += column_span
-        return self.column - column_span
+    def next_column(self) -> int:
+        self.column += 1
+        return self.column
