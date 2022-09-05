@@ -24,9 +24,5 @@ class LeftFrame(ttk.Frame):
         ).grid(column=0, row=gc.next_row(), sticky=tk.EW)
 
         self.file_frame = ExperimentFrame(self, self.model)
-        self.file_frame.grid(column=0, row=gc.next_row(), sticky=tk.EW)
-
-        ttk.Separator(
-            master=self,
-            orient=tk.HORIZONTAL,
-        ).grid(column=0, row=gc.next_row(), sticky=tk.EW)
+        self.file_frame.grid(column=0, row=gc.next_row(), sticky=tk.NSEW)
+        self.grid_rowconfigure(gc.get_row(), weight=1)

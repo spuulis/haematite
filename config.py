@@ -1,5 +1,6 @@
 import cv2
 
+
 # Calibration board parameters
 CHESSBOARD_DIM = (6, 5)     # Number of corners (width, height)
 CHESSBOARD_SIZE = 10e-3     # Side length of one square in meters (SI)
@@ -7,13 +8,13 @@ CHESSBOARD_SIZE = 10e-3     # Side length of one square in meters (SI)
 
 # Coil parameters
 COILS_MAX_CURRENT = 5.
-COILS_FPS = 60
+COILS_FPS = 1000
 
 COILS_NAME_OX = 'Dev1/ao1'
 COILS_NAME_OY = 'Dev1/ao0'
 
-COILS_T_TO_V_X = 629.6296296
-COILS_T_TO_V_Y = 649.7725796
+COILS_T_TO_V_X = 630.3
+COILS_T_TO_V_Y = 656.1
 
 
 # Marker parameters
@@ -80,3 +81,9 @@ CUBE_MARKER_POSITIONS = [
         [-MARKER_SIZE / 2, -MARKER_SIZE / 2, CUBE_SIZE / 2],
     ],
 ]
+
+
+# Data parameters
+DATA_PATH = './data/'
+CALIBRATION_PATH = DATA_PATH + 'calibration/'
+EXPERIMENT_PATH = DATA_PATH + 'experiments/'

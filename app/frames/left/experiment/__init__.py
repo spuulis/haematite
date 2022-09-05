@@ -27,30 +27,16 @@ class ExperimentFrame(ttk.Frame):
             sticky=tk.W,
         )
         self.entry = ttk.Entry(self)
-        self.entry.grid(row=gc.get_row(), column=1, sticky=tk.EW)
-
-        self.button = ttk.Button(
-            self, text="Start recording", width=12,
-            command=self.toggle_recording,
+        self.entry.grid(
+            row=gc.get_row(), column=1, padx=(0, 10), pady=(10, 0),
+            sticky=tk.EW,
         )
-        self.button.grid(row=gc.get_row(), column=2, padx=10, sticky=tk.EW)
 
         ExperimentControl(self, self.model, self.controller).grid(
-            row=gc.next_row(), column=0, columnspan=3, sticky=tk.EW,
+            row=gc.next_row(), column=0, columnspan=2, pady=(10, 0),
+            sticky=tk.NSEW,
         )
-
-    def toggle_recording(self):
-        print(self.model.recording)
-        if not self.model.recording:
-            # Commence recording
-            self.model.start_recording()
-            self.button.config(text='Stop recording')
-        else:
-            # Stop recording
-            filename = self.entry.get()
-            self.model.stop_recording(filename)
-            self.button.config(text='Start recording')
-        return True
+        self.grid_rowconfigure(gc.get_row(), weight=1)
 
 
 class ExperimentControl(ttk.Notebook):
