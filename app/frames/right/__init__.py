@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from .systemcontrol import SystemFrame
+import config
 from utils import FrameRate
 
 
@@ -34,10 +35,10 @@ class ImageFrame(ttk.Frame):
         self.model = model
 
         self.frame_rate = FrameRate()
-        self.frame_rate.set_target_fps(10)
+        self.frame_rate.set_target_fps(config.IMAGE_FPS)
 
-        self.label = ttk.Label(self)
-        self.label.grid(row=0, column=0, sticky='NS')
+        self.label = tk.Label(self)
+        self.label.grid(row=0, column=0, sticky=tk.NS)
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -58,13 +59,15 @@ class ImageFrame(ttk.Frame):
                 self.winfo_height(),
                 max(int(self.winfo_width() / img_width * img_height), 1),
             ),
-        ))
+        ), Image.NEAREST)
+
         # Convert image to PhotoImage
         imgtk = ImageTk.PhotoImage(image=frame)
         self.label.imgtk = imgtk
         self.label.configure(image=imgtk)
+
         self.after(
             # tkinter.after requires time in ms
             int(self.frame_rate.calculate_throttle() * 1.e3),
-            self.show_frame,
+            self.show_frame
         )

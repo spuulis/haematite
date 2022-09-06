@@ -87,3 +87,14 @@ CUBE_MARKER_POSITIONS = [
 DATA_PATH = './data/'
 CALIBRATION_PATH = DATA_PATH + 'calibration/'
 EXPERIMENT_PATH = DATA_PATH + 'experiments/'
+
+
+# Image parameters
+IMAGE_FPS = 30
+IMAGE_SCALE = 0.2
+
+
+# Coil profile parameters
+PROFILE_LENGTH = 3.
+PROFILE_RESOLUTION = 0.006
+PROFILE_AMPLITUDE = 6.

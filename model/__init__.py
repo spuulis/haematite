@@ -7,6 +7,7 @@ import cv2
 from .experiment import Experiment
 from .experiment.cubes import CubeExperiment
 from coils.coils import Coils
+import config
 from utils import FrameRate
 from visual.camera import Camera
 
@@ -59,7 +60,7 @@ class Model(threading.Thread):
             time_now, self._field, image, self.camera.mtx, self.camera.dist)
 
         # Rescale the image for drawing on canvas
-        scale = 0.2
+        scale = config.IMAGE_SCALE
         image = cv2.resize(
             image, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
         # Append drawings on the image

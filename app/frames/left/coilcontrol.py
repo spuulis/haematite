@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import coils.waveform as waveform
+import config
 from model import Model
 from utils import GridCounter
 
@@ -210,26 +211,22 @@ class CoilPlotFrame(ttk.Frame):
         ttk.Frame.__init__(self, parent)
         self.model = model
 
-        self.tvalues = []
-        self.xvalues = []
-        self.yvalues = []
-
+        # Generate figure
         mpl.style.use('ggplot')
         width = 500
-        # For some reason on MacOS the plot is twice as big
         if sys.platform == 'darwin':
-            width /= 2
-
+            width /= 2  # For some reason on MacOS the plot is twice as big
         dpi = self.winfo_fpixels('1i')
         self.fig = plt.figure(
             figsize=(width / dpi, width * 0.4 / dpi),
             dpi=dpi,
-            facecolor='#BBB',
         )
 
+        # Configure axes
         self.ax = self.fig.add_axes([0, 0, 1, 1])
         self.ax.set_axis_off()
 
+        # Create visual plot
         self.plotcanvas = FigureCanvasTkAgg(self.fig, self)
         self.plotcanvas.get_tk_widget().grid(column=0, row=0)
         self.grid_columnconfigure(0, weight=1)
@@ -239,10 +236,11 @@ class CoilPlotFrame(ttk.Frame):
         self.ax.clear()
 
         # Plot the new data
-        self.ax.set_ylim(-6, 6)
-        self.ax.set_xlim(profile['ts'][0], profile['ts'][-1])
-        self.ax.set_xticks(np.arange(profile['ts'][0], profile['ts'][-1] + 1))
-        self.ax.set_yticks(np.arange(-5, 6, 1))
+        self.ax.set_ylim(-config.PROFILE_AMPLITUDE, config.PROFILE_AMPLITUDE)
+        self.ax.set_xlim(0, config.PROFILE_LENGTH)
+        self.ax.set_xticks(np.arange(0, config.PROFILE_LENGTH + 1))
+        self.ax.set_yticks(
+            np.arange(-config.PROFILE_AMPLITUDE, config.PROFILE_AMPLITUDE, 1))
         self.ax.plot(profile['ts'], profile['xs'] * 1.e3, 'r')
         self.ax.plot(profile['ts'], profile['ys'] * 1.e3, 'b')
 

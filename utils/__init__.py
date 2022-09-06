@@ -2,8 +2,9 @@ import time
 
 
 class FrameRate():
-    def __init__(self, weight=2., target_dt=0.):
+    def __init__(self, weight=10., target_dt=0.):
         self.dt = 0
+        self.display_dt = 0
         self.weight = weight
         self.target_dt = None
         self.set_target_dt(target_dt)
@@ -12,7 +13,10 @@ class FrameRate():
         self.sleep = 0.
 
     def add_dt(self, dt):
-        self.dt = (dt + self.weight * self.dt) / (1 + self.weight)
+        self.dt = dt
+        self.display_dt = (
+            (dt + self.weight * self.display_dt) / (1 + self.weight)
+        )
 
     def add_time(self):
         time_now = time.time_ns() * 1.e-9
@@ -31,15 +35,16 @@ class FrameRate():
     def set_target_dt(self, dt):
         self.target_dt = dt
         self.dt = self.target_dt
+        self.display_dt = self.target_dt
 
     def set_target_fps(self, fps):
         self.set_target_dt(1. / fps)
 
     @property
     def fps(self):
-        if self.dt == 0:
+        if self.display_dt == 0:
             return 0.
-        return 1. / self.dt
+        return 1. / self.display_dt
 
 
 class GridCounter():
