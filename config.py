@@ -6,6 +6,10 @@ CHESSBOARD_DIM = (6, 5)     # Number of corners (width, height)
 CHESSBOARD_SIZE = 10e-3     # Side length of one square in meters (SI)
 
 
+# Camera paramters
+CAMERA_EXPOSURE_TIME = 10000
+
+
 # Model paramters
 MODEL_FPS = 90
 

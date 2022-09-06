@@ -47,11 +47,13 @@ class Camera():
         if self.camera is not None:
             self.camera.StopGrabbing()
 
-    def grab(self):
+    def grab(self) -> tuple[bool, np.ndarray]:
         img = None
         if self.camera is not None:
             grabResult = self.camera.RetrieveResult(
                 5000, pylon.TimeoutHandling_ThrowException)
+            if grabResult is False:
+                return False, None
             image = self.converter.Convert(grabResult)
             img = image.GetArray()
             grabResult.Release()
@@ -59,4 +61,4 @@ class Camera():
             img = np.ones(
                 (300, 500, 3)) * 255 / 8 * (2 + np.sin(time.time_ns() * 3.e-9))
             img = img.astype(np.uint8)
-        return img
+        return True, img

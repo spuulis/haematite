@@ -53,23 +53,26 @@ class Model(threading.Thread):
         # Get time, field in the coils, and image from the camera
         time_now = time.time_ns()
         self._field = self.coils.field
-        image = self.camera.grab()
+        ret, image = self.camera.grab()
 
-        # Do measurements on the image
-        self.experiment.measure(
-            time_now, self._field, image, self.camera.mtx, self.camera.dist)
+        if ret is True:
+            # Do measurements on the image
+            self.experiment.measure(
+                time_now, self._field, image, self.camera.mtx,
+                self.camera.dist,
+            )
 
-        # Rescale the image for drawing on canvas
-        scale = config.IMAGE_SCALE
-        image = cv2.resize(
-            image, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
-        # Append drawings on the image
-        self.experiment.draw(
-            time_now, self._field, image, self.camera.mtx, self.camera.dist,
-            scale,
-        )
-        # Save image as the current one
-        self._img = image
+            # Rescale the image for drawing on canvas
+            scale = config.IMAGE_SCALE
+            image = cv2.resize(
+                image, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
+            # Append drawings on the image
+            self.experiment.draw(
+                time_now, self._field, image, self.camera.mtx,
+                self.camera.dist, scale,
+            )
+            # Save image as the current one
+            self._img = image
 
         # Force specified framerate
         self.frame_rate.throttle()

@@ -311,11 +311,11 @@ class CoilParametersFrame(ttk.LabelFrame):
             entry.bind(
                 '<FocusOut>', self.controller.update_all_parameters, add=True,
             )
-            # Select text on entry selection
-            entry.bind(
-                '<FocusIn>',
-                lambda event: event.widget.selection_range(0, tk.END),
-            )
+            # # Select text on entry selection
+            # entry.bind(
+            #     '<FocusIn>',
+            #     lambda event: event.widget.selection_range(0, tk.END),
+            # )
 
         # Disable entries for y coils if coils are coupled
         if coil_name == 'y':

@@ -2,7 +2,9 @@ import json
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import showwarning
 
+import config
 from utils import GridCounter
 
 
@@ -38,16 +40,23 @@ class CameraControls(ttk.LabelFrame):
         vcmd = (self.register(
             self.validate_exposure_time
         ), '%P', '%V', '%W')
-        ttk.Entry(
+        self.var_camexpt = tk.StringVar(
+            self, name='strvar.system.camexpt')
+        self.var_camexpt.set(config.CAMERA_EXPOSURE_TIME)
+        self.entry_camexpt = ttk.Entry(
             self,
-            textvariable=tk.StringVar(self, value='10000'),
+            textvariable=self.var_camexpt,
             width=8,
             validate='all',
             validatecommand=vcmd,
-        ).grid(
+        )
+        self.entry_camexpt.grid(
             column=0, row=1, sticky=tk.W,
             padx=5, pady=(0, 5),
         )
+        self.entry_camexpt.bind(
+            '<Return>', lambda event: self.focus_set(), add=True)
+        self.entry_camexpt.bind('<FocusOut>', self.set_exposure_time, add=True)
 
         ttk.Button(
             self,
@@ -56,27 +65,30 @@ class CameraControls(ttk.LabelFrame):
         ).grid(row=2, column=0, padx=5, pady=(0, 5), sticky=tk.NW)
 
     def validate_exposure_time(self, value, reason, widget_name):
-        match reason:
-            case 'focusin':
-                pass
-            case 'focusout':
-                v = int(value)
-                self.model.camera.set_exposure_time(v)
-            case 'key':
-                if value == '':
-                    return True
-                try:
-                    _ = int(value)
-                except ValueError:
-                    return False
-            case 'forced':
-                pass
+        if value != '':
+            try:
+                _ = int(value)
+            except ValueError:
+                return False
         return True
 
+    def set_exposure_time(self, event: tk.Event):
+        strvalue = self.var_camexpt.get()
+        value = 0
+        if strvalue != '':
+            value = int(strvalue)
+        self.model.camera.set_exposure_time(value)
+
     def load_calib(self):
-        with open('calibration.json', 'r') as json_file:
-            calib = json.load(json_file)
-            self.model.camera.calibrate(calib['mtx'], calib['dist'])
+        try:
+            with open('calibration.json', 'r') as json_file:
+                calib = json.load(json_file)
+                self.model.camera.calibrate(calib['mtx'], calib['dist'])
+        except FileNotFoundError as err:
+            showwarning(
+                title='Warning',
+                message=f'Camera could not be calibrated:\n\n{err}'
+            )
 
 
 class FramerateFrame(ttk.LabelFrame):
