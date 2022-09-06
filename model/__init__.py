@@ -19,7 +19,7 @@ class Model(threading.Thread):
         self._stopper = threading.Event()
 
         self.frame_rate = FrameRate()
-        self.frame_rate.set_target_fps(100)
+        self.frame_rate.set_target_fps(config.MODEL_FPS)
 
         self.camera = camera
         self.coils = coils

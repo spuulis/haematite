@@ -6,9 +6,13 @@ CHESSBOARD_DIM = (6, 5)     # Number of corners (width, height)
 CHESSBOARD_SIZE = 10e-3     # Side length of one square in meters (SI)
 
 
+# Model paramters
+MODEL_FPS = 90
+
+
 # Coil parameters
 COILS_MAX_CURRENT = 5.
-COILS_FPS = 1000
+COILS_FPS = 900
 
 COILS_NAME_OX = 'Dev1/ao1'
 COILS_NAME_OY = 'Dev1/ao0'

@@ -11,6 +11,7 @@ class FrameRate():
 
         self.last_time = None
         self.sleep = 0.
+        self.display_sleep = 0.
 
     def add_dt(self, dt):
         self.dt = dt
@@ -30,6 +31,9 @@ class FrameRate():
     def calculate_throttle(self):
         self.add_time()
         self.sleep = max(0., self.sleep + self.target_dt - self.dt)
+        self.display_sleep = (
+            (self.sleep + self.weight * self.display_sleep) / (1 + self.weight)
+        )
         return self.sleep
 
     def set_target_dt(self, dt):
@@ -45,6 +49,10 @@ class FrameRate():
         if self.display_dt == 0:
             return 0.
         return 1. / self.display_dt
+    
+    @property
+    def usage(self):
+        return 1. - self.display_sleep / self.target_dt
 
 
 class GridCounter():
@@ -59,7 +67,7 @@ class GridCounter():
         return self.column
 
     def next_row(self) -> int:
-        self.column = 0
+        self.column = -1
         self.row += 1
         return self.row
 
