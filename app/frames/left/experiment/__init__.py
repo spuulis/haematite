@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from .calibrate import Calibrate
 from .capture import Capture
 from .cubes import Cubes
 from .phases import Phases
@@ -47,6 +48,10 @@ class ExperimentControl(ttk.Notebook):
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
+
+        self.calibrate_exp = Calibrate(self, self.model)
+        self.calibrate_exp.grid(row=0, column=0, sticky=tk.NSEW)
+        self.add(self.calibrate_exp, text='Calibrate')
 
         self.capture_exp = Capture(self, self.model)
         self.capture_exp.grid(row=0, column=0, sticky=tk.NSEW)

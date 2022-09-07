@@ -38,12 +38,6 @@ class FrameRate():
     def calculate_throttle(self):
         self.add_time()
         sleep = max(0., self.target_dt - self.dt)
-        # print((
-        #     f'{self.dt} '
-        #     f'{self.target_dt} '
-        #     f'{sleep} '
-        #     f'{self.fps_dt} '
-        # ))
         return sleep
 
     def set_target_dt(self, dt):
