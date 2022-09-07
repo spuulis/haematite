@@ -45,6 +45,8 @@ class ImageFrame(ttk.Frame):
         self.show_frame()
 
     def show_frame(self):
+        self.frame_rate.begin()
+
         # Get the latest frame and convert into Image
         img = self.model.img
         img_height, img_width, _ = img.shape
