@@ -13,7 +13,7 @@ class CalibrateExperiment(Experiment):
         self.corners = None
         self.calibrator = None
         self.image = None
-        
+
         self.calibration_data = {}
 
     def measure(
