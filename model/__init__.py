@@ -6,6 +6,7 @@ import cv2
 
 from .experiment import Experiment
 from .experiment.cubes import CubeExperiment
+from .experiment.calibrate import CalibrateExperiment
 from coils.coils import Coils
 import config
 from utils import FrameRate
@@ -34,7 +35,10 @@ class Model(threading.Thread):
 
     def change_experiment(self, experiment_name: str) -> None:
         match experiment_name:
-            case 'cubes':
+            case 'Calibrate':
+                self.experiment = CalibrateExperiment()
+                self.experiment.initialize_chessboard(0.5, (7, 10))
+            case 'Cubes':
                 self.experiment = CubeExperiment()
             case _:
                 raise Exception(f'''

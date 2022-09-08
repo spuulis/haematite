@@ -5,17 +5,22 @@ from .calibrate import Calibrate
 from .capture import Capture
 from .cubes import Cubes
 from .phases import Phases
+from model import Model
 from utils import GridCounter
 
 
 class Controller():
-    def __init__(self, parent, model):
+    def __init__(self, parent: tk.Widget, model: Model) -> None:
         self.parent = parent
         self.model = model
 
+    def change_experiment(self, event: tk.Event) -> None:
+        experiment_name = event.widget.tab(event.widget.select(), 'text')
+        self.model.change_experiment(experiment_name)
+
 
 class ExperimentFrame(ttk.Frame):
-    def __init__(self, parent, model):
+    def __init__(self, parent: tk.Widget, model: Model) -> None:
         ttk.Frame.__init__(self, parent)
         self.model = model
         self.controller = Controller(self, self.model)
@@ -41,7 +46,9 @@ class ExperimentFrame(ttk.Frame):
 
 
 class ExperimentControl(ttk.Notebook):
-    def __init__(self, parent, model, controller):
+    def __init__(
+        self, parent: tk.Widget, model: Model, controller: Controller,
+    ) -> None:
         super().__init__(parent)
         self.model = model
         self.controller = controller
@@ -64,3 +71,8 @@ class ExperimentControl(ttk.Notebook):
         self.phases_exp = Phases(self, self.model)
         self.phases_exp.grid(row=0, column=0, sticky=tk.NSEW)
         self.add(self.phases_exp, text='Phases')
+
+        self.bind(
+            '<<NotebookTabChanged>>', self.controller.change_experiment,
+            add=True,
+        )
