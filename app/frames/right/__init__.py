@@ -45,8 +45,6 @@ class ImageFrame(ttk.Frame):
         self.show_frame()
 
     def show_frame(self):
-        self.frame_rate.begin()
-
         # Get the latest frame and convert into Image
         img = self.model.img
         img_height, img_width, _ = img.shape
@@ -70,6 +68,6 @@ class ImageFrame(ttk.Frame):
 
         self.after(
             # tkinter.after requires time in ms
-            int(self.frame_rate.calculate_throttle() * 1.e3),
-            self.show_frame
+            int(self.frame_rate.imitate_throttle() * 1.e3),
+            self.show_frame,
         )

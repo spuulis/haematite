@@ -56,7 +56,8 @@ class Model(threading.Thread):
     def tick(self):
         # Get time, field in the coils, and image from the camera
         time_now = time.time_ns()
-        self._field = self.coils.field
+        # TODO: Replace the following with actual reading from coils
+        self._field = {'x': 0., 'y': 0.}
         ret, image = self.camera.grab()
 
         if ret is True:

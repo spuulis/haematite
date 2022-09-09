@@ -1,40 +1,37 @@
-import time
-
 import numpy as np
 
 
 def sine(
-    t: float, parameters: dict, phase: float = 0., amplitude: float = None,
+    t: float, parameters: dict, amplitude: float = None,
 ):
     if amplitude is None:
         amplitude = parameters.get('amp', 0.)
     return amplitude * np.sin(
-        parameters.get('freq', 0.) * t - parameters.get('phase', 0.) - phase)
+        parameters.get('freq', 0.) * t - parameters.get('phase', 0.))
 
 
 def triangle(
-    t: float, parameters: dict, phase: float = 0., amplitude: float = None,
+    t: float, parameters: dict, amplitude: float = None,
 ):
     if amplitude is None:
         amplitude = parameters.get('amp', 0.)
     return 2 * amplitude / np.pi * np.arcsin(np.sin(
-        parameters.get('freq', 0.) * t - parameters.get('phase', 0.) - phase))
+        parameters.get('freq', 0.) * t - parameters.get('phase', 0.)))
 
 
 def sawtooth(
-    t: float, parameters: dict, phase: float = 0., amplitude: float = None,
+    t: float, parameters: dict, amplitude: float = None,
 ):
     if amplitude is None:
         amplitude = parameters.get('amp', 0.)
     return 2 * amplitude / np.pi * np.arctan(np.tan(
-        parameters.get('freq', 0.) * t - parameters.get('phase', 0.) - phase))
+        parameters.get('freq', 0.) * t - parameters.get('phase', 0.)))
 
 
 class Waveform():
     def __init__(self):
         # Function arguments and function
         self.parameters = {'x': {}, 'y': {}}
-        self.master_phase = {'x': 0., 'y': 0.}
         self._function = lambda t, args: 0
 
         self.profile = {
@@ -46,32 +43,29 @@ class Waveform():
         self._hold = False
         self.hold_amplitude = {'x': 0., 'y': 0.}
 
-    def generate(self, t):
+    def generate(self, sample_rate: int):
         if self._hold is True:
+            ts = [0., 1.]
             return {
-                't': t,
-                'x': self._function(
-                    0., self.parameters['x'],
+                'ts': ts,
+                'xs': self._function(
+                    ts, self.parameters['x'],
                     amplitude=self.hold_amplitude['x']
                 ),
-                'y': self._function(
-                    0., self.parameters['y'],
+                'ys': self._function(
+                    ts, self.parameters['y'],
                     amplitude=self.hold_amplitude['y']
                 ),
             }
+        period = 2 * np.pi / self.parameters['x']
+        ts = np.linspace(
+            0, period, num=int(sample_rate * period), endpoint=False)
         return {
-            't': t,
-            'x': self._function(
-                t, self.parameters['x'], phase=self.master_phase['x']),
-            'y': self._function(
-                t, self.parameters['y'], phase=self.master_phase['y']),
-        }
-
-    def reset_phase(self):
-        t = time.time_ns() * 1.e-9
-        self.master_phase = {
-            'x': (self.parameters['x']['freq'] * t),
-            'y': (self.parameters['y']['freq'] * t),
+            'ts': ts,
+            'xs': self._function(
+                ts, self.parameters['x']),
+            'ys': self._function(
+                ts, self.parameters['y']),
         }
 
     def hold(self, hold_amplitude: dict = {'x': 0., 'y': 0.}):
@@ -79,7 +73,6 @@ class Waveform():
         self._hold = True
 
     def release(self):
-        self.reset_phase()
         self._hold = False
 
     def set_function(self, _function):

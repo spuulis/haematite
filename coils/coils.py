@@ -1,13 +1,12 @@
-from contextlib import nullcontext
 import time
 
 import nidaqmx
+from nidaqmx.constants import AcquisitionType, RegenerationMode
+from nidaqmx.stream_writers import AnalogMultiChannelWriter
 import numpy as np
-import threading
 
 import config
 from coils.waveform import Waveform
-from utils import FrameRate
 
 
 def turn_off():
@@ -20,73 +19,59 @@ def turn_off():
         task_o.write([0, 0])
 
 
-class Coils(threading.Thread):
+class Coils():
     def __init__(self):
-        threading.Thread.__init__(self)
-        self.daemon = True
-
-        self.frame_rate = FrameRate()
-        self.frame_rate.set_target_fps(config.COILS_FPS)
-        self.time_last = None
-
         self.waveform = Waveform()
         self._field = {'x': 0, 'y': 0, 't': time.time_ns()}
-        self.initialized = False
-
-        self._stopper = threading.Event()
+        self.task_o = None
+        self.writer = None
 
     def update_params(self, new_params, override=False):
         self.waveform.update_parameters(new_params, override)
+        self.write_to_coils()
 
     def set_function(self, func):
         self.waveform.set_function(func)
-
-    def stop(self):
-        self._stopper.set()
+        self.write_to_coils()
 
     def initialize(self):
         try:
-            with nidaqmx.Task() as task_o:
-                task_o = nidaqmx.Task()
-                # Define voltage output channels for coil control ([X, Y])
-                task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OX)
-                task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
+            self.task_o = nidaqmx.Task()
+            # Define voltage output channels for coil control ([X, Y])
+            self.task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OX)
+            self.task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
+            self.task_o.ao_channels.all.ao_max = config.COILS_MAX_CURRENT
+            self.task_o.ao_channels.all.ao_min = -config.COILS_MAX_CURRENT
+            # Set up timing for the DAQmx output task
+            self.task.timing.cfg_samp_clk_timing(
+                config.COILS_SAMPLE_RATE,
+                sample_mode=AcquisitionType.CONTINUOUS,
+            )
+            # Configure stream so that the values outputted are looped
+            self.task_o.out_stream.regen_mode = (
+                RegenerationMode.ALLOW_REGENERATION)
+            # Create the writer
+            self.writer = AnalogMultiChannelWriter(
+                self.task_o.out_stream, auto_start=False)
         except Exception as e:
             raise Exception(f"Coils could not be initialized:\n\n{e}")
-        else:
-            self.initialized = True
 
-    @property
-    def field(self):
-        return self._field.copy()
+    def stop(self):
+        if self.task_o is not None:
+            # Turn off coils
+            self.task_o.stop()
+            self.task_o.write(np.array([[0.], [0.]]))
+            self.task_o.start()
+            # Release task_o
+            self.task_o.stop()
+            self.task_o.close()
 
-    def run(self):
-        with nidaqmx.Task() if self.initialized else nullcontext() as task_o:
-            # Define voltage output channels for coil control ([X, Y])
-            if task_o is not None:
-                task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OX)
-                task_o.ao_channels.add_ao_voltage_chan(config.COILS_NAME_OY)
-
-            # Waveform generation loop
-            while not self._stopper.is_set():
-                time_now = time.time_ns() * 1e-9
-
-                # Set coil voltages (effectively, coil current)
-                self._field = self.waveform.generate(time_now)
-                sent_t = np.array([
-                    self._field['x'],
-                    self._field['y'],
-                ])
-                if task_o is not None:
-                    task_o.write(
-                        sent_t * np.array([
-                            config.COILS_T_TO_V_X,
-                            config.COILS_T_TO_V_Y,
-                        ])
-                    )
-
-                self.frame_rate.throttle()
-
-            # Set current through coils to zero upon exit
-            if task_o is not None:
-                task_o.write([0, 0])
+    def write_to_coils(self):
+        if self.writer is not None:
+            field = self.waveform.generate(config.COILS_SAMPLE_RATE)
+            self.task_o.stop()
+            self.writer.write_many_sample(np.array([
+                field['x'] * config.COILS_T_TO_V_X,
+                field['y'] * config.COILS_T_TO_V_Y,
+            ]))
+            self.task_o.start()

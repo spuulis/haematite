@@ -10,13 +10,18 @@ CHESSBOARD_SIZE = 10e-3     # Side length of one square in meters (SI)
 CAMERA_EXPOSURE_TIME = 10000
 
 
+# Image parameters
+IMAGE_FPS = 20
+IMAGE_SCALE = 0.2
+
+
 # Model paramters
-MODEL_FPS = 90
+MODEL_FPS = 60
 
 
 # Coil parameters
 COILS_MAX_CURRENT = 5.
-COILS_FPS = 900
+COILS_SAMPLE_RATE = 900
 
 COILS_NAME_OX = 'Dev1/ao1'
 COILS_NAME_OY = 'Dev1/ao0'
@@ -95,11 +100,6 @@ CUBE_MARKER_POSITIONS = [
 DATA_PATH = './data/'
 CALIBRATION_PATH = DATA_PATH + 'calibration/'
 EXPERIMENT_PATH = DATA_PATH + 'experiments/'
-
-
-# Image parameters
-IMAGE_FPS = 30
-IMAGE_SCALE = 0.2
 
 
 # Coil profile parameters

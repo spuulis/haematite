@@ -55,7 +55,7 @@ class App(tk.Tk):
 
     def run(self):
         self.camera.start_capture()
-        self.coils.start()
+        self.coils.write_to_coils()
         self.model.start()
 
     def stop(self):
@@ -63,5 +63,4 @@ class App(tk.Tk):
         self.model.stop()
         self.model.join()
         self.coils.stop()
-        self.coils.join()
         self.camera.stop_capture()

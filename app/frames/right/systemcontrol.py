@@ -111,15 +111,6 @@ class FramerateFrame(ttk.LabelFrame):
         self.l_model_usage.grid(
             row=gc.get_row(), column=gc.next_column(), padx=5, sticky=tk.W)
 
-        ttk.Label(self, text='Coils fps').grid(
-            row=gc.next_row(), column=gc.next_column(), padx=5, sticky=tk.W)
-        self.l_coils_fps = ttk.Label(self, text='???.??')
-        self.l_coils_fps.grid(
-            row=gc.get_row(), column=gc.next_column(), padx=5, sticky=tk.W)
-        self.l_coils_usage = ttk.Label(self, text='???%')
-        self.l_coils_usage.grid(
-            row=gc.get_row(), column=gc.next_column(), padx=5, sticky=tk.W)
-
         ttk.Label(self, text='Image fps').grid(
             row=gc.next_row(), column=gc.next_column(), padx=5, sticky=tk.W)
         self.l_image_fps = ttk.Label(self, text='???.??')
@@ -137,12 +128,6 @@ class FramerateFrame(ttk.LabelFrame):
         usage_model = self.model.frame_rate.usage * 100
         self.l_model_usage.config(
             text=f'{"{:3.0f}".format(usage_model)}%')
-
-        fps_coils = self.model.coils.frame_rate.fps
-        self.l_coils_fps.config(text='{:0.2f}'.format(fps_coils))
-        usage_coils = self.model.coils.frame_rate.usage * 100
-        self.l_coils_usage.config(
-            text=f'{"{:3.0f}".format(usage_coils)}%')
 
         # TODO: Rework reading frame_rate of ImageFrame
         fps_image = self.nametowidget(
