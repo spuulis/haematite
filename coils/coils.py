@@ -43,7 +43,7 @@ class Coils():
             self.task_o.ao_channels.all.ao_max = config.COILS_MAX_CURRENT
             self.task_o.ao_channels.all.ao_min = -config.COILS_MAX_CURRENT
             # Set up timing for the DAQmx output task
-            self.task.timing.cfg_samp_clk_timing(
+            self.task_o.timing.cfg_samp_clk_timing(
                 config.COILS_SAMPLE_RATE,
                 sample_mode=AcquisitionType.CONTINUOUS,
             )
@@ -71,7 +71,7 @@ class Coils():
             field = self.waveform.generate(config.COILS_SAMPLE_RATE)
             self.task_o.stop()
             self.writer.write_many_sample(np.array([
-                field['x'] * config.COILS_T_TO_V_X,
-                field['y'] * config.COILS_T_TO_V_Y,
+                field['xs'] * config.COILS_T_TO_V_X,
+                field['ys'] * config.COILS_T_TO_V_Y,
             ]))
             self.task_o.start()

@@ -110,6 +110,7 @@ class Controller():
             case 'Sawtooth wave':
                 self.model.coils.set_function(waveform.sawtooth)
 
+        self.model.coils.write_to_coils()
         # Redraw changes on the plot
         self.request_redraw()
 
@@ -128,6 +129,8 @@ class Controller():
                 ) + 90) % 360)
             )
             self.update_all_parameters(tk.Event())
+        
+        self.model.coils.write_to_coils()
 
     def change_mode(
         self, variable_name: str, index: str = '', mode: str = ''
@@ -141,6 +144,7 @@ class Controller():
             case 'Hold at 5 mT':
                 self.model.coils.waveform.hold({'x': 5.e-3, 'y': 5.e-3})
 
+        self.model.coils.write_to_coils()
         # Redraw changes on the plot
         self.request_redraw()
 

@@ -2,7 +2,7 @@ import numpy as np
 
 
 def sine(
-    t: float, parameters: dict, amplitude: float = None,
+    t: np.ndarray, parameters: dict, amplitude: float = None,
 ):
     if amplitude is None:
         amplitude = parameters.get('amp', 0.)
@@ -11,7 +11,7 @@ def sine(
 
 
 def triangle(
-    t: float, parameters: dict, amplitude: float = None,
+    t: np.ndarray, parameters: dict, amplitude: float = None,
 ):
     if amplitude is None:
         amplitude = parameters.get('amp', 0.)
@@ -20,7 +20,7 @@ def triangle(
 
 
 def sawtooth(
-    t: float, parameters: dict, amplitude: float = None,
+    t: np.ndarray, parameters: dict, amplitude: float = None,
 ):
     if amplitude is None:
         amplitude = parameters.get('amp', 0.)
@@ -44,8 +44,8 @@ class Waveform():
         self.hold_amplitude = {'x': 0., 'y': 0.}
 
     def generate(self, sample_rate: int):
-        if self._hold is True:
-            ts = [0., 1.]
+        if self._hold is True or self.parameters['x']['freq'] == 0:
+            ts = [0.]
             return {
                 'ts': ts,
                 'xs': self._function(
@@ -57,7 +57,7 @@ class Waveform():
                     amplitude=self.hold_amplitude['y']
                 ),
             }
-        period = 2 * np.pi / self.parameters['x']
+        period = 2 * np.pi / self.parameters['x']['freq']
         ts = np.linspace(
             0, period, num=int(sample_rate * period), endpoint=False)
         return {
