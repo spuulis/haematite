@@ -1,11 +1,12 @@
 import json
 
 import cv2
+import numpy as np
 
 from visual.calibration import Chessboard
 from visual.camera import Camera
 
-calibrator = Chessboard(1, (10, 7))
+calibrator = Chessboard(0.0033867, (10, 7))
 ret, mtx, dist, rvecs, tvecs = None, None, None, None, None
 
 cam = Camera()
@@ -14,7 +15,7 @@ cam.start_capture()
 
 calib = {}
 while True:
-    img = cam.grab()
+    ret, img = cam.grab()
     img_s = img.copy()
     ret, corners = calibrator.find_corners(img)
     if ret is True:
@@ -33,7 +34,7 @@ while True:
             'mtx': mtx.tolist(),
             'dist': dist.tolist(),
         }
-        print(ret)
+        print(ret, np.linalg.norm(tvecs[0]))
 
 cv2.destroyAllWindows()
 cv2.waitKey(1)
