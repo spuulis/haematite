@@ -15,6 +15,10 @@ def find_markers(img, aruco_dict, aruco_params):
     ]
 
 
+def draw_marker(img: np.ndarray, corners: np.ndarray) -> None:
+    cv2.aruco.drawDetectedMarkers(img, corners)
+
+
 def pose_markers(
         mtx, dist, markers, marker_size, all_solutions=False):
     poses = []
@@ -72,8 +76,9 @@ def pose_cubes(mtx, dist, markers, marker_positions):
         # Estimate and save pose
         _, rvec, tvec = cv2.solvePnP(
             objpoints, imgpoints,
-            mtx, dist, flags=cv2.SOLVEPNP_EPNP,
+            mtx, dist, # flags=cv2.SOLVEPNP_ITERATIVE,
         )
+        print(np.linalg.norm(tvec))
         poses.append({
             'cube_id': cube_id,
             'rvec': rvec.reshape(3),
@@ -105,6 +110,25 @@ def draw_marker_axis(mtx, dist, img, markers, axis_length):
                 [marker['tvecs_x'], marker['tvecs_y'], marker['tvecs_z']]),
             axis_length
         )
+
+
+def draw_cubes(mtx, dist, img, cubes, cube_size):
+    vertices = np.float32([
+        [-.5, -.5, .5], [-.5, .5, .5], [.5, .5, .5], [.5, -.5, .5],
+        [-.5, -.5, -.5], [-.5, .5, -.5], [.5, .5, -.5], [.5, -.5, -.5],
+    ]) * cube_size
+
+    for cube in cubes:
+        imgpts, _ = cv2.projectPoints(
+            vertices, cube['rvec'], cube['tvec'], mtx, dist)
+        imgpts = np.int32(imgpts).reshape(-1, 2)
+        # Draw the cube
+        img = cv2.drawContours(img, [imgpts[4:]], -1, (0, 0, 100), 3)
+        for i, j in zip(range(4), range(4, 8)):
+            img = cv2.line(
+                img, tuple(imgpts[i]), tuple(imgpts[j]),
+                (0, 0, 200), 5)
+        img = cv2.drawContours(img, [imgpts[:4]], -1, (0, 0, 255), 7)
 
 
 def draw_marker_cube(mtx, dist, img, markers, marker_size):

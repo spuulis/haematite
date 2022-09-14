@@ -10,6 +10,7 @@ class CubeExperiment(Experiment):
     def __init__(self) -> None:
         super().__init__()
         self.measurement = []
+        self.ms = []
 
         self.data = pd.DataFrame()
         self.clear_data()
@@ -19,11 +20,11 @@ class CubeExperiment(Experiment):
         camera_mtx: np.ndarray, camera_dist: np.ndarray,
     ) -> None:
         if camera_mtx is not None and camera_dist is not None:
-            ms = markers.find_markers(
+            self.ms = markers.find_markers(
                 image, config.MARKER_DICT, config.MARKER_DETECTION_PARAMS)
             cubes = markers.pose_cubes(
                 camera_mtx, camera_dist,
-                ms, config.CUBE_MARKER_POSITIONS,
+                self.ms, config.CUBE_MARKER_POSITIONS,
             )
             self.measurement = [
                 dict(cube, **{
@@ -90,5 +91,9 @@ class CubeExperiment(Experiment):
         self, time_now: float, field: dict, image: np.ndarray,
         camera_mtx: np.ndarray, camera_dist: np.ndarray, scale: float = 1.
     ) -> np.ndarray:
+        markers.draw_cubes(
+            camera_mtx, camera_dist, image, self.measurement, config.CUBE_SIZE)
+        for marker in self.ms:
+            markers.draw_marker(image, np.array([[marker['corners']]]) * scale)
         return super().draw(
             time_now, field, image, camera_mtx, camera_dist, scale)
