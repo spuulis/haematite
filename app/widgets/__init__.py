@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from utils import GridCounter
+
 
 class Entry(ttk.Entry):
     def __init__(self, parent: tk.Widget, *args, **kwargs) -> None:
@@ -43,3 +45,21 @@ class Togglebutton(ttk.Button):
                 self.config(text=self.ontext)
             case False:
                 self.config(text=self.offtext)
+
+
+class Radiobuttons(ttk.Frame):
+    def __init__(
+        self, parent: tk.Widget, modes: list[str], *args, **kwargs,
+    ) -> None:
+        super().__init__(parent, *args, **kwargs)
+        self.parent = parent
+        self.modes = modes
+
+        self.variable = tk.StringVar(
+            self, name=f'strvar.{self.winfo_name()}')
+        self.variable.set(self.modes[0])
+        gc = GridCounter()
+        for mode in modes:
+            ttk.Radiobutton(
+                self, text=mode, value=mode, variable=self.variable,
+            ).grid(column=0, row=gc.next_row(), sticky=tk.W)

@@ -2,15 +2,80 @@ import cv2
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+import config
+
 
 class CubeMarkers1x1():
-    def __init__():
-        pass
+    def __init__(self) -> None:
+        self.markers = self.generate_positions()
+
+    def get_cube(self, id: int) -> int:
+        return id // 6
+
+    def get_position(self, id: int) -> list:
+        return self.markers[id % 6]
+
+    def generate_positions(self) -> list:
+        markers = []
+        for face in config.CUBE_FACES:
+            markers.append([
+                face['origin'],
+                face['origin'] + face['y'] * config.MARKER_1X1_SIZE,
+                (
+                    face['origin']
+                    + face['y'] * config.MARKER_1X1_SIZE
+                    + face['x'] * config.MARKER_1X1_SIZE
+                ),
+                face['origin'] + face['x'] * config.MARKER_1X1_SIZE,
+            ])
+        return markers
 
 
 class CubeMarkers2x2():
-    def __init__():
-        pass
+    def __init__(self) -> None:
+        self.markers = self.generate_positions()
+
+    def get_cube(self, id: int) -> int:
+        return id // 24
+
+    def get_position(self, id: int) -> list:
+        return self.markers[id % 24]
+
+    def generate_positions(self) -> list:
+        markers = []
+        for face in config.CUBE_FACES:
+            marker_positions = [
+                face['origin'],
+                (
+                    face['origin']
+                    + face['x']
+                    * (config.MARKER_2X2_SIZE + config.MARKER_2X2_PADDING)
+                ),
+                (
+                    face['origin']
+                    + face['y']
+                    * (config.MARKER_2X2_SIZE + config.MARKER_2X2_PADDING)
+                ),
+                (
+                    face['origin']
+                    + face['x']
+                    * (config.MARKER_2X2_SIZE + config.MARKER_2X2_PADDING)
+                    + face['x']
+                    * (config.MARKER_2X2_SIZE + config.MARKER_2X2_PADDING)
+                ),
+            ]
+            for marker_position in marker_positions:
+                markers.append([
+                    marker_position,
+                    marker_position + face['y'] * config.MARKER_2X2_SIZE,
+                    (
+                        marker_position
+                        + face['y'] * config.MARKER_2X2_SIZE
+                        + face['x'] * config.MARKER_2X2_SIZE
+                    ),
+                    marker_position + face['x'] * config.MARKER_2X2_SIZE,
+                ])
+        return markers
 
 
 def find_markers(img, aruco_dict, aruco_params):
@@ -57,6 +122,42 @@ def pose_markers(
             })
 
     return poses
+
+
+def pose_cubes_new(mtx, dist, markers, marker_positions):
+    poses = []
+    cube_ids = np.unique([
+        marker_positions.get_cube(marker['id']) for marker in markers
+    ])
+    for cube_id in cube_ids:
+        cube_markers = [
+            marker for marker in markers
+            if marker_positions.get_cube(marker['id']) == cube_id
+        ]
+
+        objpoints = np.array([])
+        imgpoints = np.array([])
+        for marker in cube_markers:
+            objpoints = np.vstack([
+                objpoints,
+                marker_positions.get_position(marker['id']),
+            ]) if objpoints.size else np.array(
+                marker_positions.get_position(marker['id']))
+            imgpoints = np.vstack([
+                imgpoints,
+                marker['corners'],
+            ]) if imgpoints.size else np.array(marker['corners'])
+
+        # Estimate and save pose
+        _, rvec, tvec = cv2.solvePnP(
+            objpoints, imgpoints,
+            mtx, dist,  # flags=cv2.SOLVEPNP_ITERATIVE,
+        )
+        poses.append({
+            'cube_id': cube_id,
+            'rvec': rvec.reshape(3),
+            'tvec': tvec.reshape(3),
+        })
 
 
 def pose_cubes(mtx, dist, markers, marker_positions):

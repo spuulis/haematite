@@ -42,6 +42,15 @@ class Controller():
         self.model.experiment.draw_markers = (
             self.parent.drawmarkers_button.variable.get())
 
+    def change_markertype(
+        self, variable_name: str, index: str = '', mode: str = '',
+    ) -> None:
+        match self.parent.markertype_buttons.variable.get():
+            case '1x1 marker':
+                self.model.experiment.set_marker_type('1x1')
+            case '2x2 marker':
+                self.model.experiment.set_marker_type('2x2')
+
 
 class Cubes(ttk.Frame):
     def __init__(
@@ -54,6 +63,13 @@ class Cubes(ttk.Frame):
 
         gc = GridCounter()
         self.grid_columnconfigure(0, weight=1)
+
+        self.markertype_buttons = ctk.Radiobuttons(
+            self, ['1x1 marker', '2x2 marker'])
+        self.markertype_buttons.grid(
+            row=gc.next_row(), column=gc.next_column(), sticky=tk.NW)
+        self.markertype_buttons.variable.trace_add(
+            'write', self.controller.change_markertype)
 
         self.drawcubes_button = ctk.Checkbutton(self, text='Draw cubes')
         self.drawcubes_button.grid(

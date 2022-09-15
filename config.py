@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 
 # Calibration board parameters
@@ -34,6 +35,9 @@ COILS_T_TO_V_Y = 656.1
 MARKER_SIZE = 5.08e-3       # Side length of marker in meters (SI)
 MARKER_IS_INVERTED = True   # Is the marker black on white
 MARKER_DICT = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
+MARKER_1X1_SIZE = 5.08e-3
+MARKER_2X2_SIZE = 2.032e-3
+MARKER_2X2_PADDING = 1.016e-3
 
 MARKER_DETECTION_PARAMS = cv2.aruco.DetectorParameters_create()
 MARKER_DETECTION_PARAMS.detectInvertedMarker = True
@@ -93,6 +97,75 @@ CUBE_MARKER_POSITIONS = [
         [MARKER_SIZE / 2, -MARKER_SIZE / 2, CUBE_SIZE / 2],
         [-MARKER_SIZE / 2, -MARKER_SIZE / 2, CUBE_SIZE / 2],
     ],
+]
+
+CUBE_FACES = [
+    {   # Face 0
+        'origin': np.array([
+            MARKER_SIZE / 2, MARKER_SIZE / 2, -CUBE_SIZE / 2,
+        ]),
+        'x': np.array([
+            0., -1., 0.,
+        ]),
+        'y': np.array([
+            -1., 0., 0.,
+        ]),
+    },
+    {   # Face 1
+        'origin': np.array([
+            -MARKER_SIZE / 2, -CUBE_SIZE / 2, MARKER_SIZE / 2,
+        ]),
+        'x': np.array([
+            0., 0., -1.,
+        ]),
+        'y': np.array([
+            1., 0., 0.,
+        ]),
+    },
+    {   # Face 2
+        'origin': np.array([
+            -CUBE_SIZE / 2, MARKER_SIZE / 2, -MARKER_SIZE / 2,
+        ]),
+        'x': np.array([
+            0., -1., 0.,
+        ]),
+        'y': np.array([
+            0., 0., 1.,
+        ]),
+    },
+    {   # Face 3
+        'origin': np.array([
+            CUBE_SIZE / 2, MARKER_SIZE / 2, MARKER_SIZE / 2,
+        ]),
+        'x': np.array([
+            0., -1., 0.,
+        ]),
+        'y': np.array([
+            0., 0., -1.,
+        ]),
+    },
+    {   # Face 4
+        'origin': np.array([
+            -MARKER_SIZE / 2, CUBE_SIZE / 2, -MARKER_SIZE / 2,
+        ]),
+        'x': np.array([
+            0., 0., 1.,
+        ]),
+        'y': np.array([
+            1., 0., 0.,
+        ]),
+    },
+    {   # Face 5
+        'origin': np.array([
+            -MARKER_SIZE / 2, MARKER_SIZE / 2, CUBE_SIZE / 2,
+        ]),
+        'x': np.array([
+            0., -1., 0.,
+        ]),
+        'y': np.array([
+            1., 0., 0.,
+        ]),
+    },
 ]
 
 

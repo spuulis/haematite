@@ -20,6 +20,18 @@ class CubeExperiment(Experiment):
         self.draw_cubes = False
         self.draw_markers = False
 
+        self.marker_type = '1x1'
+        self.marker_positions = markers.CubeMarkers1x1()
+
+    def set_marker_type(self, marker_type: str):
+        match marker_type:
+            case '1x1':
+                self.marker_type = marker_type
+                self.marker_positions = markers.CubeMarkers1x1()
+            case '2x2':
+                self.marker_type = marker_type
+                self.marker_positions = markers.CubeMarkers2x2()
+
     def measure(
         self, time_now: float, field: dict, image: np.ndarray,
         camera_mtx: np.ndarray, camera_dist: np.ndarray,
@@ -27,10 +39,8 @@ class CubeExperiment(Experiment):
         if camera_mtx is not None and camera_dist is not None:
             self.ms = markers.find_markers(
                 image, config.MARKER_DICT, config.MARKER_DETECTION_PARAMS)
-            cubes = markers.pose_cubes(
-                camera_mtx, camera_dist,
-                self.ms, config.CUBE_MARKER_POSITIONS,
-            )
+            cubes = markers.pose_cubes_new(
+                camera_mtx, camera_dist, self.ms, self.marker_positions)
             self.measurement = [
                 dict(cube, **{
                     'time': time_now,
