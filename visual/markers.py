@@ -188,7 +188,7 @@ def pose_cubes(mtx, dist, markers, marker_positions):
         # Estimate and save pose
         _, rvec, tvec = cv2.solvePnP(
             objpoints, imgpoints,
-            mtx, dist,  # flags=cv2.SOLVEPNP_ITERATIVE,
+            mtx, dist, flags=cv2.SOLVEPNP_UPNP,
         )
         print(np.linalg.norm(tvec))
         poses.append({

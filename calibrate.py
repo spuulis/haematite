@@ -13,7 +13,7 @@ cam = Camera()
 cam.initialize(10000)
 cam.start_capture()
 
-calib = {}
+calib = None
 while True:
     ret, img = cam.grab()
     img_s = img.copy()
@@ -39,7 +39,8 @@ while True:
 cv2.destroyAllWindows()
 cv2.waitKey(1)
 
-with open('calibration.json', 'w') as json_file:
-    json.dump(calib, json_file)
+if calib is not None:
+    with open('calibration.json', 'w') as json_file:
+        json.dump(calib, json_file)
 
 cam.stop_capture()

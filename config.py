@@ -12,12 +12,12 @@ CAMERA_EXPOSURE_TIME = 10000
 
 
 # Image parameters
-IMAGE_FPS = 20
+IMAGE_FPS = 10
 IMAGE_SCALE = 0.2
 
 
 # Model paramters
-MODEL_FPS = 60
+MODEL_FPS = 100
 
 
 # Coil parameters
@@ -42,15 +42,15 @@ MARKER_2X2_PADDING = 1.016e-3
 MARKER_DETECTION_PARAMS = cv2.aruco.DetectorParameters_create()
 MARKER_DETECTION_PARAMS.detectInvertedMarker = True
 # Thresholding
-MARKER_DETECTION_PARAMS.adaptiveThreshWinSizeMin = 35
-MARKER_DETECTION_PARAMS.adaptiveThreshWinSizeMax = 85
-MARKER_DETECTION_PARAMS.adaptiveThreshWinSizeStep = 10
+MARKER_DETECTION_PARAMS.adaptiveThreshWinSizeMin = 205
+MARKER_DETECTION_PARAMS.adaptiveThreshWinSizeMax = 305
+MARKER_DETECTION_PARAMS.adaptiveThreshWinSizeStep = 50
 # Contour filtering
-MARKER_DETECTION_PARAMS.minMarkerPerimeterRate = 0.08
-MARKER_DETECTION_PARAMS.maxMarkerPerimeterRate = 0.32
-MARKER_DETECTION_PARAMS.polygonalApproxAccuracyRate = 0.05
-MARKER_DETECTION_PARAMS.minCornerDistanceRate = 0.05
-MARKER_DETECTION_PARAMS.minMarkerDistanceRate = 0.05
+MARKER_DETECTION_PARAMS.minMarkerPerimeterRate = 0.01
+MARKER_DETECTION_PARAMS.maxMarkerPerimeterRate = 0.8
+MARKER_DETECTION_PARAMS.polygonalApproxAccuracyRate = 0.08
+MARKER_DETECTION_PARAMS.minCornerDistanceRate = 0.01
+MARKER_DETECTION_PARAMS.minMarkerDistanceRate = 0.01
 # Corner refinement
 MARKER_DETECTION_PARAMS.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
 MARKER_DETECTION_PARAMS.cornerRefinementWinSize = 5
