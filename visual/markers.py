@@ -233,14 +233,15 @@ def draw_cubes(mtx, dist, img, scale, cubes, cube_size):
     for cube in cubes:
         imgpts, _ = cv2.projectPoints(
             vertices, cube['rvec'], cube['tvec'], mtx, dist)
-        imgpts = np.int32(imgpts).reshape(-1, 2) * scale
+        imgpts = np.int32(imgpts * scale).reshape(-1, 2)
         # Draw the cube
-        img = cv2.drawContours(img, [imgpts[4:]], -1, (0, 0, 100), 3)
+        thickness = int(10 * scale)
+        img = cv2.drawContours(img, [imgpts[4:]], -1, (0, 0, 255), thickness)
         for i, j in zip(range(4), range(4, 8)):
             img = cv2.line(
                 img, tuple(imgpts[i]), tuple(imgpts[j]),
-                (0, 0, 200), 5)
-        img = cv2.drawContours(img, [imgpts[:4]], -1, (0, 0, 255), 7)
+                (0, 0, 255), thickness)
+        img = cv2.drawContours(img, [imgpts[:4]], -1, (0, 0, 255), thickness)
 
 
 def draw_marker_cube(mtx, dist, img, markers, marker_size):
