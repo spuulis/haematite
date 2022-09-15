@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -14,6 +16,9 @@ class CubeExperiment(Experiment):
 
         self.data = pd.DataFrame()
         self.clear_data()
+
+        self.draw_cubes = False
+        self.draw_markers = False
 
     def measure(
         self, time_now: float, field: dict, image: np.ndarray,
@@ -76,24 +81,33 @@ class CubeExperiment(Experiment):
 
     def start_recording(self) -> None:
         self.clear_data()
-        return super().start_recording()
+        super().start_recording()
 
     def stop_recording(self, experiment_id: str) -> None:
-        super().stop_recording(experiment_id)
-        self.data.to_csv(
-            config.EXPERIMENT_PATH + experiment_id + '/data.csv',
-            index=False,
-            sep='\t',
-        )
+        if self.recording is True:
+            os.makedirs(
+                config.EXPERIMENT_PATH + experiment_id + '/', exist_ok=True)
+            self.data.to_csv(
+                config.EXPERIMENT_PATH + experiment_id + '/data.csv',
+                index=False,
+                sep='\t',
+            )
         self.clear_data()
+        super().stop_recording(experiment_id)
 
     def draw(
         self, time_now: float, field: dict, image: np.ndarray,
         camera_mtx: np.ndarray, camera_dist: np.ndarray, scale: float = 1.
     ) -> np.ndarray:
-        markers.draw_cubes(
-            camera_mtx, camera_dist, image, self.measurement, config.CUBE_SIZE)
-        for marker in self.ms:
-            markers.draw_marker(image, np.array([[marker['corners']]]) * scale)
+        if self.draw_cubes is True:
+            markers.draw_cubes(
+                camera_mtx, camera_dist, image, scale, self.measurement,
+                config.CUBE_SIZE,
+            )
+        if self.draw_markers is True:
+            for marker in self.ms:
+                markers.draw_marker(
+                    image, scale, np.array([[marker['corners']]]),
+                )
         return super().draw(
             time_now, field, image, camera_mtx, camera_dist, scale)

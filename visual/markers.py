@@ -3,6 +3,16 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 
+class CubeMarkers1x1():
+    def __init__():
+        pass
+
+
+class CubeMarkers2x2():
+    def __init__():
+        pass
+
+
 def find_markers(img, aruco_dict, aruco_params):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     (corners, ids, _) = cv2.aruco.detectMarkers(
@@ -15,8 +25,8 @@ def find_markers(img, aruco_dict, aruco_params):
     ]
 
 
-def draw_marker(img: np.ndarray, corners: np.ndarray) -> None:
-    cv2.aruco.drawDetectedMarkers(img, corners)
+def draw_marker(img: np.ndarray, scale: float, corners: np.ndarray) -> None:
+    cv2.aruco.drawDetectedMarkers(img, corners * scale)
 
 
 def pose_markers(
@@ -76,7 +86,7 @@ def pose_cubes(mtx, dist, markers, marker_positions):
         # Estimate and save pose
         _, rvec, tvec = cv2.solvePnP(
             objpoints, imgpoints,
-            mtx, dist, # flags=cv2.SOLVEPNP_ITERATIVE,
+            mtx, dist,  # flags=cv2.SOLVEPNP_ITERATIVE,
         )
         print(np.linalg.norm(tvec))
         poses.append({
@@ -112,7 +122,7 @@ def draw_marker_axis(mtx, dist, img, markers, axis_length):
         )
 
 
-def draw_cubes(mtx, dist, img, cubes, cube_size):
+def draw_cubes(mtx, dist, img, scale, cubes, cube_size):
     vertices = np.float32([
         [-.5, -.5, .5], [-.5, .5, .5], [.5, .5, .5], [.5, -.5, .5],
         [-.5, -.5, -.5], [-.5, .5, -.5], [.5, .5, -.5], [.5, -.5, -.5],
@@ -121,7 +131,7 @@ def draw_cubes(mtx, dist, img, cubes, cube_size):
     for cube in cubes:
         imgpts, _ = cv2.projectPoints(
             vertices, cube['rvec'], cube['tvec'], mtx, dist)
-        imgpts = np.int32(imgpts).reshape(-1, 2)
+        imgpts = np.int32(imgpts).reshape(-1, 2) * scale
         # Draw the cube
         img = cv2.drawContours(img, [imgpts[4:]], -1, (0, 0, 100), 3)
         for i, j in zip(range(4), range(4, 8)):

@@ -1,13 +1,18 @@
 import tkinter as tk
 from tkinter import ttk
 
+import app.widgets as ctk
+from model import Model
 from utils import GridCounter
 
 
 class Calibrate(ttk.Frame):
-    def __init__(self, parent, model):
+    def __init__(
+        self, parent: tk.Widget, model: Model, id_entry: ctk.Entry,
+    ) -> None:
         super().__init__(parent, padding=(5, 5, 5, 5))
         self.model = model
+        self.id_entry = id_entry
 
         gc = GridCounter()
 
@@ -83,3 +88,6 @@ class Calibrate(ttk.Frame):
         buttons_frame.grid_columnconfigure(3, weight=1)
 
         self.grid_columnconfigure(1, weight=1)
+
+    def initialize_experiment(self) -> None:
+        self.id_entry.config(state='disabled')

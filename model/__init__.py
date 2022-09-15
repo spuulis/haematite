@@ -40,6 +40,10 @@ class Model(threading.Thread):
                 self.experiment.initialize_chessboard(0.5, (7, 10))
             case 'Cubes':
                 self.experiment = CubeExperiment()
+            case 'Camera':
+                self.experiment = Experiment()
+            case 'Phases':
+                self.experiment = Experiment()
             case _:
                 raise Exception(f'''
                     Experiment "{experiment_name}" is not recognised.
