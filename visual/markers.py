@@ -158,6 +158,7 @@ def pose_cubes_new(mtx, dist, markers, marker_positions):
             'rvec': rvec.reshape(3),
             'tvec': tvec.reshape(3),
         })
+    return poses
 
 
 def pose_cubes(mtx, dist, markers, marker_positions):
