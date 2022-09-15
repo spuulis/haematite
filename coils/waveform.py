@@ -45,7 +45,7 @@ class Waveform():
 
     def generate(self, sample_rate: int):
         if self._hold is True or self.parameters['x']['freq'] == 0:
-            ts = [0.]
+            ts = np.array([0., 0.])
             return {
                 'ts': ts,
                 'xs': self._function(
