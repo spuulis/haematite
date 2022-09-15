@@ -61,7 +61,7 @@ class Model(threading.Thread):
         # Get time, field in the coils, and image from the camera
         time_now = time.time_ns()
         # TODO: Replace the following with actual reading from coils
-        self._field = {'x': 0., 'y': 0.}
+        self._field = self.coils.get_field(time_now)
         ret, image = self.camera.grab()
 
         if ret is True:
