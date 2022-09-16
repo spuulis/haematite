@@ -41,8 +41,42 @@ class Coils():
             'y': self.field['ys'][sample_index],
         }
 
+    def get_current_parameters(self, time_now):
+        if self.t0 is None or self.field is None:
+            return {
+                'x': {'amp': 0., 'freq': 0.},
+                'y': {'amp': 0., 'freq': 0.},
+            }
+        sample_index = int(
+            ((time_now - self.t0) * config.COILS_SAMPLE_RATE)
+            % len(self.waveform.parameters_t['x']['amp'])
+        )
+        return {
+            'x': {
+                'amp': (
+                    self.waveform
+                    .parameters_t['x']['amp'][sample_index]
+                ),
+                'freq': (
+                    self.waveform
+                    .parameters_t['x']['freq'][sample_index]
+                ),
+            },
+            'y': {
+                'amp': (
+                    self.waveform
+                    .parameters_t['y']['amp'][sample_index]
+                ),
+                'freq': (
+                    self.waveform
+                    .parameters_t['y']['freq'][sample_index]
+                ),
+            },
+        }
+
     def update_params(self, new_params, override=False):
         self.waveform.update_parameters(new_params, override)
+        self.waveform.generate(config.COILS_SAMPLE_RATE)
         self.write_to_coils()
 
     def set_function(self, func):
@@ -82,12 +116,12 @@ class Coils():
             self.task_o.close()
 
     def write_to_coils(self):
+        self.field = self.waveform.generate(config.COILS_SAMPLE_RATE)
         if self.writer is not None:
-            self.field = self.waveform.generate(config.COILS_SAMPLE_RATE)
             self.task_o.stop()
             self.writer.write_many_sample(np.array([
                 self.field['xs'] * config.COILS_T_TO_V_X,
                 self.field['ys'] * config.COILS_T_TO_V_Y,
             ]))
             self.task_o.start()
-            self.t0 = time.time_ns() * 1.e-9
+        self.t0 = time.time_ns() * 1.e-9

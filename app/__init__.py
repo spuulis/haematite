@@ -34,8 +34,8 @@ class App(tk.Tk):
         self.coils = Coils()
         self.coils.set_function(coils.waveform.sine)
         self.coils.update_params({
-            'x': {'amp': 0., 'freq': 0., 'phase': 0.},
-            'y': {'amp': 0., 'freq': 0., 'phase': 0.},
+            'x': {'amp': [0., 0.], 'freq': [0., 0.], 'phase': 0.},
+            'y': {'amp': [0., 0.], 'freq': [0., 0.], 'phase': 0.},
         }, override=True)
         try:
             self.coils.initialize()

@@ -10,6 +10,7 @@ class Entry(ttk.Entry):
         self.parent = parent
         self.variable = tk.StringVar(self, name=f'strvar.{self.winfo_name()}')
         super().config(textvariable=self.variable)
+        self.bind('<Return>', lambda event: self.parent.focus_set(), add=True)
 
 
 class Checkbutton(ttk.Checkbutton):
