@@ -5,8 +5,9 @@ import numpy as np
 import cv2
 
 from .experiment import Experiment
-from .experiment.cubes import CubeExperiment
 from .experiment.calibrate import CalibrateExperiment
+from .experiment.capture import CaptureExperiment
+from .experiment.cubes import CubeExperiment
 from coils.coils import Coils
 import config
 from utils import FrameRate
@@ -41,7 +42,7 @@ class Model(threading.Thread):
             case 'Cubes':
                 self.experiment = CubeExperiment()
             case 'Camera':
-                self.experiment = Experiment()
+                self.experiment = CaptureExperiment()
             case 'Phases':
                 self.experiment = Experiment()
             case _:
