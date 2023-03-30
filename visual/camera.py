@@ -52,7 +52,7 @@ class Camera():
         if self.camera is not None:
             grabResult = self.camera.RetrieveResult(
                 5000, pylon.TimeoutHandling_ThrowException)
-            if grabResult is False:
+            if grabResult is False or grabResult is None:
                 return False, None
             image = self.converter.Convert(grabResult)
             img = image.GetArray()

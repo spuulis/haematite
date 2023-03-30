@@ -12,12 +12,22 @@ class RightFrame(ttk.Frame):
     def __init__(self, parent, model):
         ttk.Frame.__init__(self, parent)
         self.model = model
+        self.parent = parent
 
         self.grid_columnconfigure(0, weight=1)
 
         self.image_frame = ImageFrame(self, model)
         self.image_frame.grid(row=0, column=0, sticky=tk.NSEW)
         self.grid_rowconfigure(0, weight=1)
+
+        self.show_image = tk.BooleanVar(
+            self.parent, name='boolvar.image.show')
+        self.show_image.trace_add('write', self.toggle_image)
+        self.show_image.set(True)
+        ttk.Checkbutton(
+            self,
+            variable=self.show_image,
+        ).grid(column=0, row=0, sticky=tk.SE)
 
         ttk.Separator(
             master=self,
@@ -27,6 +37,13 @@ class RightFrame(ttk.Frame):
         self.system_frame = SystemFrame(self, self.model)
         self.system_frame.grid(row=2, column=0, sticky=tk.NSEW)
         self.grid_rowconfigure(2, minsize=200)
+
+    def toggle_image(
+        self, variable_name: str, index: str = '', mode: str = ''
+    ) -> None:
+        self.image_frame.show_image = self.show_image.get()
+        if self.show_image.get() is True:
+            self.image_frame.show_frame()
 
 
 class ImageFrame(ttk.Frame):
@@ -42,7 +59,8 @@ class ImageFrame(ttk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.show_frame()
+        # self.show_frame()
+        self.show_image = False
 
     def show_frame(self):
         # Get the latest frame and convert into Image
@@ -66,8 +84,9 @@ class ImageFrame(ttk.Frame):
         self.label.imgtk = imgtk
         self.label.configure(image=imgtk)
 
-        self.after(
-            # tkinter.after requires time in ms
-            int(self.frame_rate.imitate_throttle() * 1.e3),
-            self.show_frame,
-        )
+        if self.show_image is True:
+            self.after(
+                # tkinter.after requires time in ms
+                int(self.frame_rate.imitate_throttle() * 1.e3),
+                self.show_frame,
+            )

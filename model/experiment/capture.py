@@ -80,4 +80,9 @@ class CaptureExperiment(Experiment):
     ) -> None:
         os.makedirs(
             config.EXPERIMENT_PATH + experiment_id + '/images/', exist_ok=True)
-        cv2.imwrite(config.EXPERIMENT_PATH + experiment_id + '/images/' + f'{str(index).zfill(6)}.jpg', image)
+        cv2.imwrite((
+            config.EXPERIMENT_PATH
+            + experiment_id
+            + '/images/'
+            + f'{str(index).zfill(6)}.jpg'
+        ), image)
